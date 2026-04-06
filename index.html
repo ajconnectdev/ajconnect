@@ -5,7 +5,401 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AJ Connect – ERP für Kirchgemeinden</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1A3560;--navy2:#0F1F3D;--navy3:#243d6e;
+  --gold:#C8941A;--gold2:#e8b84b;--gold-pale:#FDF3DC;
+  --bg:#F4F5F7;--white:#fff;
+  --text:#1A1A1A;--text2:#6B7280;--text3:#9CA3AF;
+  --border:#E5E7EB;--border2:#D1D5DB;
+  --green:#16A34A;--green-bg:#DCFCE7;
+  --red:#DC2626;--red-bg:#FEE2E2;
+  --blue:#2563EB;--blue-bg:#DBEAFE;
+  --amber:#D97706;--amber-bg:#FEF3C7;
+  --purple:#7C3AED;--purple-bg:#EDE9FE;
+  --sidebar-w:240px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:14px}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--navy2);display:flex;flex-direction:column;flex-shrink:0;height:100vh;overflow-y:auto;scrollbar-width:none}
+.sidebar::-webkit-scrollbar{display:none}
+.sidebar-logo{padding:16px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px}
+.logo-mark{width:36px;height:36px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+.logo-cross{position:absolute;width:18px;height:22px}
+.logo-cross::before{content:'';position:absolute;left:50%;top:0;transform:translateX(-50%);width:4px;height:22px;background:white;border-radius:2px}
+.logo-cross::after{content:'';position:absolute;top:6px;left:0;width:18px;height:4px;background:white;border-radius:2px}
+.logo-texts{display:flex;flex-direction:column}
+.logo-name{font-family:'Playfair Display',serif;font-size:15px;color:white;font-weight:600;line-height:1.1}
+.logo-slogan{font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:0.8px;text-transform:uppercase;margin-top:1px}
+.gemeente-wrap{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.07)}
+.gemeente-lbl{font-size:10px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.gemeente-name{font-size:13px;color:white;font-weight:500}
+.gemeente-plan{display:inline-block;background:rgba(200,148,26,0.2);color:var(--gold2);font-size:10px;padding:2px 8px;border-radius:4px;margin-top:4px}
+.nav-sec{padding:14px 10px 3px;font-size:10px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:1.2px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 11px;border-radius:7px;margin:1px 6px;cursor:pointer;color:rgba(255,255,255,0.5);font-size:12px;user-select:none;transition:all 0.15s}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85)}
+.nav-item.active{background:rgba(200,148,26,0.18);color:var(--gold2)}
+.nav-item svg{width:14px;height:14px;fill:currentColor;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--gold);color:white;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:500}
+.sidebar-foot{margin-top:auto;padding:10px 6px;border-top:1px solid rgba(255,255,255,0.07)}
+.user-row{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:7px;cursor:pointer}
+.user-row:hover{background:rgba(255,255,255,0.06)}
+.u-av{width:28px;height:28px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;flex-shrink:0}
+.u-name{font-size:12px;color:white;font-weight:500}
+.u-role{font-size:10px;color:rgba(255,255,255,0.35)}
+
+/* MAIN LAYOUT */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);height:54px;padding:0 20px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.topbar-title{font-size:16px;font-weight:600;color:var(--navy);flex:1}
+.topbar-right{display:flex;gap:8px;align-items:center}
+.date-chip{font-size:12px;color:var(--text2);background:var(--bg);border:1px solid var(--border);padding:5px 12px;border-radius:6px}
+.icon-btn{width:32px;height:32px;border-radius:7px;border:1px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.icon-btn:hover{background:var(--bg)}
+.icon-btn svg{width:15px;height:15px;fill:var(--text2)}
+.notif-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid white}
+
+/* BUTTONS */
+.btn{padding:7px 14px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;border:none;font-family:inherit;transition:all 0.15s;white-space:nowrap}
+.btn svg{width:13px;height:13px;fill:currentColor;flex-shrink:0}
+.btn-primary{background:var(--navy);color:white}.btn-primary:hover{background:var(--navy3)}
+.btn-ghost{background:white;color:var(--text2);border:1px solid var(--border)}.btn-ghost:hover{background:var(--bg)}
+.btn-gold{background:var(--gold);color:white}.btn-gold:hover{background:var(--gold2)}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1px solid #fca5a5}
+.btn-green{background:var(--green-bg);color:var(--green);border:1px solid #86efac}
+
+/* VIEW TOGGLE */
+.view-toggle{display:flex;border:1px solid var(--border);border-radius:7px;overflow:hidden}
+.vt{padding:6px 10px;cursor:pointer;background:var(--white);border:none;display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);font-family:inherit;transition:all 0.15s}
+.vt svg{width:13px;height:13px;fill:var(--text2)}
+.vt.active{background:var(--navy);color:white}
+.vt.active svg{fill:white}
+
+/* PAGES */
+.page{display:none;flex:1;overflow-y:auto;padding:20px;flex-direction:column;gap:16px}
+.page.active{display:flex}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:12px}
+.stat-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stat-ico svg{width:17px;height:17px}
+.stat-n{font-size:22px;font-weight:600;color:var(--navy);line-height:1}
+.stat-l{font-size:11px;color:var(--text3);margin-top:2px}
+.stat-d{font-size:11px;margin-top:2px}
+.d-up{color:var(--green)}.d-dn{color:var(--red)}
+
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:14px;font-weight:600;color:var(--navy)}
+.card-action{font-size:12px;color:var(--gold);cursor:pointer;font-weight:500}
+.card-body{padding:16px 18px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g2-1{display:grid;grid-template-columns:1fr 1fr 320px;gap:16px}
+
+/* TABLE */
+.table-wrap{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.tbl-toolbar{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.search-box{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:6px 11px;flex:1;min-width:160px}
+.search-box svg{width:13px;height:13px;fill:var(--text3);flex-shrink:0}
+.search-box input{border:none;background:transparent;font-size:13px;color:var(--text);outline:none;width:100%}
+.search-box input::placeholder{color:var(--text3)}
+.ftabs{display:flex;gap:3px}
+.ftab{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text2);white-space:nowrap;user-select:none}
+.ftab.active{background:var(--navy);color:white;border-color:var(--navy)}
+.ftab:hover:not(.active){background:var(--bg)}
+.fsel{padding:6px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;color:var(--text2);background:var(--white);cursor:pointer;outline:none}
+.tbl-top{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.tbl-title{font-size:13px;font-weight:600;color:var(--navy)}
+.gear-wrap{position:relative}
+.gear-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.gear-btn:hover{background:var(--bg)}
+.gear-btn svg{width:13px;height:13px;fill:var(--text2)}
+.gear-dd{position:absolute;top:34px;right:0;background:var(--white);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:200;min-width:210px;display:none}
+.gear-dd.open{display:block}
+.gear-dh{padding:9px 13px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--navy);display:flex;justify-content:space-between;align-items:center}
+.gear-reset{font-size:11px;color:var(--gold);cursor:pointer}
+.gear-row{display:flex;align-items:center;gap:9px;padding:7px 13px;cursor:pointer}
+.gear-row:hover{background:var(--bg)}
+.gcb{width:14px;height:14px;border-radius:3px;border:1.5px solid var(--border2);background:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gcb.on{background:var(--navy);border-color:var(--navy)}
+.gcb svg{display:none;width:8px;height:8px;fill:white}
+.gcb.on svg{display:block}
+.gcb.req{background:var(--bg);border-color:var(--border);cursor:not-allowed}
+.gear-lbl{font-size:12px;color:var(--text);flex:1}
+.req-tag{font-size:10px;color:var(--text3);background:var(--bg);padding:1px 6px;border-radius:4px}
+table{width:100%;border-collapse:collapse}
+thead tr{background:var(--bg);border-bottom:1px solid var(--border)}
+th{padding:8px 13px;text-align:left;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;user-select:none}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;cursor:pointer}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#F9FAFB}
+td{padding:10px 13px;font-size:13px;vertical-align:middle}
+.td-name{display:flex;align-items:center;gap:9px}
+.m-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;flex-shrink:0}
+.m-fn{font-weight:500;color:var(--navy);font-size:13px}
+.m-em{font-size:11px;color:var(--text3)}
+.sbadge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:500}
+.sbadge::before{content:'';width:5px;height:5px;border-radius:50%}
+.s-aktiv{background:var(--green-bg);color:var(--green)}.s-aktiv::before{background:var(--green)}
+.s-besucher{background:var(--blue-bg);color:var(--blue)}.s-besucher::before{background:var(--blue)}
+.s-inaktiv{background:var(--bg);color:var(--text3)}.s-inaktiv::before{background:var(--text3)}
+.s-neu{background:var(--amber-bg);color:var(--amber)}.s-neu::before{background:var(--amber)}
+.s-taufkandidat{background:var(--purple-bg);color:var(--purple)}.s-taufkandidat::before{background:var(--purple)}
+.edit-sel{padding:3px 7px;border:1px solid var(--border);border-radius:5px;font-size:11px;color:var(--text);background:var(--white);cursor:pointer;outline:none;max-width:150px}
+.row-del{width:24px;height:24px;border-radius:5px;border:1px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.row-del:hover{background:var(--red-bg);border-color:var(--red)}
+.row-del svg{width:11px;height:11px;fill:var(--text3)}
+.row-del:hover svg{fill:var(--red)}
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border)}
+.pi{font-size:12px;color:var(--text3)}
+.pbtns{display:flex;gap:3px}
+.pbtn{width:26px;height:26px;border-radius:5px;border:1px solid var(--border);background:var(--white);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2)}
+.pbtn.active{background:var(--navy);color:white;border-color:var(--navy)}
+.pbtn:hover:not(.active){background:var(--bg)}
+
+/* CARD GRID */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.member-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px;cursor:pointer;transition:all 0.15s}
+.member-card:hover{border-color:var(--gold);box-shadow:0 2px 12px rgba(200,148,26,0.1)}
+.mc-av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:white;margin:0 auto 10px}
+.mc-name{font-size:14px;font-weight:600;color:var(--navy);text-align:center;margin-bottom:6px}
+.mc-badges{display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.mc-div{height:1px;background:var(--border);margin-bottom:10px}
+.mc-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);margin-bottom:5px}
+.mc-row svg{width:11px;height:11px;fill:var(--text3);flex-shrink:0}
+
+/* DASHBOARD */
+.godi-card{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);border:none}
+.godi-row{display:flex;align-items:center;gap:7px;margin-bottom:7px;font-size:13px;color:rgba(255,255,255,0.75)}
+.godi-row svg{width:12px;height:12px;fill:var(--gold2);flex-shrink:0}
+.godi-live{display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,0.25);color:#4ade80;font-size:11px;padding:3px 9px;border-radius:5px;margin-top:7px}
+.godi-live::before{content:'';width:6px;height:6px;background:#4ade80;border-radius:50%}
+.ev-item{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--border)}
+.ev-item:last-child{border-bottom:none;padding-bottom:0}
+.ev-date{width:38px;height:38px;border-radius:7px;background:var(--gold-pale);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.ev-day{font-size:15px;font-weight:600;color:var(--gold);line-height:1}
+.ev-mon{font-size:9px;color:var(--gold);text-transform:uppercase;font-weight:500}
+.ev-info{flex:1;min-width:0}
+.ev-name{font-size:13px;font-weight:500;color:var(--text)}
+.ev-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.ev-cnt{font-size:12px;font-weight:500;color:var(--text2);background:var(--bg);padding:3px 7px;border-radius:5px;flex-shrink:0}
+.bar-wrap{margin-bottom:12px}
+.bar-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px}
+.bar-track{height:7px;background:var(--bg);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.twint-row{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-radius:8px;padding:9px 11px;margin-top:9px}
+.twint-badge{background:#00A0E4;color:white;font-size:11px;font-weight:600;padding:3px 9px;border-radius:5px}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quick-btn{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;cursor:pointer;transition:all 0.15s}
+.quick-btn:hover{border-color:var(--gold);background:var(--gold-pale)}
+.quick-btn svg{width:16px;height:16px;fill:var(--navy)}
+.quick-btn:hover svg{fill:var(--gold)}
+.quick-btn span{font-size:12px;font-weight:500;color:var(--text)}
+.act-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border)}
+.act-item:last-child{border-bottom:none;padding-bottom:0}
+.act-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.act-dot svg{width:13px;height:13px;fill:white}
+.act-text{flex:1;font-size:13px;color:var(--text)}
+.act-time{font-size:11px;color:var(--text3);white-space:nowrap}
+
+/* MITGLIEDERKARTE */
+.karte-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:300;display:none}
+.karte-overlay.open{display:block}
+.karte-panel{position:fixed;top:0;right:-740px;width:740px;height:100vh;background:var(--white);border-left:1px solid var(--border);z-index:400;display:flex;flex-direction:column;transition:right 0.3s ease;box-shadow:-4px 0 32px rgba(0,0,0,0.1)}
+.karte-panel.open{right:0}
+.karte-topbar{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.karte-caption{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.karte-close{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:auto}
+.karte-close svg{width:11px;height:11px;fill:var(--text2)}
+.karte-header{padding:18px;border-bottom:1px solid var(--border);display:flex;gap:14px;align-items:flex-start;flex-shrink:0}
+.karte-av{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:white;flex-shrink:0}
+.karte-info{flex:1}
+.karte-name{font-size:19px;font-weight:600;color:var(--navy);margin-bottom:3px}
+.karte-sub{font-size:12px;color:var(--text2);margin-bottom:7px}
+.karte-badges{display:flex;gap:5px;flex-wrap:wrap}
+.kchip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:5px;font-size:11px;font-weight:500}
+.krole{background:var(--navy);color:white;border-radius:5px;padding:2px 9px;font-size:11px;font-weight:500}
+.kq-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-left:auto}
+.kq{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 6px;text-align:center;min-width:58px}
+.kq-n{font-size:14px;font-weight:600;color:var(--navy)}
+.kq-l{font-size:9px;color:var(--text3);margin-top:1px}
+.karte-actions{display:flex;gap:6px;padding:10px 18px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+.karte-body{flex:1;overflow-y:auto}
+.stl{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;overflow-x:auto;scrollbar-width:none}
+.stl::-webkit-scrollbar{display:none}
+.stl-step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-width:80px}
+.stl-step::before{content:'';position:absolute;top:10px;left:-50%;width:100%;height:2px;background:var(--border)}
+.stl-step:first-child::before{display:none}
+.stl-step.done::before{background:var(--green)}
+.stl-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;z-index:1;position:relative}
+.stl-dot.done{background:var(--green);border-color:var(--green)}
+.stl-dot.done svg{display:block;width:10px;height:10px;fill:white}
+.stl-dot svg{display:none}
+.stl-dot.cur{background:var(--navy);border-color:var(--navy)}
+.stl-dot.cur::after{content:'';width:6px;height:6px;border-radius:50%;background:white}
+.stl-lbl{font-size:10px;color:var(--text3);margin-top:4px;text-align:center}
+.stl-step.done .stl-lbl,.stl-step.cur .stl-lbl{color:var(--navy);font-weight:500}
+.ktabs{display:flex;border-bottom:1px solid var(--border);padding:0 18px;flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+.ktabs::-webkit-scrollbar{display:none}
+.ktab{padding:9px 13px;font-size:12px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.15s;user-select:none}
+.ktab.active{color:var(--navy);border-bottom-color:var(--navy);font-weight:500}
+.ktab-cnt{background:var(--bg);color:var(--text3);font-size:10px;padding:1px 5px;border-radius:8px;margin-left:3px}
+.ktab.active .ktab-cnt{background:var(--navy);color:white}
+.tab-pane{display:none;padding:14px 18px}
+.tab-pane.active{display:block}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
+.cs{background:var(--white);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:10px}
+.cs-head{padding:10px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cs-title{font-size:12px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:5px}
+.cs-dot{width:6px;height:6px;border-radius:50%}
+.cs-edit{font-size:11px;color:var(--gold);cursor:pointer;font-weight:500}
+.cs-body{padding:12px 13px}
+.frow{display:flex;padding:6px 0;border-bottom:1px solid var(--border)}
+.frow:last-child{border-bottom:none}
+.flbl{font-size:11px;color:var(--text3);width:130px;flex-shrink:0;padding-top:1px}
+.fval{font-size:13px;color:var(--text);flex:1}
+.fval.mt{color:var(--text3);font-style:italic}
+.fvt{display:block}
+.fvi{display:none;padding:3px 7px;border:1px solid var(--navy);border-radius:5px;font-size:12px;color:var(--text);outline:none;font-family:inherit;background:var(--white);width:100%}
+.fvs{display:none;padding:3px 7px;border:1px solid var(--navy);border-radius:5px;font-size:12px;color:var(--text);outline:none;font-family:inherit;background:var(--white);width:100%}
+.editing .fvt{display:none}
+.editing .fvi,.editing .fvs{display:block}
+.editing .cs-edit{color:var(--green);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:500;background:var(--navy);color:white}
+.chip.gold{background:var(--gold)}.chip.purple{background:var(--purple)}
+.chip.add{background:var(--bg);color:var(--text3);border:1px dashed var(--border2);cursor:pointer}
+.chip.add:hover{border-color:var(--gold);color:var(--gold)}
+.fam-item{display:flex;align-items:center;gap:9px;padding:7px 10px;background:var(--bg);border-radius:7px;margin-bottom:5px;cursor:pointer}
+.fam-item:hover{background:var(--gold-pale)}
+.fam-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white}
+.sp-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.sp-c{background:var(--bg);border-radius:8px;padding:10px;text-align:center;border:1px solid var(--border)}
+.sp-n{font-size:17px;font-weight:600;color:var(--navy)}
+.sp-l{font-size:10px;color:var(--text3);margin-top:2px}
+.sp-tbl{width:100%;font-size:12px;border-collapse:collapse;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.sp-tbl th{padding:6px 10px;text-align:left;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border);background:var(--bg);font-size:11px;text-transform:uppercase}
+.sp-tbl td{padding:7px 10px;border-bottom:1px solid var(--border)}
+.sp-tbl tr:last-child td{border-bottom:none}
+.zw{display:inline-flex;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600}
+.notiz{padding:10px;background:var(--bg);border-radius:7px;margin-bottom:7px;border-left:3px solid var(--gold)}
+.notiz.s{border-left-color:var(--purple)}.notiz.g{border-left-color:var(--blue)}
+.notiz-head{display:flex;justify-content:space-between;margin-bottom:4px}
+.notiz-autor{font-size:11px;font-weight:500;color:var(--navy)}
+.notiz-date{font-size:11px;color:var(--text3)}
+.notiz-text{font-size:12px;color:var(--text);line-height:1.5}
+.nflag{display:inline-flex;font-size:10px;padding:2px 6px;border-radius:4px;margin-top:4px}
+.nf-s{color:var(--purple);background:var(--purple-bg)}.nf-v{color:var(--red);background:var(--red-bg)}
+.vertraulich{background:var(--red-bg);border:1px solid #fca5a5;border-radius:7px;padding:7px 11px;font-size:11px;color:var(--red);display:flex;align-items:center;gap:5px;margin-bottom:10px}
+.consent-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}
+.consent-row:last-child{border-bottom:none}
+.ct{font-size:13px;font-weight:500;color:var(--text)}
+.cm{font-size:11px;color:var(--text3);margin-top:2px}
+.toggle{width:32px;height:18px;border-radius:9px;cursor:pointer;position:relative;flex-shrink:0;transition:background 0.2s}
+.toggle.on{background:var(--green)}.toggle.off{background:var(--border2)}
+.toggle::after{content:'';position:absolute;top:2px;width:14px;height:14px;border-radius:50%;background:white;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle.on::after{left:16px}.toggle.off::after{left:2px}
+.proto-item{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
+.proto-item:last-child{border-bottom:none}
+.proto-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0;margin-top:4px}
+.proto-text{font-size:12px;color:var(--text2);flex:1}
+.proto-date{font-size:11px;color:var(--text3);white-space:nowrap}
+.lnk-item{display:flex;align-items:center;gap:9px;padding:8px 10px;background:var(--bg);border-radius:7px;margin-bottom:5px;cursor:pointer;transition:all 0.15s}
+.lnk-item:hover{background:var(--gold-pale)}
+.lnk-ico{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.lnk-ico svg{width:12px;height:12px;fill:white}
+.vday{width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500}
+.vday.y{background:var(--green);color:white}.vday.n{background:var(--border);color:var(--text3)}
+.vgrid{display:flex;flex-wrap:wrap;gap:3px}
+.dms-note{background:var(--blue-bg);border:1px solid #bfdbfe;border-radius:7px;padding:7px 11px;font-size:11px;color:var(--blue);display:flex;align-items:center;gap:5px;margin-bottom:10px}
+.dms-drop{border:2px dashed var(--border2);border-radius:9px;padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:10px}
+.dms-drop:hover,.dms-drop.drag{border-color:var(--gold);background:var(--gold-pale)}
+.dms-drop svg{width:26px;height:26px;fill:var(--border2);margin:0 auto 6px;display:block}
+.dms-file{display:flex;align-items:center;gap:9px;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:7px;margin-bottom:5px}
+.dms-ico{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;font-weight:700;color:white}
+.dms-fname{font-size:13px;font-weight:500;color:var(--navy);flex:1}
+.dms-meta{font-size:11px;color:var(--text3);margin-top:1px}
+.soc-btn{display:flex;align-items:center;gap:6px;padding:5px 11px;border:1px solid var(--border);border-radius:6px;font-size:12px;color:var(--text2);cursor:pointer;background:var(--white);transition:all 0.15s}
+.soc-btn:hover{border-color:var(--navy);color:var(--navy)}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:600;display:none;align-items:center;justify-content:center}
+.mo.open{display:flex}
+.modal{background:var(--white);border-radius:14px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.modal-lg{width:660px}
+.mh{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1}
+.mt{font-size:15px;font-weight:600;color:var(--navy)}
+.mx{width:24px;height:24px;border-radius:6px;border:1px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.mx svg{width:11px;height:11px;fill:var(--text2)}
+.mb{padding:20px}
+.mf{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--white)}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fgg{display:flex;flex-direction:column;gap:4px}
+.fgg.full{grid-column:1/-1}
+.fl{font-size:12px;font-weight:500;color:var(--text2)}
+.fl .req{color:var(--red)}
+.fi,.fs,.fta{padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:13px;color:var(--text);outline:none;font-family:inherit;background:var(--white);transition:border 0.15s}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--navy)}
+.fta{resize:vertical;min-height:65px}
+.sub-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.sub-s{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:5px 9px;flex:1}
+.sub-s svg{width:11px;height:11px;fill:var(--text3)}
+.sub-s input{border:none;background:transparent;font-size:12px;color:var(--text);outline:none;width:100%}
+.sub-tbl{border:1px solid var(--border);border-radius:7px;overflow:hidden}
+.sub-tbl table{width:100%}
+.sub-tbl thead tr{background:var(--bg)}
+.sub-tbl th{font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;padding:6px 11px;border-bottom:1px solid var(--border)}
+.sub-tbl tbody tr{border-bottom:1px solid var(--border)}
+.sub-tbl tbody tr:last-child{border-bottom:none}
+.sub-tbl tbody tr:hover{background:var(--bg)}
+.sub-tbl td{padding:7px 11px;font-size:12px}
+.mini-del{width:22px;height:22px;border-radius:4px;border:1px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.mini-del:hover{background:var(--red-bg);border-color:var(--red)}
+.mini-del svg{width:10px;height:10px;fill:var(--text3)}
+.mini-del:hover svg{fill:var(--red)}
+.iadd{background:var(--gold-pale);border:1px solid #e8c97a;border-radius:7px;padding:10px;display:none;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-top:8px}
+.iadd.open{display:flex}
+
+/* EINRICHTUNG */
+.setup-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.sc{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px;cursor:pointer;transition:all 0.2s;display:flex;gap:12px;align-items:flex-start}
+.sc:hover{border-color:var(--navy);box-shadow:0 4px 16px rgba(26,53,96,0.1)}
+.sc.ok{border-color:var(--green)}
+.sc-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sc-ico svg{width:19px;height:19px;fill:white}
+.sc-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:3px}
+.sc-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:5px}
+.sc-status{font-size:11px;font-weight:500;color:var(--text3);display:flex;align-items:center;gap:4px}
+.sc-status::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.sc.ok .sc-status{color:var(--green)}
+.setup-sec{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px}
+.setup-sec svg{width:14px;height:14px;fill:var(--gold)}
+.setup-field{margin-bottom:12px}
+.setup-field label{display:block;font-size:12px;font-weight:500;color:var(--text2);margin-bottom:4px}
+.si,.ss{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:13px;color:var(--text);outline:none;font-family:inherit;background:var(--white)}
+.si:focus,.ss:focus{border-color:var(--navy)}
+.api-row{display:flex;gap:8px}
+.api-row .si{flex:1}
+.api-status{display:flex;align-items:center;gap:6px;font-size:12px;padding:6px 10px;border-radius:7px;margin-top:5px}
+.as-warn{background:var(--amber-bg);color:var(--amber)}
+.as-ok{background:var(--green-bg);color:var(--green)}
+
+/* COMING SOON */
+.coming-soon{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;color:var(--text3)}
+.coming-soon svg{width:44px;height:44px;fill:var(--border)}
+.coming-soon h3{font-size:17px;font-weight:500;color:var(--text2)}
+.coming-soon p{font-size:13px;text-align:center;max-width:300px;line-height:1.6}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:white;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:500;z-index:999;opacity:0;transform:translateY(10px);transition:all 0.3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+
+</style>
 </head>
 <body>
 
@@ -651,6 +1045,606 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="app.js"></script>
+<script>
+// ═══════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════
+const COLORS=['#2563EB','#16A34A','#C8941A','#7C3AED','#DC2626','#0891B2','#D97706','#059669'];
+const LS_KEY='ajc_cols_v4';
+
+let rollen=[
+  {id:1,name:'Pastor',kat:'Leitung'},{id:2,name:'Ältester',kat:'Amt'},
+  {id:3,name:'Diakon',kat:'Amt'},{id:4,name:'Worship Leader',kat:'Dienst'},
+  {id:5,name:'Gruppenleiter',kat:'Leitung'},{id:6,name:'Kinderkirche',kat:'Dienst'},
+  {id:7,name:'Technik',kat:'Technik'},{id:8,name:'Jugendleiter',kat:'Jugend'},
+];
+let gruppen=[
+  {id:1,name:'Hauskreis Zürich Nord',leiter:'Anna Müller',tag:'Dienstag'},
+  {id:2,name:'Junge Erwachsene',leiter:'Peter Keller',tag:'Freitag'},
+  {id:3,name:'Familienkreis',leiter:'Maria Weber',tag:'Mittwoch'},
+  {id:4,name:'Seniorengruppe',leiter:'Hans Gerber',tag:'Donnerstag'},
+  {id:5,name:'Jugendgruppe',leiter:'Laura Brunner',tag:'Samstag'},
+];
+let rSeq=9, gSeq=6;
+
+const NM=[
+  ['Sarah','Meier','Frau'],['Peter','Keller','Herr'],['Laura','Brunner','Frau'],
+  ['Marco','Zimmermann','Herr'],['Anna','Fischer','Frau'],['Thomas','Müller','Herr'],
+  ['Elena','Huber','Frau'],['David','Schmid','Herr'],['Maria','Weber','Frau'],
+  ['Jonas','Meyer','Herr'],['Lisa','Schneider','Frau'],['Markus','Bauer','Herr'],
+  ['Sandra','Keller','Frau'],['Michael','Hofmann','Herr'],['Julia','Wagner','Frau'],
+  ['Andreas','Steiner','Herr'],['Claudia','Moser','Frau'],['Stefan','Lehmann','Herr'],
+  ['Petra','Arnold','Frau'],['Daniel','Maurer','Herr'],['Christine','Baumann','Frau'],
+  ['Patrick','Gerber','Herr'],['Nicole','Roth','Frau'],['Christian','Wyss','Herr'],['Monika','Frei','Frau']
+];
+const ORT=[['8001','Zürich','ZH'],['8400','Winterthur','ZH'],['3000','Bern','BE'],['4000','Basel','BS'],['6000','Luzern','LU']];
+const STR=['Bahnhofstrasse','Hauptstrasse','Kirchgasse','Dorfstrasse','Seestrasse'];
+const STATS=['aktiv','aktiv','aktiv','aktiv','besucher','besucher','inaktiv','neu','taufkandidat'];
+const SP_DEMO=[
+  {datum:'2026-04-02',betrag:100,weg:'twint',zweck:'Gemeinde allgemein'},
+  {datum:'2026-03-16',betrag:80,weg:'bar',zweck:'Mission'},
+  {datum:'2026-03-02',betrag:100,weg:'twint',zweck:'Gemeinde allgemein'},
+  {datum:'2026-02-18',betrag:150,weg:'ueberweisung',zweck:'Bauprojekt'},
+  {datum:'2026-01-05',betrag:100,weg:'twint',zweck:'Gemeinde allgemein'},
+];
+
+let members = NM.map((n,i) => {
+  const o = ORT[i%ORT.length];
+  return {
+    id:i+1, anrede:n[2], vorname:n[0], nachname:n[1],
+    geschlecht: n[2]==='Frau'?'Weiblich':'Männlich',
+    email:`${n[0].toLowerCase()}.${n[1].toLowerCase()}@example.ch`,
+    mobil:`+41 ${70+i%10} ${100+i*3} ${10+i%89} ${10+i%80}`,
+    festnetz:'', strasse:STR[i%STR.length], nr:String(i+1),
+    plz:o[0], ort:o[1], kanton:o[2],
+    nationalitaet:'🇨🇭 Schweiz', sprache:'Deutsch',
+    familienstand:['Ledig','Verheiratet','Verheiratet','Ledig'][i%4],
+    notfall:'', status:STATS[i%STATS.length],
+    rolleId:rollen[i%rollen.length].id, groupId:gruppen[i%gruppen.length].id,
+    eingetreten:`${2016+i%9}-${String(1+i%12).padStart(2,'0')}-01`,
+    taufe:i%3===0?`${2017+i%8}-07-03`:'',
+    geburt:`${1960+i%45}-${String(1+i%12).padStart(2,'0')}-15`,
+    notizen:'', color:COLORS[i%COLORS.length],
+    spenden: i<8 ? SP_DEMO.slice(0,1+i%5) : [],
+  };
+});
+let mIdSeq = NM.length+1;
+let mFilt = [...members], mFilter='alle', mPage=1, mView='list', activeId=null;
+const PER = 10;
+let dmsStore={}, dmsSeq=1, dmsAF='alle';
+
+// ═══════════════════════════════════════════════
+// COLUMNS
+// ═══════════════════════════════════════════════
+const COLS=[
+  {key:'name',lbl:'Name',req:true,vis:true},
+  {key:'email',lbl:'E-Mail',req:false,vis:true},
+  {key:'mobil',lbl:'Telefon',req:false,vis:true},
+  {key:'status',lbl:'Status',req:false,vis:true},
+  {key:'rolle',lbl:'Rolle',req:false,vis:true},
+  {key:'group',lbl:'Small Group',req:false,vis:true},
+  {key:'eingetreten',lbl:'Eingetreten',req:false,vis:true},
+  {key:'geburt',lbl:'Geburtsdatum',req:false,vis:false},
+  {key:'ort',lbl:'Ort',req:false,vis:false},
+  {key:'geschlecht',lbl:'Geschlecht',req:false,vis:false},
+];
+
+function ldCols(){
+  try{const s=JSON.parse(localStorage.getItem(LS_KEY));if(s)COLS.forEach(c=>{const f=s.find(x=>x.key===c.key);if(f&&!c.req)c.vis=f.vis});}catch(e){}
+}
+function svCols(){ localStorage.setItem(LS_KEY,JSON.stringify(COLS.map(c=>({key:c.key,vis:c.vis})))); }
+function resetCols(){
+  COLS.forEach(c=>{if(!c.req)c.vis=['email','mobil','status','rolle','group','eingetreten'].includes(c.key);});
+  svCols(); bldGear(); rndrTbl();
+}
+function bldGear(){
+  document.getElementById('gear-items').innerHTML = COLS.map(c =>
+    `<div class="gear-row" onclick="${c.req?'':` tCol('${c.key}',event)`}" style="${c.req?'opacity:.55;cursor:default':''}">
+      <div class="gcb ${c.req?'req':c.vis?'on':''}" id="gcb-${c.key}"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+      <span class="gear-lbl">${c.lbl}</span>${c.req?'<span class="req-tag">Pflicht</span>':''}
+    </div>`).join('');
+}
+function tCol(k,e){
+  e.stopPropagation();
+  const c=COLS.find(x=>x.key===k); if(!c||c.req) return;
+  c.vis=!c.vis; svCols();
+  document.getElementById('gcb-'+k).className='gcb'+(c.vis?' on':'');
+  rndrTbl();
+}
+function toggleGear(e){ e.stopPropagation(); document.getElementById('gear-dd').classList.toggle('open'); }
+document.addEventListener('click',()=>document.querySelectorAll('.gear-dd').forEach(d=>d.classList.remove('open')));
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+const ini = m => (m.vorname[0]+m.nachname[0]).toUpperCase();
+function fD(d){ if(!d) return '—'; const p=d.split('-'); return `${p[2]}.${p[1]}.${p[0]}`; }
+function aY(d){
+  if(!d) return null;
+  const b=new Date(d),n=new Date(); let a=n.getFullYear()-b.getFullYear();
+  if(n.getMonth()<b.getMonth()||(n.getMonth()===b.getMonth()&&n.getDate()<b.getDate()))a--;
+  return a;
+}
+const sL = s => ({aktiv:'Aktiv',besucher:'Besucher',inaktiv:'Inaktiv',neu:'Neu',taufkandidat:'Taufkandidat'}[s]||s);
+const sC = s => ({aktiv:'s-aktiv',besucher:'s-besucher',inaktiv:'s-inaktiv',neu:'s-neu',taufkandidat:'s-taufkandidat'}[s]||'s-inaktiv');
+const gR = id => rollen.find(r=>r.id===id);
+const gG = id => gruppen.find(g=>g.id===id);
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+function closeMo(id){ document.getElementById(id).classList.remove('open'); }
+function openMo(id){ document.getElementById(id).classList.add('open'); }
+function tIA(id){ document.getElementById(id).classList.toggle('open'); }
+function zwB(w){
+  return {
+    twint:'<span class="zw" style="background:#E0F2FE;color:#0369A1">TWINT</span>',
+    bar:'<span class="zw" style="background:var(--green-bg);color:var(--green)">Bar</span>',
+    ueberweisung:'<span class="zw" style="background:var(--purple-bg);color:var(--purple)">Überweisung</span>',
+  }[w]||w;
+}
+
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+const PT = {
+  dashboard:'Dashboard', mitglieder:'Mitglieder', kontakte:'Kontakte',
+  smallgroups:'Small Groups', gottesdienste:'Gottesdienste', worship:'Worship',
+  events:'Veranstaltungen', spenden:'Twint & Spenden', kreditoren:'Kreditoren',
+  debitoren:'Debitoren', dokumente:'Dokumente', personal:'Personal / HR', einrichtung:'Einrichtung'
+};
+function nav(p, el){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  const pg = document.getElementById('page-'+p); if(pg) pg.classList.add('active');
+  if(el) el.classList.add('active');
+  else { const ni=document.querySelector(`[data-page="${p}"]`); if(ni) ni.classList.add('active'); }
+  document.getElementById('topbar-title').textContent = PT[p]||p;
+  const isM = p==='mitglieder';
+  document.getElementById('vt-wrap').style.display = isM?'flex':'none';
+  document.getElementById('btn-exp').style.display = isM?'flex':'none';
+  document.getElementById('btn-new').style.display = isM?'flex':'none';
+  if(isM){ updStats(); rndrTbl(); }
+}
+
+// ═══════════════════════════════════════════════
+// VIEW / FILTERS
+// ═══════════════════════════════════════════════
+function setView(v){
+  mView=v;
+  document.getElementById('m-tbl-wrap').style.display = v==='list'?'block':'none';
+  document.getElementById('m-cg').style.display = v==='cards'?'grid':'none';
+  document.getElementById('vt-l').className = 'vt'+(v==='list'?' active':'');
+  document.getElementById('vt-c').className = 'vt'+(v==='cards'?' active':'');
+  if(v==='cards') rndrCards();
+}
+function setMF(f,el){
+  mFilter=f;
+  document.querySelectorAll('#page-mitglieder .ftab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active'); applyMF();
+}
+function applyMF(){
+  const q=(document.getElementById('m-srch').value||'').toLowerCase();
+  const gid=parseInt(document.getElementById('m-gf').value)||0;
+  const rid=parseInt(document.getElementById('m-rf').value)||0;
+  mFilt = members.filter(m =>
+    (mFilter==='alle'||m.status===mFilter) &&
+    (!q||(m.vorname+' '+m.nachname+m.email).toLowerCase().includes(q)) &&
+    (!gid||m.groupId===gid) && (!rid||m.rolleId===rid)
+  );
+  mPage=1; rndrTbl(); if(mView==='cards') rndrCards();
+}
+
+// ═══════════════════════════════════════════════
+// TABLE RENDER
+// ═══════════════════════════════════════════════
+function rndrTbl(){
+  const vis = COLS.filter(c=>c.vis);
+  const start = (mPage-1)*PER, page = mFilt.slice(start,start+PER);
+  document.getElementById('m-thead').innerHTML =
+    vis.map(c=>`<th>${c.lbl}</th>`).join('')+'<th style="width:38px"></th>';
+  document.getElementById('m-tbody').innerHTML = page.map(m => {
+    const cells = vis.map(c => {
+      if(c.key==='name') return `<td><div class="td-name"><div class="m-av" style="background:${m.color}">${ini(m)}</div><div><div class="m-fn">${m.vorname} ${m.nachname}</div><div class="m-em">${m.email}</div></div></div></td>`;
+      if(c.key==='email') return `<td style="color:var(--text2)">${m.email}</td>`;
+      if(c.key==='mobil') return `<td style="color:var(--text2)">${m.mobil}</td>`;
+      if(c.key==='status') return `<td><span class="sbadge ${sC(m.status)}">${sL(m.status)}</span></td>`;
+      if(c.key==='rolle') return `<td><select class="edit-sel" onclick="event.stopPropagation()" onchange="chR(this,${m.id})">${rollen.map(r=>`<option value="${r.id}"${m.rolleId===r.id?' selected':''}>${r.name}</option>`).join('')}<option value="__n">+ Neue Rolle...</option></select></td>`;
+      if(c.key==='group') return `<td><select class="edit-sel" onclick="event.stopPropagation()" onchange="chG(this,${m.id})"><option value="0">— keine —</option>${gruppen.map(g=>`<option value="${g.id}"${m.groupId===g.id?' selected':''}>${g.name}</option>`).join('')}<option value="__n">+ Neue Gruppe...</option></select></td>`;
+      if(c.key==='eingetreten') return `<td style="color:var(--text2)">${fD(m.eingetreten)}</td>`;
+      if(c.key==='geburt') return `<td style="color:var(--text2)">${fD(m.geburt)}</td>`;
+      if(c.key==='ort') return `<td style="color:var(--text2)">${m.plz} ${m.ort}</td>`;
+      if(c.key==='geschlecht') return `<td style="color:var(--text2)">${m.geschlecht||'—'}</td>`;
+      return '<td>—</td>';
+    }).join('');
+    return `<tr onclick="openK(${m.id})">${cells}<td><div class="row-del" onclick="event.stopPropagation();delM(${m.id})"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td></tr>`;
+  }).join('');
+  document.getElementById('m-cnt').textContent = `${mFilt.length} Mitglieder`;
+  document.getElementById('m-pi').textContent = `${start+1}–${Math.min(start+PER,mFilt.length)} von ${mFilt.length}`;
+  const tp = Math.ceil(mFilt.length/PER);
+  const pb = document.getElementById('m-pb'); pb.innerHTML='';
+  for(let i=1;i<=Math.min(tp,8);i++){
+    const b=document.createElement('div'); b.className='pbtn'+(i===mPage?' active':'');
+    b.textContent=i; b.onclick=()=>{mPage=i;rndrTbl();}; pb.appendChild(b);
+  }
+}
+function chR(s,id){ if(s.value==='__n'){openRM();s.value='';return;} const m=members.find(x=>x.id===id); if(m) m.rolleId=parseInt(s.value); }
+function chG(s,id){ if(s.value==='__n'){openGM();s.value='';return;} const m=members.find(x=>x.id===id); if(m) m.groupId=parseInt(s.value)||0; }
+
+function rndrCards(){
+  document.getElementById('m-cg').innerHTML = mFilt.map(m => {
+    const g=gG(m.groupId);
+    return `<div class="member-card" onclick="openK(${m.id})">
+      <div class="mc-av" style="background:${m.color}">${ini(m)}</div>
+      <div class="mc-name">${m.vorname} ${m.nachname}</div>
+      <div class="mc-badges"><span class="sbadge ${sC(m.status)}">${sL(m.status)}</span></div>
+      <div class="mc-div"></div>
+      <div class="mc-row"><svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:var(--text3)"><path d="M20 4H4c-1.11 0-2 .89-2 2v12h2V6h16v12h2V6c0-1.11-.89-2-2-2z"/></svg>${m.email}</div>
+      <div class="mc-row"><svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:var(--text3)"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>${m.mobil}</div>
+      ${g?`<div class="mc-row"><svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:var(--text3)"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg>${g.name}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// STATS
+// ═══════════════════════════════════════════════
+function updStats(){
+  const t=members.length, a=members.filter(m=>m.status==='aktiv').length;
+  const b=members.filter(m=>m.status==='besucher').length, n=members.filter(m=>m.status==='neu').length;
+  ['ms-t','db-m'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});
+  document.getElementById('ms-a').textContent=a;
+  document.getElementById('ms-b').textContent=b;
+  document.getElementById('ms-n').textContent=n;
+  document.getElementById('nb-m').textContent=t;
+  const dmd=document.getElementById('db-md'); if(dmd) dmd.textContent=`↑ ${n} diesen Monat`;
+}
+
+// ═══════════════════════════════════════════════
+// MEMBER CRUD
+// ═══════════════════════════════════════════════
+function openNM(){ refreshSel(); document.getElementById('nm-ein').value=new Date().toISOString().split('T')[0]; openMo('mo-nm'); }
+function saveM(){
+  const v=document.getElementById('nm-vn').value.trim(), n=document.getElementById('nm-nn').value.trim();
+  if(!v||!n){ alert('Vorname und Nachname sind Pflichtfelder.'); return; }
+  members.unshift({
+    id:mIdSeq++, anrede:document.getElementById('nm-anr').value, vorname:v, nachname:n,
+    geschlecht:document.getElementById('nm-ges').value, email:document.getElementById('nm-em').value,
+    mobil:document.getElementById('nm-mob').value, festnetz:'',
+    strasse:document.getElementById('nm-str').value, nr:document.getElementById('nm-nr').value,
+    plz:document.getElementById('nm-plz').value, ort:document.getElementById('nm-ort').value, kanton:'ZH',
+    nationalitaet:document.getElementById('nm-nat').value, sprache:'Deutsch', familienstand:'',
+    notfall:document.getElementById('nm-nf').value, status:document.getElementById('nm-st').value,
+    rolleId:parseInt(document.getElementById('nm-rol').value)||rollen[0].id,
+    groupId:parseInt(document.getElementById('nm-grp').value)||0,
+    eingetreten:document.getElementById('nm-ein').value, taufe:'', geburt:'',
+    notizen:document.getElementById('nm-not').value,
+    color:COLORS[Math.floor(Math.random()*COLORS.length)], spenden:[],
+  });
+  closeMo('mo-nm'); applyMF(); updStats(); toast(`${v} ${n} gespeichert`);
+}
+function delM(id){ if(!confirm('Mitglied löschen?')) return; members=members.filter(m=>m.id!==id); applyMF(); updStats(); toast('Gelöscht'); }
+function exportCSV(){
+  const rows=[['Anrede','Vorname','Nachname','E-Mail','Mobil','Strasse','Nr','PLZ','Ort','Status','Rolle','Small Group','Eingetreten']];
+  members.forEach(m=>{const r=gR(m.rolleId),g=gG(m.groupId);rows.push([m.anrede,m.vorname,m.nachname,m.email,m.mobil,m.strasse,m.nr,m.plz,m.ort,m.status,r?r.name:'',g?g.name:'',m.eingetreten]);});
+  const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(rows.map(r=>r.map(v=>`"${v||''}"`).join(',')).join('\n'));
+  a.download='mitglieder.csv'; a.click(); toast('CSV exportiert');
+}
+
+// ═══════════════════════════════════════════════
+// MITGLIEDERKARTE
+// ═══════════════════════════════════════════════
+function openK(id){
+  const m=members.find(x=>x.id===id); if(!m) return;
+  activeId=id;
+  document.getElementById('k-av').textContent=ini(m);
+  document.getElementById('k-av').style.background=m.color;
+  document.getElementById('k-name').textContent=`${m.anrede} ${m.vorname} ${m.nachname}`;
+  document.getElementById('k-sub').textContent=`${m.email} · ${m.mobil}`;
+  const r=gR(m.rolleId), g=gG(m.groupId);
+  document.getElementById('k-badges').innerHTML=
+    `<span class="kchip ${sC(m.status)}">${sL(m.status)}</span>`+
+    (r?`<span class="krole">${r.name}</span>`:'')+
+    (g?`<span class="kchip" style="background:var(--bg);color:var(--text2)">${g.name}</span>`:'');
+  const yrs=aY(m.eingetreten);
+  document.getElementById('kq-j').textContent=yrs!==null?yrs:'—';
+  const st=m.spenden.reduce((s,x)=>s+x.betrag,0);
+  document.getElementById('kq-s').textContent=st>0?String(st):'—';
+
+  const sv=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val||'—';};
+  const si=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||'';};
+
+  sv('k-anrede',m.anrede); si('k-anrede-i',m.anrede);
+  sv('k-vorname',m.vorname); si('k-vorname-i',m.vorname);
+  sv('k-nachname',m.nachname); si('k-nachname-i',m.nachname);
+  const a=aY(m.geburt);
+  sv('k-geburt',m.geburt?`${fD(m.geburt)}${a?' ('+a+' J.)':''}`:''); si('k-geburt-i',m.geburt);
+  sv('k-geschlecht',m.geschlecht); si('k-geschlecht-i',m.geschlecht);
+  sv('k-nation',m.nationalitaet); si('k-nation-i',m.nationalitaet);
+  sv('k-sprache',m.sprache); si('k-sprache-i',m.sprache);
+  sv('k-fstand',m.familienstand); si('k-fstand-i',m.familienstand);
+  sv('k-email',m.email); si('k-email-i',m.email);
+  sv('k-mobil',m.mobil); si('k-mobil-i',m.mobil);
+  sv('k-fest',m.festnetz); si('k-fest-i',m.festnetz);
+  sv('k-str',m.strasse&&m.nr?`${m.strasse} ${m.nr}`:''); si('k-str-i',m.strasse?`${m.strasse} ${m.nr}`:'');
+  sv('k-plz',m.plz&&m.ort?`${m.plz} ${m.ort}`:''); si('k-plz-i',`${m.plz} ${m.ort}`);
+  sv('k-kant',m.kanton); si('k-kant-i',m.kanton);
+  sv('k-notfall',m.notfall); si('k-notfall-i',m.notfall);
+
+  document.getElementById('k-status-v').innerHTML=`<span class="sbadge ${sC(m.status)}">${sL(m.status)}</span>`;
+  sv('k-eingetreten',fD(m.eingetreten)); sv('k-taufe',fD(m.taufe));
+  document.getElementById('k-rolle-c').textContent=r?r.name:'—';
+  sv('k-group-v',g?g.name:''); sv('k-fstand-v',m.familienstand); sv('k-taufe-v',fD(m.taufe));
+
+  const s26=m.spenden.filter(s=>s.datum.startsWith('2026')).reduce((s,x)=>s+x.betrag,0);
+  document.getElementById('kf-t').textContent=`CHF ${s26.toLocaleString('de-CH')}`;
+  document.getElementById('kf-c').textContent=m.spenden.length;
+  document.getElementById('kt-sp').textContent=m.spenden.length;
+  document.getElementById('kf-body').innerHTML = m.spenden.length ?
+    m.spenden.map(s=>`<tr><td>${fD(s.datum)}</td><td><strong>CHF ${s.betrag}</strong></td><td>${zwB(s.weg)}</td><td>${s.zweck}</td><td><span style="color:var(--blue);cursor:pointer;font-size:11px">↓ PDF</span></td></tr>`).join('') :
+    '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:12px">Keine Spenden</td></tr>';
+  sv('k-iban',m.iban); sv('k-bank',m.bank);
+  document.getElementById('lnk-sp').textContent=`CHF ${m.spenden.reduce((s,x)=>s+x.betrag,0).toLocaleString('de-CH')} total`;
+  document.getElementById('lnk-gr').textContent=g?`${g.name} · ${g.tag}`:'Keine Gruppe';
+  const v=Array.from({length:14},()=>Math.random()>0.2);
+  document.getElementById('k-visits').innerHTML=v.map(x=>`<div class="vday ${x?'y':'n'}">${x?'✓':''}</div>`).join('');
+  rndrDms();
+  document.querySelectorAll('.cs').forEach(s=>s.classList.remove('editing'));
+  document.querySelectorAll('.cs-edit').forEach(b=>{if(b.textContent.includes('Fertig')){b.textContent='Bearbeiten';b.style.color='';}});
+  sTab('stamm',document.querySelector('.ktab'));
+  document.getElementById('k-overlay').classList.add('open');
+  document.getElementById('k-panel').classList.add('open');
+}
+function closeKarte(){
+  document.getElementById('k-overlay').classList.remove('open');
+  document.getElementById('k-panel').classList.remove('open');
+  activeId=null;
+}
+function deleteCurrent(){
+  if(!activeId||!confirm('Mitglied löschen?')) return;
+  members=members.filter(m=>m.id!==activeId);
+  closeKarte(); applyMF(); updStats(); toast('Gelöscht');
+}
+function sTab(name,el){
+  document.querySelectorAll('.ktab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  const tp=document.getElementById('tab-'+name); if(tp) tp.classList.add('active');
+  if(name==='dms') rndrDms();
+}
+
+// ═══════════════════════════════════════════════
+// INLINE EDITING
+// ═══════════════════════════════════════════════
+function tEdit(secId, btn){
+  const sec=document.getElementById(secId);
+  const isE=sec.classList.contains('editing');
+  if(isE){
+    sec.querySelectorAll('.fvi,.fvs').forEach(inp=>{
+      const bid=inp.id.replace(/-i$/,'');
+      const tel=document.getElementById(bid);
+      if(tel&&inp.value){
+        tel.textContent=inp.value;
+        if(activeId){
+          const m=members.find(x=>x.id===activeId);
+          if(m){
+            const MAP={'k-anrede':'anrede','k-vorname':'vorname','k-nachname':'nachname','k-geburt':'geburt','k-geschlecht':'geschlecht','k-nation':'nationalitaet','k-sprache':'sprache','k-fstand':'familienstand','k-email':'email','k-mobil':'mobil','k-fest':'festnetz','k-str':'strasse','k-plz':'plz','k-kant':'kanton','k-notfall':'notfall'};
+            const key=MAP[bid]; if(key) m[key]=inp.value;
+            if(['k-vorname','k-nachname','k-anrede'].includes(bid)){
+              document.getElementById('k-name').textContent=`${m.anrede} ${m.vorname} ${m.nachname}`;
+              rndrTbl();
+            }
+          }
+        }
+      }
+    });
+    sec.classList.remove('editing'); btn.textContent='Bearbeiten'; btn.style.color=''; toast('Gespeichert');
+  } else {
+    sec.classList.add('editing'); btn.textContent='✓ Fertig'; btn.style.color='var(--green)';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// DMS
+// ═══════════════════════════════════════════════
+const getDms = () => dmsStore[activeId]||[];
+const extC = e => ({'pdf':'#DC2626','docx':'#2563EB','doc':'#2563EB','xlsx':'#16A34A','xls':'#16A34A','png':'#7C3AED','jpg':'#7C3AED','jpeg':'#7C3AED','pptx':'#D97706','txt':'#6B7280'}[e.toLowerCase()]||'#6B7280');
+const extT = e => { const x=e.toLowerCase(); return['pdf'].includes(x)?'pdf':['doc','docx'].includes(x)?'docx':['png','jpg','jpeg','gif'].includes(x)?'img':'other'; };
+const fSz = b => b<1024?b+' B':b<1048576?Math.round(b/1024)+' KB':(b/1048576).toFixed(1)+' MB';
+
+function dmsF(t,el){
+  dmsAF=t;
+  document.querySelectorAll('#tab-dms .ftab').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active'); rndrDms();
+}
+function rndrDms(){
+  const files=getDms();
+  const filt=dmsAF==='alle'?files:files.filter(f=>f.ftype===dmsAF);
+  document.getElementById('kt-dms').textContent=files.length;
+  document.getElementById('lnk-dms').textContent=`${files.length} Dokumente`;
+  const list=document.getElementById('dms-list'); if(!list) return;
+  if(!filt.length){ list.innerHTML=`<div style="text-align:center;padding:18px;color:var(--text3);font-size:13px">Keine Dokumente hochgeladen</div>`; return; }
+  list.innerHTML=filt.map(f=>
+    `<div class="dms-file">
+      <div class="dms-ico" style="background:${extC(f.ext)}">${f.ext.toUpperCase()}</div>
+      <div style="flex:1;min-width:0"><div class="dms-fname">${f.name}</div><div class="dms-meta">${f.date} · ${fSz(f.size)}</div></div>
+      <div class="row-del" onclick="dmsDel(${f.id})"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div>
+    </div>`).join('');
+}
+function dmsUpload(input){
+  if(!activeId) return;
+  Array.from(input.files).forEach(file=>{
+    const ext=file.name.split('.').pop()||'dat';
+    const d=new Date(); const date=`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+    if(!dmsStore[activeId]) dmsStore[activeId]=[];
+    dmsStore[activeId].push({id:dmsSeq++,name:file.name,size:file.size,ext,ftype:extT(ext),date});
+  });
+  rndrDms(); input.value=''; toast(`${input.files.length} Dokument(e) hochgeladen`);
+}
+function dmsDel(fid){ if(!activeId) return; dmsStore[activeId]=(dmsStore[activeId]||[]).filter(f=>f.id!==fid); rndrDms(); toast('Dokument gelöscht'); }
+function dmsDrag(e,on){ e.preventDefault(); document.getElementById('dms-drop').classList.toggle('drag',on); }
+function dmsDrop(e){
+  e.preventDefault(); document.getElementById('dms-drop').classList.remove('drag');
+  if(!activeId) return;
+  Array.from(e.dataTransfer.files).forEach(file=>{
+    const ext=file.name.split('.').pop()||'dat';
+    const d=new Date(); const date=`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+    if(!dmsStore[activeId]) dmsStore[activeId]=[];
+    dmsStore[activeId].push({id:dmsSeq++,name:file.name,size:file.size,ext,ftype:extT(ext),date});
+  });
+  rndrDms(); toast('Dokument(e) hochgeladen');
+}
+
+// ═══════════════════════════════════════════════
+// SPENDENBESCHEINIGUNG
+// ═══════════════════════════════════════════════
+function genQuittung(){
+  if(!activeId) return;
+  const m=members.find(x=>x.id===activeId); if(!m) return;
+  const t=m.spenden.filter(s=>s.datum.startsWith('2026')).reduce((s,x)=>s+x.betrag,0);
+  const lines=[
+    'SPENDENBESCHEINIGUNG 2026','='.repeat(30),'',
+    'Gemeinde: Ev. Gemeinde Zürich',
+    `Ausgestellt: ${new Date().toLocaleDateString('de-CH')}`, '',
+    `Spender/in: ${m.anrede} ${m.vorname} ${m.nachname}`,
+    `Adresse: ${m.strasse} ${m.nr}, ${m.plz} ${m.ort}`, '',
+    'Spenden 2026:',
+    ...m.spenden.filter(s=>s.datum.startsWith('2026')).map(s=>`  ${fD(s.datum)}   CHF ${s.betrag}   ${s.zweck}`),
+    '', `GESAMT 2026: CHF ${t.toLocaleString('de-CH')}`, '',
+    'Für Steuerabzug. Später: PDF via Exoscale Genf.',
+  ];
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(lines.join('\n'));
+  a.download=`Spendenbescheinigung_2026_${m.nachname}.txt`;
+  a.click(); toast('Spendenbescheinigung erstellt');
+}
+
+// ═══════════════════════════════════════════════
+// ROLLEN / GRUPPEN
+// ═══════════════════════════════════════════════
+function openRM(){ rndrR(); openMo('mo-rollen'); }
+function openGM(){ rndrG(); openMo('mo-gruppen'); }
+function rndrR(f=''){
+  document.getElementById('r-tbody').innerHTML=rollen
+    .filter(r=>!f||r.name.toLowerCase().includes(f.toLowerCase()))
+    .map(r=>`<tr><td><strong>${r.name}</strong></td><td><span style="background:var(--bg);padding:2px 7px;border-radius:4px;font-size:10px;color:var(--text2)">${r.kat}</span></td><td>${members.filter(m=>m.rolleId===r.id).length}</td><td><div class="mini-del" onclick="delR(${r.id})"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td></tr>`).join('');
+}
+function rndrG(f=''){
+  document.getElementById('g-tbody').innerHTML=gruppen
+    .filter(g=>!f||g.name.toLowerCase().includes(f.toLowerCase()))
+    .map(g=>`<tr><td><strong>${g.name}</strong></td><td>${g.leiter||'—'}</td><td>${g.tag}</td><td>${members.filter(m=>m.groupId===g.id).length}</td><td><div class="mini-del" onclick="delG(${g.id})"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td></tr>`).join('');
+}
+function addR(){
+  const n=document.getElementById('r-name').value.trim();
+  if(!n){alert('Pflichtfeld');return;}
+  if(rollen.some(r=>r.name.toLowerCase()===n.toLowerCase())){alert('Existiert bereits');return;}
+  rollen.push({id:rSeq++,name:n,kat:document.getElementById('r-kat').value});
+  document.getElementById('r-name').value=''; rndrR(); toast(`Rolle "${n}" hinzugefügt`);
+}
+function addG(){
+  const n=document.getElementById('g-name').value.trim();
+  if(!n){alert('Pflichtfeld');return;}
+  gruppen.push({id:gSeq++,name:n,leiter:document.getElementById('g-leit').value.trim(),tag:document.getElementById('g-tag').value});
+  document.getElementById('g-name').value=''; document.getElementById('g-leit').value='';
+  rndrG(); toast(`Gruppe "${n}" hinzugefügt`);
+}
+function delR(id){ if(members.some(m=>m.rolleId===id)){alert('Rolle wird noch verwendet.');return;} rollen=rollen.filter(r=>r.id!==id); rndrR(); toast('Gelöscht'); }
+function delG(id){ if(members.some(m=>m.groupId===id)){alert('Gruppe hat noch Mitglieder.');return;} gruppen=gruppen.filter(g=>g.id!==id); rndrG(); toast('Gelöscht'); }
+function refreshSel(){
+  const rs=document.getElementById('nm-rol'); if(rs) rs.innerHTML=rollen.map(r=>`<option value="${r.id}">${r.name}</option>`).join('')+'<option value="__n">+ Neue Rolle...</option>';
+  const gs=document.getElementById('nm-grp'); if(gs) gs.innerHTML='<option value="0">— keine —</option>'+gruppen.map(g=>`<option value="${g.id}">${g.name}</option>`).join('')+'<option value="__n">+ Neue Gruppe...</option>';
+  const gf=document.getElementById('m-gf'); if(gf) gf.innerHTML='<option value="">Alle Gruppen</option>'+gruppen.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
+  const rf=document.getElementById('m-rf'); if(rf) rf.innerHTML='<option value="">Alle Rollen</option>'+rollen.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// EINRICHTUNG
+// ═══════════════════════════════════════════════
+const SETUP={
+  gemeinde:{title:'Gemeinde-Stammdaten',html:`
+    <div class="setup-field"><label>Gemeindename *</label><input class="si" id="s-gn" value="Ev. Gemeinde Zürich"></div>
+    <div class="setup-field"><label>Adresse</label><input class="si" value="Musterstrasse 1, 8001 Zürich"></div>
+    <div class="setup-field"><label>Telefon</label><input class="si" placeholder="+41 44 123 45 67"></div>
+    <div class="setup-field"><label>E-Mail</label><input class="si" placeholder="info@gemeinde.ch"></div>
+    <div class="setup-field"><label>Website</label><input class="si" placeholder="https://gemeinde.ch"></div>
+    <div class="setup-field"><label>Sprache</label><select class="ss"><option>Deutsch</option><option>Französisch</option><option>Italienisch</option></select></div>
+    <div class="setup-field"><label>Lizenzplan</label><select class="ss"><option>Professional (CHF 299/Mt.)</option><option>Starter (CHF 149/Mt.)</option></select></div>`},
+  benutzer:{title:'Benutzer & Rollen',html:`
+    <div style="background:var(--bg);border-radius:8px;padding:12px;display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div class="m-av" style="background:var(--gold)">AJ</div>
+      <div><div style="font-size:13px;font-weight:500">Andreas Jost</div><div style="font-size:11px;color:var(--text3)">Administrator</div></div>
+      <span style="margin-left:auto;background:var(--green-bg);color:var(--green);font-size:11px;padding:2px 8px;border-radius:4px">Aktiv</span>
+    </div>
+    <div class="setup-field"><label>Neuen Benutzer einladen</label><div class="api-row"><input class="si" placeholder="E-Mail-Adresse"><button class="btn btn-primary">Einladen</button></div></div>
+    <div class="setup-field"><label>Standard-Rolle</label><select class="ss"><option>Leiter</option><option>Mitarbeiter</option><option>Admin</option></select></div>`},
+  twint:{title:'Twint / Payrexx',html:`
+    <div style="background:var(--blue-bg);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--blue);margin-bottom:12px">Twint läuft über Payrexx. Konto auf payrexx.com erstellen, dann API-Key eintragen.</div>
+    <div class="setup-field"><label>Payrexx Instance</label><input class="si" placeholder="meine-gemeinde"></div>
+    <div class="setup-field"><label>API Key</label><div class="api-row"><input class="si" placeholder="pk_live_..." type="password"><button class="btn btn-ghost" onclick="document.getElementById('s-px-st').style.display='flex'">Testen</button></div>
+    <div class="api-status as-warn" id="s-px-st" style="display:none">⚠ Kein Key — Payrexx-Konto erstellen und Key eintragen</div></div>
+    <div class="setup-field"><label>Webhook URL</label><input class="si" value="https://ajconnect.ch/api/webhook/twint" readonly style="background:var(--bg)"></div>`},
+  bank:{title:'Bankanbindung (ISO 20022)',html:`
+    <div style="background:var(--amber-bg);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--amber);margin-bottom:12px">Phase 1: manueller camt.053 Import. Phase 2: direkte API-Anbindung (geplant).</div>
+    <div class="setup-field"><label>Bank</label><select class="ss"><option>— wählen —</option><option>UBS</option><option>ZKB</option><option>Raiffeisen</option><option>PostFinance</option><option>Andere</option></select></div>
+    <div class="setup-field"><label>IBAN</label><input class="si" placeholder="CH56 0483 5012 3456 7800 9"></div>
+    <div class="setup-field"><label>Kontoinhaber</label><input class="si" placeholder="Ev. Gemeinde Zürich"></div>`},
+  dms:{title:'DMS / Exoscale Genf',html:`
+    <div style="background:var(--green-bg);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green);margin-bottom:12px">100% Schweizer Datenhaltung auf Exoscale Genf. DSG-konform, Art. 5 DSG.</div>
+    <div class="setup-field"><label>Access Key</label><div class="api-row"><input class="si" placeholder="EXO..." type="password"><button class="btn btn-ghost" onclick="document.getElementById('s-ex-st').style.display='flex'">Testen</button></div>
+    <div class="api-status as-warn" id="s-ex-st" style="display:none">⚠ Nach Exoscale-Registrierung Key eintragen</div></div>
+    <div class="setup-field"><label>Secret Key</label><input class="si" type="password" placeholder="..."></div>
+    <div class="setup-field"><label>Bucket Name</label><input class="si" placeholder="ajconnect-gemeinde"></div>
+    <div class="setup-field"><label>Region</label><select class="ss"><option>ch-gva-2 (Genf) — Empfohlen</option><option>ch-dk-2 (Zürich)</option></select></div>`},
+  fibu:{title:'Finanzbuchhaltung',html:`
+    <div class="setup-field"><label>Geschäftsjahr beginnt</label><select class="ss"><option>Januar</option><option>Juli</option><option>April</option></select></div>
+    <div class="setup-field"><label>MWST</label><select class="ss"><option>Nein (unter CHF 100'000)</option><option>Ja</option></select></div>
+    <div class="setup-field"><label>Kontenplan</label><select class="ss"><option>Kirchliche Buchhaltung CH</option><option>KMU Kontenplan</option><option>Eigener</option></select></div>`},
+  email:{title:'E-Mail / SMTP',html:`
+    <div class="setup-field"><label>SMTP-Server</label><input class="si" placeholder="smtp.infomaniak.com"></div>
+    <div class="setup-field"><label>Port</label><select class="ss"><option>587 (TLS — Empfohlen)</option><option>465 (SSL)</option></select></div>
+    <div class="setup-field"><label>Benutzername</label><input class="si" placeholder="info@ajconnect.ch"></div>
+    <div class="setup-field"><label>Passwort</label><input class="si" type="password"></div>
+    <div class="setup-field"><label>Absender-Name</label><input class="si" placeholder="Ev. Gemeinde Zürich"></div>
+    <div style="background:var(--bg);border-radius:7px;padding:9px 11px;font-size:12px;color:var(--text2)">Empfehlung: Infomaniak (Genf) — DSG-konform, CH-Server.</div>`},
+  datenschutz:{title:'Datenschutz (DSG)',html:`
+    <div style="background:var(--red-bg);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--red);margin-bottom:12px">Kirchenzugehörigkeit = besonders schützenswertes Datum (Art. 5 DSG).</div>
+    <div class="setup-field"><label>AVV</label><select class="ss"><option>Standard AJ Connect AVV</option><option>Eigenen AVV hochladen</option></select></div>
+    <div class="setup-field"><label>Datenschutzerklärung URL</label><input class="si" placeholder="https://gemeinde.ch/datenschutz"></div>
+    <div class="setup-field"><label>Löschfrist inaktive Mitglieder</label><select class="ss"><option>3 Jahre nach Austritt</option><option>5 Jahre</option><option>10 Jahre</option></select></div>`},
+  'm-mitglieder':{title:'Mitglieder-Einrichtung',html:`
+    <div class="setup-field"><label>Pflichtfelder</label><div style="display:flex;flex-direction:column;gap:6px;margin-top:5px">
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" checked disabled style="width:14px;height:14px">Vorname / Nachname (immer Pflicht)</label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" style="width:14px;height:14px">E-Mail</label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" style="width:14px;height:14px">Telefon</label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" style="width:14px;height:14px">Geburtsdatum</label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" style="width:14px;height:14px">Adresse</label>
+    </div></div>
+    <div class="setup-field"><label>Standard-Status</label><select class="ss"><option>Besucher</option><option>Aktiv</option><option>Neu</option></select></div>
+    <div class="setup-field"><label>Mitgliedsnummer</label><select class="ss"><option>Automatisch (ab M-001)</option><option>Manuell</option></select></div>`},
+};
+
+function openSetup(key){
+  const cfg=SETUP[key];
+  if(!cfg){ toast('Diese Einrichtung wird bald verfügbar sein'); return; }
+  document.getElementById('setup-title').textContent=cfg.title;
+  document.getElementById('setup-body').innerHTML=cfg.html;
+  openMo('mo-setup');
+}
+function saveSetup(){
+  const gn=document.getElementById('s-gn');
+  if(gn&&gn.value) document.getElementById('g-name').textContent=gn.value;
+  closeMo('mo-setup'); toast('Einstellungen gespeichert');
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+(function init(){
+  const d=new Date();
+  const days=['So','Mo','Di','Mi','Do','Fr','Sa'];
+  const months=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+  document.getElementById('date-chip').textContent=`${days[d.getDay()]}, ${d.getDate()}. ${months[d.getMonth()]} ${d.getFullYear()}`;
+  ldCols(); bldGear(); refreshSel();
+  mFilt=[...members]; updStats();
+})();
+
+</script>
 </body>
 </html>
