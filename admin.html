@@ -239,12 +239,23 @@ const sb = createClient(SUPA_URL, SUPA_ANON);
 let allUsers = [], allMandanten = [], userTabFilter = 'alle';
 let editingMandantId = null;
 
-// Auth guard
+// Auth guard - KEIN Loop, nur einmal prüfen
 (async () => {
   const sess = sessionStorage.getItem('ajc_session');
-  if (!sess) { window.location.href='index.html'; return; }
-  const s = JSON.parse(sess);
-  if (s.rolle !== 'superadmin') { window.location.href='app.html'; return; }
+  if (!sess) {
+    window.location.replace('index.html');
+    return;
+  }
+  let s;
+  try { s = JSON.parse(sess); } catch(e) { 
+    sessionStorage.clear();
+    window.location.replace('index.html');
+    return;
+  }
+  if (s.rolle !== 'superadmin') {
+    window.location.replace('app.html');
+    return;
+  }
   document.getElementById('admin-name').textContent = s.name || s.email;
   await loadAll();
 })();
