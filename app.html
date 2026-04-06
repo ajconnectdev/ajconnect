@@ -405,18 +405,18 @@ td{padding:10px 13px;font-size:13px;vertical-align:middle}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function() {
-  // Auth guard - redirect to login if not authenticated
+  // Auth guard - KEIN Loop
   const sess = sessionStorage.getItem('ajc_session');
   if (!sess) {
-    window.location.href = 'index.html';
+    window.location.replace('index.html');
     return;
   }
   try {
     const s = JSON.parse(sess);
-    window._AJC = s; // global session info
-    // Will be used by app to show correct mandant name, user name, etc.
+    window._AJC = s;
   } catch(e) {
-    window.location.href = 'index.html';
+    sessionStorage.clear();
+    window.location.replace('index.html');
   }
 })();
 
