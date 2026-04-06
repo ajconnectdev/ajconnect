@@ -6,293 +6,212 @@
 <title>AJ Connect – Anmelden</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --navy:#1A3560;--navy2:#0F1F3D;--gold:#C8941A;--gold2:#e8b84b;--gold-pale:#FDF3DC;
-  --bg:#F4F5F7;--white:#fff;--text:#1A1A1A;--text2:#6B7280;--text3:#9CA3AF;
-  --border:#E5E7EB;--green:#16A34A;--green-bg:#DCFCE7;--red:#DC2626;--red-bg:#FEE2E2;
-}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--navy2);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.login-wrap{width:100%;max-width:420px}
-.login-card{background:var(--white);border-radius:16px;padding:40px;box-shadow:0 8px 40px rgba(0,0,0,0.3)}
-.logo{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:32px}
-.logo-mark{width:48px;height:48px;background:var(--gold);border-radius:10px;position:relative;flex-shrink:0}
-.logo-mark::before{content:'';position:absolute;left:50%;top:9px;transform:translateX(-50%);width:6px;height:30px;background:white;border-radius:3px}
-.logo-mark::after{content:'';position:absolute;top:18px;left:9px;width:30px;height:6px;background:white;border-radius:3px}
-.logo-texts .logo-name{font-size:22px;font-weight:700;color:var(--navy);font-family:Georgia,serif;line-height:1.1}
-.logo-texts .logo-slogan{font-size:10px;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;margin-top:2px}
-h2{font-size:18px;font-weight:600;color:var(--navy);margin-bottom:5px;text-align:center}
-.subtitle{font-size:13px;color:var(--text2);text-align:center;margin-bottom:24px}
-.msg{padding:10px 13px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none;align-items:flex-start;gap:7px;line-height:1.5}
-.msg.err{background:var(--red-bg);color:var(--red);border:1px solid #fca5a5;display:flex}
-.msg.ok{background:var(--green-bg);color:var(--green);border:1px solid #86efac;display:flex}
-.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
-label{font-size:12px;font-weight:500;color:var(--text2)}
-input[type=email],input[type=password],input[type=text]{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;color:var(--text);outline:none;transition:border 0.15s;font-family:inherit;background:var(--white)}
-input:focus{border-color:var(--navy)}
-.pw-wrap{position:relative}
-.pw-wrap input{padding-right:72px}
-.pw-toggle{position:absolute;right:11px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text3);font-size:11px;font-weight:500;user-select:none;background:var(--white);padding:2px 4px}
-.pw-toggle:hover{color:var(--navy)}
-.btn{width:100%;padding:11px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}
-.btn-primary{background:var(--navy);color:white}
-.btn-primary:hover:not(:disabled){background:#243d6e}
-.btn-primary:disabled{background:var(--text3);cursor:not-allowed}
-.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;display:none;flex-shrink:0}
-@keyframes spin{to{transform:rotate(360deg)}}
-.forgot{text-align:center;margin-top:14px}
-.forgot a{font-size:12px;color:var(--gold);text-decoration:none;font-weight:500}
-.forgot a:hover{text-decoration:underline}
-.footer-note{background:var(--bg);border-radius:10px;padding:13px 16px;text-align:center;font-size:12px;color:var(--text2);margin-top:16px;line-height:1.7}
-.footer-note strong{color:var(--navy)}
-.security-badges{display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap}
-.sbadge{font-size:10px;color:var(--text3);background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:4px}
-.sbadge::before{content:'';width:5px;height:5px;border-radius:50%;background:#4ade80}
-#view-reset{display:none}
-.loading-overlay{position:fixed;inset:0;background:var(--navy2);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:20px}
-.loading-overlay.show{display:flex}
-.lo-mark{width:60px;height:60px;background:var(--gold);border-radius:14px;position:relative}
-.lo-mark::before{content:'';position:absolute;left:50%;top:10px;transform:translateX(-50%);width:7px;height:40px;background:white;border-radius:3px}
-.lo-mark::after{content:'';position:absolute;top:22px;left:10px;width:40px;height:7px;background:white;border-radius:3px}
-.lo-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.15);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite}
-.lo-text{color:rgba(255,255,255,0.5);font-size:14px;letter-spacing:0.3px}
-.lo-name{color:white;font-size:16px;font-weight:600;font-family:Georgia,serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#0F1F3D;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:#fff;border-radius:16px;padding:36px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,0.3)}
+.logo{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:28px}
+.lm{width:46px;height:46px;background:#C8941A;border-radius:10px;position:relative;flex-shrink:0}
+.lm::before{content:'';position:absolute;left:50%;top:9px;transform:translateX(-50%);width:6px;height:28px;background:#fff;border-radius:3px}
+.lm::after{content:'';position:absolute;top:18px;left:9px;width:28px;height:6px;background:#fff;border-radius:3px}
+.ln{font-size:22px;font-weight:700;color:#1A3560;font-family:Georgia,serif}
+.ls{font-size:10px;color:#9CA3AF;letter-spacing:1.2px;text-transform:uppercase;margin-top:2px}
+h2{font-size:18px;font-weight:600;color:#1A3560;text-align:center;margin-bottom:4px}
+p{font-size:13px;color:#6B7280;text-align:center;margin-bottom:22px}
+.fg{margin-bottom:14px}
+label{display:block;font-size:12px;font-weight:500;color:#6B7280;margin-bottom:5px}
+input{width:100%;padding:10px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:14px;outline:none;transition:border .15s;font-family:inherit}
+input:focus{border-color:#1A3560}
+.btn{width:100%;padding:11px;background:#1A3560;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px;font-family:inherit}
+.btn:hover{background:#243d6e}
+.btn:disabled{background:#9CA3AF;cursor:not-allowed}
+.err{background:#FEE2E2;color:#DC2626;border:1px solid #fca5a5;border-radius:8px;padding:10px 13px;font-size:13px;margin-bottom:12px;display:none}
+.ok{background:#DCFCE7;color:#16A34A;border:1px solid #86efac;border-radius:8px;padding:10px 13px;font-size:13px;margin-bottom:12px;display:none}
+.link{text-align:center;margin-top:12px}
+.link a{font-size:12px;color:#C8941A;text-decoration:none;font-weight:500}
+.badges{display:flex;justify-content:center;gap:8px;margin-top:14px}
+.badge{font-size:10px;color:#9CA3AF;border:1px solid rgba(255,255,255,0.1);padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:4px}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;background:#4ade80}
+#debug{background:#f0f0f0;border-radius:6px;padding:8px;font-size:11px;font-family:monospace;margin-top:10px;display:none;word-break:break-all}
 </style>
 </head>
 <body>
-
-<!-- LOADING OVERLAY -->
-<div class="loading-overlay" id="loading-overlay">
-  <div class="lo-mark"></div>
-  <div class="lo-name">AJ Connect</div>
-  <div class="lo-spinner"></div>
-  <div class="lo-text" id="lo-text">Anmeldung wird geprüft...</div>
-</div>
-
-<div class="login-wrap">
-  <div class="login-card">
+<div>
+  <div class="card">
     <div class="logo">
-      <div class="logo-mark"></div>
-      <div class="logo-texts">
-        <div class="logo-name">AJ Connect</div>
-        <div class="logo-slogan">Connect. Organize. Grow.</div>
-      </div>
+      <div class="lm"></div>
+      <div><div class="ln">AJ Connect</div><div class="ls">Connect. Organize. Grow.</div></div>
     </div>
-
-    <!-- LOGIN VIEW -->
-    <div id="view-login">
-      <h2>Willkommen zurück</h2>
-      <p class="subtitle">Melden Sie sich bei Ihrer Gemeinde an</p>
-      <div class="msg" id="msg-login"></div>
-      <div class="fg">
-        <label for="email">E-Mail-Adresse</label>
-        <input type="email" id="email" placeholder="pastor@gemeinde.ch" autocomplete="email">
-      </div>
-      <div class="fg">
-        <label for="password">Passwort</label>
-        <div class="pw-wrap">
-          <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
-          <span class="pw-toggle" onclick="togglePw()">Anzeigen</span>
-        </div>
-      </div>
-      <button class="btn btn-primary" id="btn-login" onclick="doLogin()">
-        <span id="btn-login-text">Anmelden</span>
-        <div class="spinner" id="spinner-login"></div>
-      </button>
-      <div class="forgot"><a href="#" onclick="showView('reset');return false">Passwort vergessen?</a></div>
-      <div class="footer-note">
-        Noch keinen Zugang?<br>
-        Kontaktieren Sie <strong>info@ajconnect.ch</strong>
-      </div>
+    <h2>Willkommen zurück</h2>
+    <p>Melden Sie sich bei Ihrer Gemeinde an</p>
+    <div class="err" id="err"></div>
+    <div class="ok" id="ok"></div>
+    <div class="fg">
+      <label>E-Mail</label>
+      <input type="email" id="email" placeholder="pastor@gemeinde.ch" autocomplete="email">
     </div>
-
-    <!-- RESET VIEW -->
-    <div id="view-reset">
-      <h2>Passwort zurücksetzen</h2>
-      <p class="subtitle">Wir senden Ihnen einen sicheren Reset-Link</p>
-      <div class="msg" id="msg-reset"></div>
-      <div class="fg">
-        <label>E-Mail-Adresse</label>
-        <input type="email" id="reset-email" placeholder="pastor@gemeinde.ch">
-      </div>
-      <button class="btn btn-primary" id="btn-reset" onclick="doReset()">
-        <span id="btn-reset-text">Reset-Link senden</span>
-        <div class="spinner" id="spinner-reset"></div>
-      </button>
-      <div class="forgot" style="margin-top:12px">
-        <a href="#" onclick="showView('login');return false">← Zurück zum Login</a>
-      </div>
+    <div class="fg">
+      <label>Passwort</label>
+      <input type="password" id="pw" placeholder="••••••••" autocomplete="current-password">
     </div>
+    <button class="btn" id="btn" onclick="login()">Anmelden</button>
+    <div class="link"><a href="#" onclick="showReset();return false">Passwort vergessen?</a></div>
+    <div id="debug"></div>
   </div>
-
-  <div class="security-badges">
-    <span class="sbadge">Verschlüsselt</span>
-    <span class="sbadge">Server Zürich CH</span>
-    <span class="sbadge">DSG-konform</span>
+  <div class="badges">
+    <span class="badge">Verschlüsselt</span>
+    <span class="badge">Server Zürich CH</span>
+    <span class="badge">DSG-konform</span>
   </div>
 </div>
 
 <script>
-const SUPA_URL = 'https://gpmwlkqwdfxkenyebjmj.supabase.co';
-const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwbXdsa3F3ZGZ4a2VueWViam1qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NTM1NTcsImV4cCI6MjA5MTAyOTU1N30.7d6aHR79PuRi_K7D8ikIGMxojKApIVBYE6yaW6UId8w';
-const { createClient } = supabase;
-const sb = createClient(SUPA_URL, SUPA_ANON);
+const SB_URL = 'https://gpmwlkqwdfxkenyebjmj.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwbXdsa3F3ZGZ4a2VueWViam1qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NTM1NTcsImV4cCI6MjA5MTAyOTU1N30.7d6aHR79PuRi_K7D8ikIGMxojKApIVBYE6yaW6UId8w';
+const sb = supabase.createClient(SB_URL, SB_KEY);
 
-// ANTI-LOOP: nur auf index.html prüfen, niemals auf app/admin
-const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-const isLoginPage = currentPage === '' || currentPage === 'index.html';
-
-if (isLoginPage) {
-  (async () => {
-    try {
-      const { data: { session } } = await sb.auth.getSession();
-      if (session) {
-        await checkAndRedirect(session.user);
-      }
-    } catch(e) {
-      // Session check failed, stay on login
-    }
-  })();
+function dbg(msg) {
+  const d = document.getElementById('debug');
+  d.style.display = 'block';
+  d.textContent += msg + '\n';
 }
 
-function showView(v) {
-  document.getElementById('view-login').style.display = v==='login' ? 'block' : 'none';
-  document.getElementById('view-reset').style.display = v==='reset' ? 'block' : 'none';
+function showErr(msg) {
+  const e = document.getElementById('err');
+  e.textContent = msg; e.style.display = 'block';
+  document.getElementById('ok').style.display = 'none';
 }
-function showMsg(id, type, text) {
-  const el = document.getElementById(id);
-  el.className = 'msg ' + type;
-  el.textContent = text;
-  el.style.display = 'flex';
+function showOk(msg) {
+  const o = document.getElementById('ok');
+  o.textContent = msg; o.style.display = 'block';
+  document.getElementById('err').style.display = 'none';
 }
-function hideMsg(id) { document.getElementById(id).style.display = 'none'; }
-function setLoading(on, text) {
-  if (text) document.getElementById('lo-text').textContent = text;
-  document.getElementById('loading-overlay').classList.toggle('show', on);
-}
-function togglePw() {
-  const i = document.getElementById('password');
-  const t = document.querySelector('.pw-toggle');
-  i.type = i.type === 'password' ? 'text' : 'password';
-  t.textContent = i.type === 'password' ? 'Anzeigen' : 'Verbergen';
-}
-function setBtnLoading(id, on) {
-  const btn = document.getElementById('btn-' + id);
-  const txt = document.getElementById('btn-' + id + '-text');
-  const spin = document.getElementById('spinner-' + id);
-  btn.disabled = on;
-  txt.style.display = on ? 'none' : 'inline';
-  spin.style.display = on ? 'block' : 'none';
+function hideAll() {
+  document.getElementById('err').style.display = 'none';
+  document.getElementById('ok').style.display = 'none';
 }
 
-async function checkAndRedirect(user) {
-  setLoading(true, 'Profil wird geladen...');
+async function login() {
+  hideAll();
+  const email = document.getElementById('email').value.trim();
+  const pw = document.getElementById('pw').value;
+  
+  if (!email || !pw) { showErr('Bitte E-Mail und Passwort eingeben.'); return; }
+  
+  const btn = document.getElementById('btn');
+  btn.disabled = true;
+  btn.textContent = 'Wird angemeldet...';
+
   try {
-    const { data: profile, error } = await sb
-      .from('profiles')
-      .select('id, name, rolle, aktiv, mandant_id, mandanten(id, name, lizenz, aktiv)')
-      .eq('id', user.id)
-      .single();
-
-    if (error || !profile) {
-      await sb.auth.signOut();
-      setLoading(false);
-      showMsg('msg-login', 'err', 'Kein Profil gefunden. Bitte Administrator kontaktieren.');
+    dbg('1. Supabase signIn...');
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+    
+    if (error) {
+      dbg('Auth error: ' + error.message);
+      btn.disabled = false;
+      btn.textContent = 'Anmelden';
+      if (error.message.includes('Invalid') || error.message.includes('invalid')) {
+        showErr('E-Mail oder Passwort falsch.');
+      } else {
+        showErr('Fehler: ' + error.message);
+      }
       return;
     }
+    
+    dbg('2. Login OK, user: ' + data.user.id.substring(0,8) + '...');
+    
+    // Load profile
+    dbg('3. Lade Profil...');
+    const { data: profile, error: pErr } = await sb
+      .from('profiles')
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
+    
+    if (pErr) {
+      dbg('Profile error: ' + pErr.message);
+      showErr('Profil nicht gefunden: ' + pErr.message);
+      btn.disabled = false;
+      btn.textContent = 'Anmelden';
+      return;
+    }
+    
+    dbg('4. Profil: rolle=' + profile.rolle + ' aktiv=' + profile.aktiv);
+    
     if (!profile.aktiv) {
       await sb.auth.signOut();
-      setLoading(false);
-      showMsg('msg-login', 'err', 'Ihr Konto wurde noch nicht freigeschaltet.');
+      showErr('Konto noch nicht freigeschaltet. Bitte warten Sie auf die Aktivierung.');
+      btn.disabled = false;
+      btn.textContent = 'Anmelden';
       return;
     }
-
-    // Superadmin: kein Mandant nötig
-    if (profile.rolle !== 'superadmin') {
-      if (!profile.mandanten || !profile.mandanten.aktiv) {
-        await sb.auth.signOut();
-        setLoading(false);
-        showMsg('msg-login', 'err', 'Ihre Gemeinde hat keine aktive Lizenz. Kontaktieren Sie info@ajconnect.ch.');
-        return;
-      }
-    }
-
-    // Session speichern
-    sessionStorage.setItem('ajc_session', JSON.stringify({
-      user_id: user.id,
-      email: user.email,
-      name: profile.name || user.email,
+    
+    // Save to sessionStorage
+    const sess = {
+      user_id: data.user.id,
+      email: data.user.email,
+      name: profile.name || data.user.email,
       rolle: profile.rolle,
       mandant_id: profile.mandant_id || null,
-      mandant_name: profile.mandanten?.name || 'AJ Connect Admin',
-      lizenz: profile.mandanten?.lizenz || 'professional',
-    }));
-
-    setLoading(true, 'Weiterleitung...');
-
-    // WICHTIG: replace statt href damit kein Back-Loop entsteht
-    if (profile.rolle === 'superadmin') {
-      window.location.replace('admin.html');
-    } else {
-      window.location.replace('app.html');
+      mandant_name: 'AJ Connect',
+      lizenz: 'professional',
+    };
+    
+    // If not superadmin, load mandant info
+    if (profile.rolle !== 'superadmin' && profile.mandant_id) {
+      dbg('5. Lade Mandant...');
+      const { data: mand } = await sb
+        .from('mandanten')
+        .select('name, lizenz, aktiv')
+        .eq('id', profile.mandant_id)
+        .single();
+      
+      if (!mand || !mand.aktiv) {
+        await sb.auth.signOut();
+        showErr('Ihre Gemeinde hat keine aktive Lizenz. Kontakt: info@ajconnect.ch');
+        btn.disabled = false;
+        btn.textContent = 'Anmelden';
+        return;
+      }
+      sess.mandant_name = mand.name;
+      sess.lizenz = mand.lizenz;
+      dbg('6. Mandant: ' + mand.name);
     }
+    
+    sessionStorage.setItem('ajc_session', JSON.stringify(sess));
+    dbg('7. Session gespeichert. Weiterleitung...');
+    
+    showOk('Anmeldung erfolgreich! Weiterleitung...');
+    
+    setTimeout(() => {
+      if (profile.rolle === 'superadmin') {
+        window.location.replace('admin.html');
+      } else {
+        window.location.replace('app.html');
+      }
+    }, 800);
+    
   } catch(e) {
-    setLoading(false);
-    showMsg('msg-login', 'err', 'Verbindungsfehler. Bitte Seite neu laden.');
+    dbg('Exception: ' + e.message);
+    showErr('Unerwarteter Fehler: ' + e.message);
+    btn.disabled = false;
+    btn.textContent = 'Anmelden';
   }
 }
 
-async function doLogin() {
+function showReset() {
   const email = document.getElementById('email').value.trim();
-  const pw = document.getElementById('password').value;
-  hideMsg('msg-login');
-  if (!email || !pw) {
-    showMsg('msg-login', 'err', 'Bitte E-Mail und Passwort eingeben.');
-    return;
-  }
-  setBtnLoading('login', true);
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
-  if (error) {
-    setBtnLoading('login', false);
-    const m = error.message;
-    if (m.includes('Invalid login') || m.includes('invalid_credentials')) {
-      showMsg('msg-login', 'err', 'E-Mail oder Passwort ist falsch.');
-    } else if (m.includes('Email not confirmed')) {
-      showMsg('msg-login', 'err', 'Bitte bestätigen Sie Ihre E-Mail-Adresse (Postfach prüfen).');
-    } else if (m.includes('Too many requests')) {
-      showMsg('msg-login', 'err', 'Zu viele Versuche. Bitte warten Sie einige Minuten.');
-    } else {
-      showMsg('msg-login', 'err', 'Anmeldung fehlgeschlagen: ' + m);
-    }
-    return;
-  }
-  await checkAndRedirect(data.user);
-}
-
-async function doReset() {
-  const email = document.getElementById('reset-email').value.trim();
-  hideMsg('msg-reset');
-  if (!email) { showMsg('msg-reset', 'err', 'Bitte E-Mail eingeben.'); return; }
-  setBtnLoading('reset', true);
-  const { error } = await sb.auth.resetPasswordForEmail(email, {
+  if (!email) { showErr('Bitte zuerst E-Mail eingeben.'); return; }
+  sb.auth.resetPasswordForEmail(email, {
     redirectTo: window.location.origin + '/index.html'
+  }).then(({error}) => {
+    if (error) showErr('Fehler: ' + error.message);
+    else showOk('Reset-Link gesendet! Bitte E-Mail-Postfach prüfen.');
   });
-  setBtnLoading('reset', false);
-  if (error) {
-    showMsg('msg-reset', 'err', 'Fehler: ' + error.message);
-  } else {
-    showMsg('msg-reset', 'ok', 'Reset-Link gesendet! Prüfen Sie Ihr E-Mail-Postfach (auch Spam).');
-  }
 }
 
+// Enter key
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    if (document.getElementById('view-reset').style.display === 'block') {
-      doReset();
-    } else {
-      doLogin();
-    }
-  }
+  if (e.key === 'Enter') login();
 });
 </script>
 </body>
