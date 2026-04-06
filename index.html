@@ -472,7 +472,7 @@ td{padding:10px 13px;font-size:13px;vertical-align:middle}
       <div class="lfg"><label>Passwort</label><input type="password" id="l-pw" placeholder="••••••••" autocomplete="current-password"></div>
       <button class="lbtn" id="l-btn" onclick="doLogin()">Anmelden</button>
       <div style="text-align:center;margin-top:12px"><a href="#" onclick="showReset();return false" style="font-size:12px;color:#C8941A;text-decoration:none;font-weight:500">Passwort vergessen?</a></div>
-      <div style="text-align:center;margin-top:14px;font-size:12px;color:#9CA3AF">Noch keinen Zugang? Kontaktieren Sie<br><strong style="color:#1A3560">info@ajconnect.ch</strong></div>
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:#9CA3AF">Noch keinen Zugang? Kontaktieren Sie<br><strong style="color:#1A3560"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d5bcbbb3ba95b4bfb6babbbbb0b6a1fbb6bd">[email&#160;protected]</a></strong></div>
     </div>
     <div class="lbadges">
       <span class="lbadge">Verschlüsselt</span>
@@ -503,11 +503,11 @@ td{padding:10px 13px;font-size:13px;vertical-align:middle}
       <div class="astat"><div class="astat-ico" style="background:#FEE2E2">⏳</div><div><div style="font-size:22px;font-weight:600;color:#1A3560" id="as-p">—</div><div style="font-size:11px;color:#9CA3AF">Ausstehend</div></div></div>
     </div>
     <div class="card">
-      <div class="card-header"><div class="card-title">Kirchgemeinden</div><button class="btn btn-gold" onclick="openMo('mo-am')">+ Neue Gemeinde</button></div>
+      <div class="card-header"><div class="card-title">Kirchgemeinden</div><button class="btn btn-gold" onclick="openNewGemeinde()">+ Neue Gemeinde</button></div>
       <div style="overflow-x:auto"><table><thead><tr><th>Gemeinde</th><th>Lizenz</th><th>Status</th><th>Benutzer</th><th>Aktionen</th></tr></thead><tbody id="a-mandanten"><tr><td colspan="5" class="aempty">Lädt...</td></tr></tbody></table></div>
     </div>
     <div class="card">
-      <div class="card-header"><div class="card-title">Alle Benutzer</div><button class="btn btn-primary" onclick="openMo('mo-au')">+ Benutzer anlegen</button></div>
+      <div class="card-header"><div class="card-title">Alle Benutzer</div><button class="btn btn-primary" onclick="openNewUser()">+ Benutzer anlegen</button></div>
       <div style="overflow-x:auto"><table><thead><tr><th>Name / E-Mail</th><th>Gemeinde</th><th>Rolle</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="a-users"><tr><td colspan="5" class="aempty">Lädt...</td></tr></tbody></table></div>
     </div>
   </div>
@@ -530,7 +530,7 @@ td{padding:10px 13px;font-size:13px;vertical-align:middle}
   <div class="gemeente-wrap">
     <div class="gemeente-lbl">Gemeinde</div>
     <div class="gemeente-name" id="g-name">Ev. Gemeinde Zürich</div>
-    <span class="gemeente-plan">Professional</span>
+    <span class="gemeente-plan" id="g-plan">Professional</span>
   </div>
   <div class="nav-sec">Übersicht</div>
   <div class="nav-item active" data-page="dashboard" onclick="nav('dashboard',this)">
@@ -579,8 +579,8 @@ td{padding:10px 13px;font-size:13px;vertical-align:middle}
   </div>
   <div class="sidebar-foot">
     <div class="user-row">
-      <div class="u-av">AJ</div>
-      <div><div class="u-name">Andreas Jost</div><div class="u-role">Administrator</div></div>
+      <div class="u-av" id="app-av-init">AJ</div>
+      <div><div class="u-name" id="u-name-display">Andreas Jost</div><div class="u-role" id="u-role-display">Administrator</div></div>
     </div>
   </div>
 </div>
@@ -1158,7 +1158,7 @@ td{padding:10px 13px;font-size:13px;vertical-align:middle}
 
 <div class="toast" id="toast"></div>
 
-<script src="app.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="app.js"></script>
 
 </div>
 
@@ -1181,7 +1181,7 @@ td{padding:10px 13px;font-size:13px;vertical-align:middle}
   <div class="modal">
     <div class="mh"><div class="mt">Benutzer anlegen</div><div class="mx" onclick="closeMo('mo-au')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div></div>
     <div class="mb">
-      <div class="info-box">Benutzer in DB anlegen. Auth-Account muss separat via Supabase Dashboard → Authentication → Add User erstellt werden.</div>
+      <div class="info-box">Benutzer wird automatisch erstellt und erhält eine E-Mail mit einem Link zum Passwort setzen.</div>
       <div class="afg"><label>E-Mail *</label><input class="afi" id="au-email" type="email" placeholder="pastor@gemeinde.ch"></div>
       <div class="afg"><label>Name</label><input class="afi" id="au-name" placeholder="Thomas Müller"></div>
       <div class="afg"><label>Gemeinde *</label><select class="afs" id="au-mandant"><option value="">— wählen —</option></select></div>
@@ -1330,30 +1330,135 @@ function renderAU(){
 }
 async function toggleAM(id,a){if(!confirm(a?'Sperren?':'Aktivieren?'))return;const{error}=await sb.from('mandanten').update({aktiv:!a}).eq('id',id);if(error){toast('Fehler: '+error.message);return;}toast(a?'Gesperrt':'Aktiviert ✓');await loadAdminData();}
 async function toggleAU(id,a){if(!confirm(a?'Sperren?':'Freischalten?'))return;const{error}=await sb.from('profiles').update({aktiv:!a}).eq('id',id);if(error){toast('Fehler: '+error.message);return;}toast(a?'Gesperrt':'Freigeschaltet ✓');await loadAdminData();}
+
+async function openNewGemeinde() {
+  // Clear all fields
+  ['am-name','am-plz','am-ort','am-email'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  document.getElementById('am-lizenz').value = 'starter';
+  document.getElementById('am-aktiv').value = 'false';
+  openMo('mo-am');
+}
+
+async function openNewUser() {
+  // Clear all fields  
+  ['au-email','au-name'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  document.getElementById('au-rolle').value = 'admin';
+  document.getElementById('au-aktiv').value = 'false';
+  openMo('mo-au');
+}
+
 async function saveAM(){
   const name=document.getElementById('am-name').value.trim();
   if(!name){toast('Name Pflichtfeld');return;}
   const{error}=await sb.from('mandanten').insert({name,plz:document.getElementById('am-plz').value,ort:document.getElementById('am-ort').value,email:document.getElementById('am-email').value,lizenz:document.getElementById('am-lizenz').value,aktiv:document.getElementById('am-aktiv').value==='true'});
   if(error){toast('Fehler: '+error.message);return;}
-  toast('Gemeinde erstellt ✓');closeMo('mo-am');await loadAdminData();
+  toast('Gemeinde erstellt ✓ Jetzt Benutzer zuweisen!');closeMo('mo-am');['am-name','am-plz','am-ort','am-email'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});await loadAdminData();
 }
 async function saveAU(){
   const email=document.getElementById('au-email').value.trim();
+  const name=document.getElementById('au-name').value.trim();
   const mid=document.getElementById('au-mandant').value;
-  if(!email||!mid){toast('E-Mail und Gemeinde Pflicht');return;}
-  const{error}=await sb.from('profiles').insert({id:crypto.randomUUID(),email,name:document.getElementById('au-name').value,mandant_id:mid,rolle:document.getElementById('au-rolle').value,aktiv:document.getElementById('au-aktiv').value==='true'});
-  if(error){toast('Fehler: '+error.message);return;}
-  toast('Profil angelegt ✓');closeMo('mo-au');await loadAdminData();
+  const rolle=document.getElementById('au-rolle').value;
+  const aktiv=document.getElementById('au-aktiv').value==='true';
+  if(!email||!mid){toast('E-Mail und Gemeinde sind Pflicht');return;}
+  
+  const btn=document.querySelector('#mo-au .btn-primary');
+  btn.disabled=true; btn.textContent='Wird erstellt...';
+  
+  try {
+    // 1. Temporäres Passwort generieren
+    const tmpPw = 'AJC-' + Math.random().toString(36).slice(-8).toUpperCase() + '!1';
+    
+    // 2. Auth User via Supabase Admin API erstellen
+    const res = await fetch(SB_URL + '/auth/v1/admin/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY
+      },
+      body: JSON.stringify({
+        email: email,
+        password: tmpPw,
+        email_confirm: true,
+        user_metadata: { name: name }
+      })
+    });
+    
+    const authData = await res.json();
+    
+    if (!res.ok || authData.error) {
+      // Falls Admin-API nicht verfügbar, Profile direkt anlegen mit UUID
+      // User muss dann selbst über "Passwort vergessen" einen Account erstellen
+      const tmpId = crypto.randomUUID();
+      const{error:pErr}=await sb.from('profiles').insert({
+        id:tmpId, email, name, mandant_id:mid, rolle, aktiv
+      });
+      if(pErr){
+        toast('Fehler: '+pErr.message+' — Bitte Benutzer via Supabase Auth anlegen');
+        btn.disabled=false; btn.textContent='Anlegen';
+        return;
+      }
+      toast('Profil angelegt. Benutzer muss über "Passwort vergessen" auf ajconnect.ch sein Konto aktivieren.');
+      // Send password reset so user can set their own password
+      await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+      closeMo('mo-au');
+      ['au-email','au-name'].forEach(id=>document.getElementById(id).value='');
+      await loadAdminData();
+    } else {
+      // Auth User erstellt, jetzt Profile anlegen
+      const userId = authData.id || authData.user?.id;
+      const{error:pErr}=await sb.from('profiles').insert({
+        id:userId, email, name, mandant_id:mid, rolle, aktiv
+      });
+      if(pErr) toast('Auth OK aber Profil-Fehler: '+pErr.message);
+      else {
+        // Passwort-Reset senden damit User eigenes Passwort setzen kann
+        await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+        toast('Benutzer erstellt! '+email+' erhält eine E-Mail zum Passwort setzen.');
+      }
+      closeMo('mo-au');
+      ['au-email','au-name'].forEach(id=>document.getElementById(id).value='');
+      await loadAdminData();
+    }
+  } catch(e) {
+    toast('Fehler: '+e.message);
+  }
+  btn.disabled=false; btn.textContent='Anlegen';
 }
 
 // ═══════════════════════════════════════
 // APP INIT
 // ═══════════════════════════════════════
 function initApp() {
-  const gn=document.getElementById('g-name');if(gn)gn.textContent=_S.mandant_name;
-  const gp=document.getElementById('g-plan');if(gp)gp.textContent=_S.lizenz==='professional'?'Professional':'Starter';
-  const un=document.getElementById('u-name-display');if(un)un.textContent=_S.name||_S.email;
-  const av=document.getElementById('app-av-init');if(av)av.textContent=(_S.name||_S.email||'U').split(' ').map(w=>w[0]).join('').toUpperCase().substring(0,2);
+  // Gemeindename in Sidebar
+  const gn=document.getElementById('g-name');
+  if(gn)gn.textContent=_S.mandant_name||'Gemeinde';
+  
+  // Lizenzplan Badge
+  const gp=document.getElementById('g-plan');
+  if(gp)gp.textContent=_S.lizenz==='professional'?'Professional':'Starter';
+  
+  // Benutzername in Sidebar
+  const un=document.getElementById('u-name-display');
+  if(un)un.textContent=_S.name||_S.email||'Benutzer';
+  
+  // Rolle in Sidebar
+  const ur=document.getElementById('u-role-display');
+  if(ur){const roleLabel={superadmin:'Super Admin',admin:'Administrator',leiter:'Leiter',mitarbeiter:'Mitarbeiter'}[_S.rolle]||_S.rolle; ur.textContent=roleLabel+' · Abmelden ↗';}
+  
+  // Avatar Initialen
+  const av=document.getElementById('app-av-init');
+  if(av){const initials=(_S.name||_S.email||'U').split(' ').filter(w=>w).map(w=>w[0]).join('').toUpperCase().substring(0,2); av.textContent=initials;}
+  
+  // Topbar Datum
+  
   const d=new Date();const days=['So','Mo','Di','Mi','Do','Fr','Sa'];const months=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
   const dc=document.getElementById('date-chip');if(dc)dc.textContent=`${days[d.getDay()]}, ${d.getDate()}. ${months[d.getMonth()]} ${d.getFullYear()}`;
   ldCols();bldGear();refreshSel();mFilt=[...members];updStats();
@@ -1968,13 +2073,4 @@ function saveSetup(){
 document.addEventListener('DOMContentLoaded', () => {
   const userRow = document.querySelector('.user-row');
   if (userRow) {
-    userRow.onclick = doLogout;
-    const uname = userRow.querySelector('.u-name');
-    if (uname) uname.id = 'u-name-display';
-    const av = userRow.querySelector('.u-av');
-    if (av) av.id = 'app-av-init';
-  }
-});
-</script>
-</body>
-</html>
+    userRow.onc
