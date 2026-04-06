@@ -31,7 +31,6 @@ input:focus{border-color:#1A3560}
 .badges{display:flex;justify-content:center;gap:8px;margin-top:14px}
 .badge{font-size:10px;color:#9CA3AF;border:1px solid rgba(255,255,255,0.1);padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:4px}
 .badge::before{content:'';width:5px;height:5px;border-radius:50%;background:#4ade80}
-#debug{background:#f0f0f0;border-radius:6px;padding:8px;font-size:11px;font-family:monospace;margin-top:10px;display:none;word-break:break-all}
 </style>
 </head>
 <body>
@@ -69,12 +68,6 @@ const SB_URL = 'https://gpmwlkqwdfxkenyebjmj.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwbXdsa3F3ZGZ4a2VueWViam1qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NTM1NTcsImV4cCI6MjA5MTAyOTU1N30.7d6aHR79PuRi_K7D8ikIGMxojKApIVBYE6yaW6UId8w';
 const sb = supabase.createClient(SB_URL, SB_KEY);
 
-function dbg(msg) {
-  const d = document.getElementById('debug');
-  d.style.display = 'block';
-  d.textContent += msg + '\n';
-}
-
 function showErr(msg) {
   const e = document.getElementById('err');
   e.textContent = msg; e.style.display = 'block';
@@ -102,7 +95,6 @@ async function login() {
   btn.textContent = 'Wird angemeldet...';
 
   try {
-    dbg('1. Supabase signIn...');
     const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
     
     if (error) {
@@ -120,7 +112,6 @@ async function login() {
     dbg('2. Login OK, user: ' + data.user.id.substring(0,8) + '...');
     
     // Load profile
-    dbg('3. Lade Profil...');
     const { data: profile, error: pErr } = await sb
       .from('profiles')
       .select('*')
@@ -158,7 +149,6 @@ async function login() {
     
     // If not superadmin, load mandant info
     if (profile.rolle !== 'superadmin' && profile.mandant_id) {
-      dbg('5. Lade Mandant...');
       const { data: mand } = await sb
         .from('mandanten')
         .select('name, lizenz, aktiv')
@@ -178,7 +168,6 @@ async function login() {
     }
     
     sessionStorage.setItem('ajc_session', JSON.stringify(sess));
-    dbg('7. Session gespeichert. Weiterleitung...');
     
     showOk('Anmeldung erfolgreich! Weiterleitung...');
     
