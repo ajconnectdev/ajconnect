@@ -4,895 +4,653 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AJ Connect – ERP für Kirchgemeinden</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
-<style>
-/* ─── RESET & VARIABLES ───────────────────────────── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --navy:#1A3560;--navy2:#0F1F3D;--navy3:#243d6e;
-  --gold:#C8941A;--gold2:#e8b84b;--gold-pale:#FDF3DC;
-  --bg:#F4F5F7;--white:#fff;
-  --text:#1A1A1A;--text2:#6B7280;--text3:#9CA3AF;
-  --border:#E5E7EB;--border2:#D1D5DB;
-  --green:#16A34A;--green-bg:#DCFCE7;
-  --red:#DC2626;--red-bg:#FEE2E2;
-  --blue:#2563EB;--blue-bg:#DBEAFE;
-  --amber:#D97706;--amber-bg:#FEF3C7;
-  --purple:#7C3AED;--purple-bg:#EDE9FE;
-  --sidebar-w:240px;
-}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:14px}
-
-/* ─── SIDEBAR ─────────────────────────────────────── */
-.sidebar{width:var(--sidebar-w);background:var(--navy2);display:flex;flex-direction:column;flex-shrink:0;height:100vh;overflow-y:auto}
-.sidebar-logo{padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px}
-.logo-icon{width:32px;height:32px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.logo-icon svg{width:16px;height:16px;fill:white}
-.logo-text{font-family:'Playfair Display',serif;font-size:17px;color:white;font-weight:600}
-.sidebar-gemeente{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.07)}
-.gemeente-label{font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
-.gemeente-name{font-size:13px;color:white;font-weight:500}
-.gemeente-plan{display:inline-block;background:rgba(200,148,26,0.2);color:var(--gold2);font-size:10px;padding:2px 8px;border-radius:4px;margin-top:4px}
-.nav-section{padding:16px 10px 4px;font-size:10px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1.2px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:7px;margin:1px 6px;cursor:pointer;transition:background 0.15s;color:rgba(255,255,255,0.55);font-size:13px;user-select:none}
-.nav-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85)}
-.nav-item.active{background:rgba(200,148,26,0.18);color:var(--gold2)}
-.nav-item svg{width:15px;height:15px;fill:currentColor;flex-shrink:0}
-.nav-badge{margin-left:auto;background:var(--gold);color:white;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:500}
-.sidebar-bottom{margin-top:auto;padding:12px 6px;border-top:1px solid rgba(255,255,255,0.07)}
-.user-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer}
-.user-row:hover{background:rgba(255,255,255,0.06)}
-.avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:white;flex-shrink:0}
-.user-name{font-size:12px;color:white;font-weight:500}
-.user-role{font-size:11px;color:rgba(255,255,255,0.35)}
-
-/* ─── MAIN ────────────────────────────────────────── */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;gap:12px;flex-shrink:0}
-.topbar-title{font-size:16px;font-weight:600;color:var(--navy);flex:1}
-.topbar-actions{display:flex;gap:8px;align-items:center}
-.btn{padding:7px 14px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;border:none;font-family:inherit;transition:all 0.15s}
-.btn svg{width:14px;height:14px;fill:currentColor}
-.btn-primary{background:var(--navy);color:white}
-.btn-primary:hover{background:var(--navy3)}
-.btn-ghost{background:white;color:var(--text2);border:1px solid var(--border)}
-.btn-ghost:hover{background:var(--bg)}
-.btn-danger{background:var(--red-bg);color:var(--red);border:1px solid #fca5a5}
-.icon-btn{width:34px;height:34px;border-radius:7px;border:1px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
-.icon-btn:hover{background:var(--bg)}
-.icon-btn svg{width:16px;height:16px;fill:var(--text2)}
-.notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid white}
-
-/* ─── PAGES ───────────────────────────────────────── */
-.page{display:none;flex:1;overflow-y:auto;padding:24px;flex-direction:column;gap:16px}
-.page.active{display:flex}
-
-/* ─── STATS GRID ──────────────────────────────────── */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.stat-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:14px}
-.stat-icon-box{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.stat-icon-box svg{width:18px;height:18px}
-.stat-num{font-size:24px;font-weight:600;color:var(--navy);line-height:1}
-.stat-lbl{font-size:11px;color:var(--text3);margin-top:3px}
-.stat-delta{font-size:11px;margin-top:2px}
-.delta-up{color:var(--green)}
-.delta-down{color:var(--red)}
-
-/* ─── CARDS ───────────────────────────────────────── */
-.card{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.card-title{font-size:14px;font-weight:600;color:var(--navy)}
-.card-action{font-size:12px;color:var(--gold);cursor:pointer;font-weight:500}
-.card-body{padding:16px 18px}
-.row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-.row-2-1{display:grid;grid-template-columns:1fr 1fr 340px;gap:16px}
-
-/* ─── TABLE ───────────────────────────────────────── */
-.table-wrap{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.table-toolbar{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.search-box{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:7px 12px;flex:1;min-width:180px}
-.search-box svg{width:13px;height:13px;fill:var(--text3);flex-shrink:0}
-.search-box input{border:none;background:transparent;font-size:13px;color:var(--text);outline:none;width:100%}
-.search-box input::placeholder{color:var(--text3)}
-.filter-tabs{display:flex;gap:3px}
-.ftab{padding:6px 13px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text2);white-space:nowrap;user-select:none}
-.ftab.active{background:var(--navy);color:white;border-color:var(--navy)}
-.ftab:hover:not(.active){background:var(--bg)}
-.filter-select{padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;color:var(--text2);background:var(--white);cursor:pointer;outline:none}
-.tbl-header-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg)}
-.tbl-header-title{font-size:13px;font-weight:600;color:var(--navy)}
-.gear-wrap{position:relative}
-.gear-btn{width:30px;height:30px;border-radius:6px;border:1px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer}
-.gear-btn:hover{background:var(--bg)}
-.gear-btn svg{width:14px;height:14px;fill:var(--text2)}
-.gear-dropdown{position:absolute;top:36px;right:0;background:var(--white);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:200;min-width:220px;display:none}
-.gear-dropdown.open{display:block}
-.gear-dh{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--navy);display:flex;align-items:center;justify-content:space-between}
-.gear-reset{font-size:11px;color:var(--gold);cursor:pointer}
-.gear-item{display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer}
-.gear-item:hover{background:var(--bg)}
-.gear-cb{width:15px;height:15px;border-radius:3px;border:1.5px solid var(--border2);background:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.gear-cb.on{background:var(--navy);border-color:var(--navy)}
-.gear-cb.on svg{display:block}
-.gear-cb svg{display:none;width:9px;height:9px;fill:white}
-.gear-cb.req{background:var(--bg);border-color:var(--border);cursor:not-allowed}
-.gear-item-lbl{font-size:13px;color:var(--text);flex:1}
-.req-tag{font-size:10px;color:var(--text3);background:var(--bg);padding:1px 6px;border-radius:4px}
-table{width:100%;border-collapse:collapse}
-thead tr{background:var(--bg);border-bottom:1px solid var(--border)}
-th{padding:9px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;cursor:pointer;user-select:none}
-th:hover:not(.no-sort){color:var(--navy)}
-tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;cursor:pointer}
-tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:#F9FAFB}
-td{padding:11px 14px;font-size:13px;color:var(--text);vertical-align:middle}
-.td-name{display:flex;align-items:center;gap:10px}
-.m-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;flex-shrink:0}
-.m-fn{font-weight:500;color:var(--navy);font-size:13px}
-.m-em{font-size:11px;color:var(--text3)}
-.s-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:500}
-.s-badge::before{content:'';width:5px;height:5px;border-radius:50%}
-.s-aktiv{background:var(--green-bg);color:var(--green)}.s-aktiv::before{background:var(--green)}
-.s-besucher{background:var(--blue-bg);color:var(--blue)}.s-besucher::before{background:var(--blue)}
-.s-inaktiv{background:var(--bg);color:var(--text3)}.s-inaktiv::before{background:var(--text3)}
-.s-neu{background:var(--amber-bg);color:var(--amber)}.s-neu::before{background:var(--amber)}
-.s-taufkandidat{background:var(--purple-bg);color:var(--purple)}.s-taufkandidat::before{background:var(--purple)}
-.edit-sel{padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;color:var(--text);background:var(--white);cursor:pointer;outline:none;max-width:160px}
-.edit-sel:focus{border-color:var(--navy)}
-.row-del{width:26px;height:26px;border-radius:5px;border:1px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
-.row-del:hover{background:var(--red-bg);border-color:var(--red)}
-.row-del svg{width:12px;height:12px;fill:var(--text3)}
-.row-del:hover svg{fill:var(--red)}
-.pagination{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border)}
-.page-info{font-size:12px;color:var(--text3)}
-.page-btns{display:flex;gap:3px}
-.page-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--white);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2)}
-.page-btn.active{background:var(--navy);color:white;border-color:var(--navy)}
-.page-btn:hover:not(.active){background:var(--bg)}
-
-/* ─── MODAL ───────────────────────────────────────── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;display:none;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal{background:var(--white);border-radius:14px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
-.modal-lg{width:680px}
-.modal-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1}
-.modal-title{font-size:15px;font-weight:600;color:var(--navy)}
-.modal-close{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer}
-.modal-close svg{width:12px;height:12px;fill:var(--text2)}
-.modal-body{padding:22px}
-.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--white)}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.form-group{display:flex;flex-direction:column;gap:5px}
-.form-group.full{grid-column:1/-1}
-.form-label{font-size:12px;font-weight:500;color:var(--text2)}
-.form-label .req{color:var(--red)}
-.form-input,.form-select,.form-textarea{padding:8px 11px;border:1px solid var(--border);border-radius:7px;font-size:13px;color:var(--text);outline:none;font-family:inherit;transition:border 0.15s;background:var(--white)}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--navy)}
-.form-textarea{resize:vertical;min-height:70px}
-
-/* ─── SUBTABLE MODAL ──────────────────────────────── */
-.sub-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.sub-search{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:6px 10px;flex:1}
-.sub-search svg{width:12px;height:12px;fill:var(--text3);flex-shrink:0}
-.sub-search input{border:none;background:transparent;font-size:12px;color:var(--text);outline:none;width:100%}
-.sub-search input::placeholder{color:var(--text3)}
-.sub-table-wrap{border:1px solid var(--border);border-radius:8px;overflow:hidden}
-.sub-table-wrap table{width:100%}
-.sub-table-wrap thead tr{background:var(--bg)}
-.sub-table-wrap th{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;padding:7px 12px;border-bottom:1px solid var(--border);cursor:default}
-.sub-table-wrap tbody tr{border-bottom:1px solid var(--border);cursor:default}
-.sub-table-wrap tbody tr:last-child{border-bottom:none}
-.sub-table-wrap tbody tr:hover{background:var(--bg)}
-.sub-table-wrap td{padding:8px 12px;font-size:13px}
-.inline-add{background:var(--gold-pale);border:1px solid #e8c97a;border-radius:8px;padding:12px;display:none;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-top:10px}
-.inline-add.open{display:flex}
-.inline-add .form-input,.inline-add .form-select{padding:6px 10px;font-size:12px}
-.mini-del{width:24px;height:24px;border-radius:5px;border:1px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.mini-del:hover{background:var(--red-bg);border-color:var(--red)}
-.mini-del svg{width:11px;height:11px;fill:var(--text3)}
-.mini-del:hover svg{fill:var(--red)}
-
-/* ─── DASHBOARD SPECIFIC ──────────────────────────── */
-.godi-card{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);border:none}
-.godi-card .card-title{color:rgba(255,255,255,0.6);font-size:11px;text-transform:uppercase;letter-spacing:1px}
-.godi-card .card-action{color:var(--gold2)}
-.godi-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;color:rgba(255,255,255,0.75)}
-.godi-row svg{width:13px;height:13px;fill:var(--gold2);flex-shrink:0}
-.godi-live{display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,0.25);color:#4ade80;font-size:11px;padding:3px 10px;border-radius:5px;margin-top:8px}
-.godi-live::before{content:'';width:6px;height:6px;background:#4ade80;border-radius:50%}
-.event-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
-.event-item:last-child{border-bottom:none;padding-bottom:0}
-.ev-date{width:40px;height:40px;border-radius:8px;background:var(--gold-pale);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
-.ev-day{font-size:16px;font-weight:600;color:var(--gold);line-height:1}
-.ev-mon{font-size:9px;color:var(--gold);text-transform:uppercase;font-weight:500}
-.ev-info{flex:1;min-width:0}
-.ev-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ev-meta{font-size:11px;color:var(--text3);margin-top:2px}
-.ev-cnt{font-size:12px;font-weight:500;color:var(--text2);background:var(--bg);padding:3px 8px;border-radius:5px;flex-shrink:0}
-.bar-wrap{margin-bottom:14px}
-.bar-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px}
-.bar-track{height:7px;background:var(--bg);border-radius:4px;overflow:hidden}
-.bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--gold2))}
-.twint-row{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-radius:8px;padding:10px 12px;margin-top:10px}
-.twint-badge{background:#00A0E4;color:white;font-size:11px;font-weight:600;padding:3px 10px;border-radius:5px}
-.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.quick-btn{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:14px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;cursor:pointer;transition:all 0.15s;text-align:left}
-.quick-btn:hover{border-color:var(--gold);background:var(--gold-pale)}
-.quick-btn svg{width:18px;height:18px;fill:var(--navy)}
-.quick-btn:hover svg{fill:var(--gold)}
-.quick-btn span{font-size:12px;font-weight:500;color:var(--text)}
-.activity-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
-.activity-item:last-child{border-bottom:none;padding-bottom:0}
-.act-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.act-dot svg{width:14px;height:14px;fill:white}
-.act-text{flex:1;font-size:13px;color:var(--text)}
-.act-time{font-size:11px;color:var(--text3);white-space:nowrap}
-
-/* ─── TOAST ───────────────────────────────────────── */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:white;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;z-index:999;opacity:0;transform:translateY(10px);transition:all 0.3s;pointer-events:none}
-.toast.show{opacity:1;transform:translateY(0)}
-
-/* ─── COMING SOON ─────────────────────────────────── */
-.coming-soon{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;color:var(--text3)}
-.coming-soon svg{width:48px;height:48px;fill:var(--border)}
-.coming-soon h3{font-size:18px;font-weight:500;color:var(--text2)}
-.coming-soon p{font-size:14px;text-align:center;max-width:320px;line-height:1.6}
-
-@media(max-width:900px){
-  .sidebar{display:none}
-  .stats-grid{grid-template-columns:1fr 1fr}
-  .row-2,.row-3,.row-2-1{grid-template-columns:1fr}
-}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- ═══ SIDEBAR ═══════════════════════════════════════ -->
-<div class="sidebar" id="sidebar">
+<!-- ═══════════════════════════════════════════ -->
+<!-- SIDEBAR                                     -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M11 2v9H2v2h9v9h2v-9h9v-2h-9V2z"/></svg></div>
-    <span class="logo-text">AJ Connect</span>
+    <div class="logo-mark"><div class="logo-cross"></div></div>
+    <div class="logo-texts">
+      <div class="logo-name">AJ Connect</div>
+      <div class="logo-slogan">Connect. Organize. Grow.</div>
+    </div>
   </div>
-  <div class="sidebar-gemeente">
-    <div class="gemeente-label">Gemeinde</div>
-    <div class="gemeente-name" id="gemeindeName">Ev. Gemeinde Zürich</div>
+  <div class="gemeente-wrap">
+    <div class="gemeente-lbl">Gemeinde</div>
+    <div class="gemeente-name" id="g-name">Ev. Gemeinde Zürich</div>
     <span class="gemeente-plan">Professional</span>
   </div>
-
-  <div class="nav-section">Übersicht</div>
-  <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard',this)">
+  <div class="nav-sec">Übersicht</div>
+  <div class="nav-item active" data-page="dashboard" onclick="nav('dashboard',this)">
     <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>Dashboard
   </div>
-
-  <div class="nav-section">Gemeinde</div>
-  <div class="nav-item" data-page="mitglieder" onclick="navigate('mitglieder',this)">
-    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-    Mitglieder<span class="nav-badge" id="nav-badge-mitglieder">0</span>
+  <div class="nav-sec">Gemeinde</div>
+  <div class="nav-item" data-page="mitglieder" onclick="nav('mitglieder',this)">
+    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+    Mitglieder<span class="nav-badge" id="nb-m">0</span>
   </div>
-  <div class="nav-item" data-page="kontakte" onclick="navigate('kontakte',this)">
+  <div class="nav-item" data-page="kontakte" onclick="nav('kontakte',this)">
     <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Kontakte
   </div>
-  <div class="nav-item" data-page="smallgroups" onclick="navigate('smallgroups',this)">
+  <div class="nav-item" data-page="smallgroups" onclick="nav('smallgroups',this)">
     <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg>Small Groups
   </div>
-
-  <div class="nav-section">Gottesdienst</div>
-  <div class="nav-item" data-page="gottesdienste" onclick="navigate('gottesdienste',this)">
-    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>Gottesdienste
+  <div class="nav-sec">Gottesdienst</div>
+  <div class="nav-item" data-page="gottesdienste" onclick="nav('gottesdienste',this)">
+    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13z"/></svg>Gottesdienste
   </div>
-  <div class="nav-item" data-page="worship" onclick="navigate('worship',this)">
+  <div class="nav-item" data-page="worship" onclick="nav('worship',this)">
     <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>Worship
   </div>
-  <div class="nav-item" data-page="veranstaltungen" onclick="navigate('veranstaltungen',this)">
-    <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>Veranstaltungen
+  <div class="nav-item" data-page="events" onclick="nav('events',this)">
+    <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2z"/></svg>Veranstaltungen
   </div>
-
-  <div class="nav-section">Finanzen</div>
-  <div class="nav-item" data-page="spenden" onclick="navigate('spenden',this)">
+  <div class="nav-sec">Finanzen</div>
+  <div class="nav-item" data-page="spenden" onclick="nav('spenden',this)">
     <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg>Twint & Spenden
   </div>
-  <div class="nav-item" data-page="kreditoren" onclick="navigate('kreditoren',this)">
+  <div class="nav-item" data-page="kreditoren" onclick="nav('kreditoren',this)">
     <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>Kreditoren
   </div>
-  <div class="nav-item" data-page="debitoren" onclick="navigate('debitoren',this)">
+  <div class="nav-item" data-page="debitoren" onclick="nav('debitoren',this)">
     <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>Debitoren
   </div>
-
-  <div class="nav-section">Verwaltung</div>
-  <div class="nav-item" data-page="verkauf" onclick="navigate('verkauf',this)">
-    <svg viewBox="0 0 24 24"><path d="M17.21 9l-4.38-6.56c-.19-.28-.51-.42-.83-.42s-.64.14-.83.43L6.79 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1h-4.79z"/></svg>Verkauf
+  <div class="nav-sec">Verwaltung</div>
+  <div class="nav-item" data-page="dokumente" onclick="nav('dokumente',this)">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg>Dokumente
   </div>
-  <div class="nav-item" data-page="einkauf" onclick="navigate('einkauf',this)">
-    <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96C5 16.1 6.1 17 7 17h11v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H18c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 22.46 4H5.21l-.94-2H1z"/></svg>Einkauf
-  </div>
-  <div class="nav-item" data-page="artikel" onclick="navigate('artikel',this)">
-    <svg viewBox="0 0 24 24"><path d="M20 4H4v2l8 5 8-5V4zm0 4.55L12 13 4 8.55V20h16V8.55z"/></svg>Artikel
-  </div>
-  <div class="nav-item" data-page="personal" onclick="navigate('personal',this)">
+  <div class="nav-item" data-page="personal" onclick="nav('personal',this)">
     <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.3C18 2.55 16.45 1 14.5 1c-1.13 0-2.08.53-2.75 1.36L12 3l-.75-.64C10.57 1.53 9.62 1 8.5 1 6.55 1 5 2.55 5 4.5c0 .42.11.86.18 1.3H3c-1.11 0-2 .89-2 2v14c0 1.1.89 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.11-.89-2-2-2z"/></svg>Personal / HR
   </div>
-  <div class="nav-item" data-page="dokumente" onclick="navigate('dokumente',this)">
-    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>Dokumente
+  <div class="nav-item" data-page="einrichtung" onclick="nav('einrichtung',this)">
+    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg>Einrichtung
   </div>
-  <div class="nav-item" data-page="einstellungen" onclick="navigate('einstellungen',this)">
-    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>Einstellungen
-  </div>
-
-  <div class="sidebar-bottom">
+  <div class="sidebar-foot">
     <div class="user-row">
-      <div class="avatar">AJ</div>
-      <div>
-        <div class="user-name">Andreas Jost</div>
-        <div class="user-role">Administrator</div>
-      </div>
+      <div class="u-av">AJ</div>
+      <div><div class="u-name">Andreas Jost</div><div class="u-role">Administrator</div></div>
     </div>
   </div>
 </div>
 
-<!-- ═══ MAIN ═══════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════ -->
+<!-- MAIN                                        -->
+<!-- ═══════════════════════════════════════════ -->
 <div class="main">
+
   <!-- TOPBAR -->
   <div class="topbar">
-    <div class="topbar-title" id="topbarTitle">Dashboard</div>
-    <div class="topbar-actions">
-      <div style="font-size:12px;color:var(--text2);background:var(--bg);border:1px solid var(--border);padding:5px 12px;border-radius:6px" id="topbarDate"></div>
-      <div class="icon-btn"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></div>
-      <div class="icon-btn"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg><div class="notif-dot"></div></div>
-      <div class="avatar" style="cursor:pointer">AJ</div>
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-right">
+      <div class="view-toggle" id="vt-wrap" style="display:none">
+        <button class="vt active" id="vt-l" onclick="setView('list')">
+          <svg viewBox="0 0 24 24"><path d="M3 14h3v-3H3v3zm0 4h3v-3H3v3zm0-8h3V7H3v3zm4 4h14v-3H7v3zm0 4h14v-3H7v3zM7 7v3h14V7H7z"/></svg>Liste
+        </button>
+        <button class="vt" id="vt-c" onclick="setView('cards')">
+          <svg viewBox="0 0 24 24"><path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"/></svg>Karten
+        </button>
+      </div>
+      <button class="btn btn-ghost" id="btn-exp" style="display:none;font-size:12px" onclick="exportCSV()">
+        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Export
+      </button>
+      <button class="btn btn-primary" id="btn-new" style="display:none;font-size:12px" onclick="openNM()">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Neues Mitglied
+      </button>
+      <div class="date-chip" id="date-chip"></div>
+      <div class="icon-btn">
+        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+        <div class="notif-dot"></div>
+      </div>
+      <div class="u-av" style="cursor:pointer">AJ</div>
     </div>
   </div>
 
-  <!-- ─ PAGE: DASHBOARD ─ -->
+  <!-- ═══ PAGE: DASHBOARD ═══ -->
   <div class="page active" id="page-dashboard">
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-icon-box" style="background:#EFF6FF"><svg viewBox="0 0 24 24" style="fill:#2563EB"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div><div><div class="stat-num" id="db-members">0</div><div class="stat-lbl">Mitglieder total</div><div class="stat-delta delta-up" id="db-members-delta"></div></div></div>
-      <div class="stat-card"><div class="stat-icon-box" style="background:#FDF3DC"><svg viewBox="0 0 24 24" style="fill:#C8941A"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg></div><div><div class="stat-num">CHF 4'820</div><div class="stat-lbl">Spenden April</div><div class="stat-delta delta-up">↑ 12% vs. Vormonat</div></div></div>
-      <div class="stat-card"><div class="stat-icon-box" style="background:#DCFCE7"><svg viewBox="0 0 24 24" style="fill:#16A34A"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div><div><div class="stat-num">Heute</div><div class="stat-lbl">Nächster Gottesdienst</div><div class="stat-delta" style="color:var(--text2)">10:00 Uhr · Hauptsaal</div></div></div>
-      <div class="stat-card"><div class="stat-icon-box" style="background:#FEE2E2"><svg viewBox="0 0 24 24" style="fill:#DC2626"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg></div><div><div class="stat-num">7</div><div class="stat-lbl">Offene Aufgaben</div><div class="stat-delta delta-down">2 überfällig</div></div></div>
+      <div class="stat-card">
+        <div class="stat-ico" style="background:#EFF6FF"><svg viewBox="0 0 24 24" style="fill:#2563EB"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+        <div><div class="stat-n" id="db-m">0</div><div class="stat-l">Mitglieder</div><div class="stat-d d-up" id="db-md"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-ico" style="background:#FDF3DC"><svg viewBox="0 0 24 24" style="fill:#C8941A"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg></div>
+        <div><div class="stat-n">CHF 4'820</div><div class="stat-l">Spenden April</div><div class="stat-d d-up">↑ 12% vs. Vormonat</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-ico" style="background:#DCFCE7"><svg viewBox="0 0 24 24" style="fill:#16A34A"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13z"/></svg></div>
+        <div><div class="stat-n">Heute</div><div class="stat-l">Nächster Gottesdienst</div><div class="stat-d" style="color:var(--text2)">10:00 · Hauptsaal</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-ico" style="background:#FEE2E2"><svg viewBox="0 0 24 24" style="fill:#DC2626"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg></div>
+        <div><div class="stat-n">7</div><div class="stat-l">Offene Aufgaben</div><div class="stat-d d-dn">2 überfällig</div></div>
+      </div>
     </div>
-    <div class="row-2-1">
-      <!-- Gottesdienst heute -->
+    <div class="g2-1">
       <div class="card godi-card">
-        <div class="card-header"><div class="card-title">Gottesdienst heute</div><span class="card-action">Details →</span></div>
+        <div class="card-header">
+          <div class="card-title" style="color:rgba(255,255,255,0.6);font-size:11px;text-transform:uppercase;letter-spacing:1px">Gottesdienst heute</div>
+          <span class="card-action">Details →</span>
+        </div>
         <div class="card-body">
-          <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.8px">Sonntag, 5. April 2026</div>
-          <div style="font-size:17px;font-weight:600;color:white;margin-bottom:14px">Ostern — Er ist auferstanden!</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:3px;text-transform:uppercase">Sonntag, 5. April 2026</div>
+          <div style="font-size:16px;font-weight:600;color:white;margin-bottom:12px">Ostern — Er ist auferstanden!</div>
           <div class="godi-row"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>10:00 – 12:00 Uhr</div>
-          <div class="godi-row"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13z"/></svg>Hauptsaal · Musterstrasse 1, Zürich</div>
-          <div class="godi-row"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>Worship: Praise Team · 4 Songs</div>
+          <div class="godi-row"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13z"/></svg>Hauptsaal · Musterstrasse 1</div>
+          <div class="godi-row"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>Praise Team · 4 Songs</div>
           <div class="godi-live">Live in 2 Stunden</div>
         </div>
       </div>
-      <!-- Events -->
       <div class="card">
-        <div class="card-header"><div class="card-title">Nächste Veranstaltungen</div><span class="card-action">Alle anzeigen</span></div>
+        <div class="card-header"><div class="card-title">Nächste Veranstaltungen</div><span class="card-action">Alle</span></div>
         <div class="card-body">
-          <div class="event-item"><div class="ev-date"><div class="ev-day">12</div><div class="ev-mon">Apr</div></div><div class="ev-info"><div class="ev-name">Hauskreis Leitermeeting</div><div class="ev-meta">18:30 · Gemeindehaus</div></div><div class="ev-cnt">14</div></div>
-          <div class="event-item"><div class="ev-date"><div class="ev-day">19</div><div class="ev-mon">Apr</div></div><div class="ev-info"><div class="ev-name">Jugendgottesdienst</div><div class="ev-meta">17:00 · Jugendraum</div></div><div class="ev-cnt">38</div></div>
-          <div class="event-item"><div class="ev-date"><div class="ev-day">26</div><div class="ev-mon">Apr</div></div><div class="ev-info"><div class="ev-name">Gemeindefest Frühling</div><div class="ev-meta">14:00 · Aussengelände</div></div><div class="ev-cnt">120+</div></div>
-          <div class="event-item"><div class="ev-date"><div class="ev-day">3</div><div class="ev-mon">Mai</div></div><div class="ev-info"><div class="ev-name">Worship Night</div><div class="ev-meta">19:30 · Hauptsaal</div></div><div class="ev-cnt">60</div></div>
+          <div class="ev-item"><div class="ev-date"><div class="ev-day">12</div><div class="ev-mon">Apr</div></div><div class="ev-info"><div class="ev-name">Hauskreis Leitermeeting</div><div class="ev-meta">18:30 · Gemeindehaus</div></div><div class="ev-cnt">14</div></div>
+          <div class="ev-item"><div class="ev-date"><div class="ev-day">19</div><div class="ev-mon">Apr</div></div><div class="ev-info"><div class="ev-name">Jugendgottesdienst</div><div class="ev-meta">17:00 · Jugendraum</div></div><div class="ev-cnt">38</div></div>
+          <div class="ev-item"><div class="ev-date"><div class="ev-day">26</div><div class="ev-mon">Apr</div></div><div class="ev-info"><div class="ev-name">Gemeindefest Frühling</div><div class="ev-meta">14:00 · Aussengelände</div></div><div class="ev-cnt">120+</div></div>
+          <div class="ev-item"><div class="ev-date"><div class="ev-day">3</div><div class="ev-mon">Mai</div></div><div class="ev-info"><div class="ev-name">Worship Night</div><div class="ev-meta">19:30 · Hauptsaal</div></div><div class="ev-cnt">60</div></div>
         </div>
       </div>
-      <!-- Spenden -->
       <div class="card">
         <div class="card-header"><div class="card-title">Spenden April 2026</div><span class="card-action">Details</span></div>
         <div class="card-body">
-          <div class="bar-wrap"><div class="bar-label"><span>Ziel CHF 8'000</span><span>60%</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div></div>
-          <div class="twint-row"><div><div style="font-size:11px;color:var(--text3);margin-bottom:2px">Twint heute</div><div style="font-size:19px;font-weight:600;color:var(--navy)">CHF 340</div></div><div class="twint-badge">TWINT</div></div>
-          <div style="margin-top:12px;display:flex;flex-direction:column;gap:5px">
+          <div class="bar-wrap"><div class="bar-lbl"><span>Ziel CHF 8'000</span><span>60%</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div></div>
+          <div class="twint-row"><div><div style="font-size:10px;color:var(--text3);margin-bottom:2px">Twint heute</div><div style="font-size:18px;font-weight:600;color:var(--navy)">CHF 340</div></div><div class="twint-badge">TWINT</div></div>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:4px">
             <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text2)">Kollekte bar</span><span style="font-weight:500">CHF 2'140</span></div>
             <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text2)">Twint</span><span style="font-weight:500">CHF 1'890</span></div>
             <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text2)">Daueraufträge</span><span style="font-weight:500">CHF 790</span></div>
-            <div style="border-top:1px solid var(--border);padding-top:6px;display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:500">Total</span><span style="font-weight:600;color:var(--navy)">CHF 4'820</span></div>
+            <div style="border-top:1px solid var(--border);padding-top:5px;display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:500">Total</span><span style="font-weight:600;color:var(--navy)">CHF 4'820</span></div>
           </div>
         </div>
       </div>
     </div>
-    <div class="row-2">
-      <!-- Aktivitäten -->
+    <div class="g2">
       <div class="card">
-        <div class="card-header"><div class="card-title">Letzte Aktivitäten</div><span class="card-action">Alle</span></div>
+        <div class="card-header"><div class="card-title">Letzte Aktivitäten</div></div>
         <div class="card-body">
-          <div class="activity-item"><div class="act-dot" style="background:#2563EB"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg></div><div class="act-text">Maria Müller ist beigetreten</div><div class="act-time">vor 2h</div></div>
-          <div class="activity-item"><div class="act-dot" style="background:#00A0E4"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg></div><div class="act-text">Spende CHF 150 via Twint eingegangen</div><div class="act-time">vor 4h</div></div>
-          <div class="activity-item"><div class="act-dot" style="background:#C8941A"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div><div class="act-text">Worship-Plan Sonntag gesetzt</div><div class="act-time">gestern</div></div>
-          <div class="activity-item"><div class="act-dot" style="background:#16A34A"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></div><div class="act-text">Veranstaltung Gemeindefest erstellt</div><div class="act-time">gestern</div></div>
+          <div class="act-item"><div class="act-dot" style="background:#2563EB"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg></div><div class="act-text">Maria Müller ist beigetreten</div><div class="act-time">vor 2h</div></div>
+          <div class="act-item"><div class="act-dot" style="background:#00A0E4"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg></div><div class="act-text">Spende CHF 150 via Twint</div><div class="act-time">vor 4h</div></div>
+          <div class="act-item"><div class="act-dot" style="background:#C8941A"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div><div class="act-text">Worship-Plan Sonntag gesetzt</div><div class="act-time">gestern</div></div>
+          <div class="act-item"><div class="act-dot" style="background:#16A34A"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5z"/></svg></div><div class="act-text">Veranstaltung Gemeindefest erstellt</div><div class="act-time">gestern</div></div>
         </div>
       </div>
-      <!-- Schnellzugriff -->
       <div class="card">
         <div class="card-header"><div class="card-title">Schnellzugriff</div></div>
         <div class="card-body">
           <div class="quick-grid">
-            <div class="quick-btn" onclick="navigate('mitglieder');openNewMemberModal()"><svg viewBox="0 0 24 24"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6z"/></svg><span>Mitglied erfassen</span></div>
-            <div class="quick-btn" onclick="navigate('veranstaltungen')"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg><span>Event erstellen</span></div>
-            <div class="quick-btn" onclick="navigate('spenden')"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg><span>Spende erfassen</span></div>
-            <div class="quick-btn" onclick="navigate('dokumente')"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg><span>Dokument hochladen</span></div>
+            <div class="quick-btn" onclick="nav('mitglieder');openNM()"><svg viewBox="0 0 24 24"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6z"/></svg><span>Mitglied erfassen</span></div>
+            <div class="quick-btn" onclick="nav('events')"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2z"/></svg><span>Event erstellen</span></div>
+            <div class="quick-btn" onclick="nav('spenden')"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg><span>Spende erfassen</span></div>
+            <div class="quick-btn" onclick="nav('einrichtung')"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg><span>Einrichtung</span></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ─ PAGE: MITGLIEDER ─ -->
+  <!-- ═══ PAGE: MITGLIEDER ═══ -->
   <div class="page" id="page-mitglieder">
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-icon-box" style="background:#EFF6FF"><svg viewBox="0 0 24 24" style="fill:#2563EB"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div><div><div class="stat-num" id="ms-total">0</div><div class="stat-lbl">Total</div></div></div>
-      <div class="stat-card"><div class="stat-icon-box" style="background:#DCFCE7"><svg viewBox="0 0 24 24" style="fill:#16A34A"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div><div><div class="stat-num" id="ms-aktiv">0</div><div class="stat-lbl">Aktiv</div></div></div>
-      <div class="stat-card"><div class="stat-icon-box" style="background:#DBEAFE"><svg viewBox="0 0 24 24" style="fill:#2563EB"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div><div><div class="stat-num" id="ms-besucher">0</div><div class="stat-lbl">Besucher</div></div></div>
-      <div class="stat-card"><div class="stat-icon-box" style="background:#FEF3C7"><svg viewBox="0 0 24 24" style="fill:#D97706"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6z"/></svg></div><div><div class="stat-num" id="ms-neu">0</div><div class="stat-lbl">Neu diesen Monat</div></div></div>
+      <div class="stat-card"><div class="stat-ico" style="background:#EFF6FF"><svg viewBox="0 0 24 24" style="fill:#2563EB"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div><div><div class="stat-n" id="ms-t">0</div><div class="stat-l">Total</div></div></div>
+      <div class="stat-card"><div class="stat-ico" style="background:#DCFCE7"><svg viewBox="0 0 24 24" style="fill:#16A34A"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div><div><div class="stat-n" id="ms-a">0</div><div class="stat-l">Aktiv</div></div></div>
+      <div class="stat-card"><div class="stat-ico" style="background:#DBEAFE"><svg viewBox="0 0 24 24" style="fill:#2563EB"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div><div><div class="stat-n" id="ms-b">0</div><div class="stat-l">Besucher</div></div></div>
+      <div class="stat-card"><div class="stat-ico" style="background:#FEF3C7"><svg viewBox="0 0 24 24" style="fill:#D97706"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6z"/></svg></div><div><div class="stat-n" id="ms-n">0</div><div class="stat-l">Neu</div></div></div>
     </div>
-    <div class="table-wrap">
-      <div class="table-toolbar">
-        <div class="search-box"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="text" id="m-search" placeholder="Name, E-Mail suchen..." oninput="applyMemberFilters()"></div>
-        <div class="filter-tabs">
-          <div class="ftab active" onclick="setMemberFilter('alle',this)">Alle</div>
-          <div class="ftab" onclick="setMemberFilter('aktiv',this)">Aktiv</div>
-          <div class="ftab" onclick="setMemberFilter('besucher',this)">Besucher</div>
-          <div class="ftab" onclick="setMemberFilter('inaktiv',this)">Inaktiv</div>
-          <div class="ftab" onclick="setMemberFilter('neu',this)">Neu</div>
+    <div class="table-wrap" id="m-tbl-wrap">
+      <div class="tbl-toolbar">
+        <div class="search-box"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5S13.09 3 9.5 3 3 5.91 3 9.5s2.91 6.5 6.5 6.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg><input id="m-srch" placeholder="Name, E-Mail suchen..." oninput="applyMF()"></div>
+        <div class="ftabs">
+          <div class="ftab active" onclick="setMF('alle',this)">Alle</div>
+          <div class="ftab" onclick="setMF('aktiv',this)">Aktiv</div>
+          <div class="ftab" onclick="setMF('besucher',this)">Besucher</div>
+          <div class="ftab" onclick="setMF('taufkandidat',this)">Taufkandidat</div>
+          <div class="ftab" onclick="setMF('inaktiv',this)">Inaktiv</div>
+          <div class="ftab" onclick="setMF('neu',this)">Neu</div>
         </div>
-        <select class="filter-select" id="m-group-filter" onchange="applyMemberFilters()"><option value="">Alle Gruppen</option></select>
-        <select class="filter-select" id="m-role-filter" onchange="applyMemberFilters()"><option value="">Alle Rollen</option></select>
-        <button class="btn btn-ghost" style="font-size:12px" onclick="exportMembersCSV()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>Export</button>
-        <button class="btn btn-primary" style="font-size:12px" onclick="openNewMemberModal()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Neues Mitglied</button>
+        <select class="fsel" id="m-gf" onchange="applyMF()"><option value="">Alle Gruppen</option></select>
+        <select class="fsel" id="m-rf" onchange="applyMF()"><option value="">Alle Rollen</option></select>
       </div>
-      <div class="tbl-header-row">
-        <div class="tbl-header-title" id="m-table-count">Lade...</div>
+      <div class="tbl-top">
+        <div class="tbl-title" id="m-cnt">Lade...</div>
         <div class="gear-wrap">
-          <div class="gear-btn" onclick="toggleGear(event,'m-gear-dd')" title="Spalten verwalten"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg></div>
-          <div class="gear-dropdown" id="m-gear-dd">
-            <div class="gear-dh">Spalten <span class="gear-reset" onclick="resetMemberCols()">Zurücksetzen</span></div>
-            <div id="m-gear-items"></div>
+          <div class="gear-btn" onclick="toggleGear(event)"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg></div>
+          <div class="gear-dd" id="gear-dd">
+            <div class="gear-dh">Spalten <span class="gear-reset" onclick="resetCols()">Zurücksetzen</span></div>
+            <div id="gear-items"></div>
           </div>
         </div>
       </div>
       <div style="overflow-x:auto"><table><thead><tr id="m-thead"></tr></thead><tbody id="m-tbody"></tbody></table></div>
-      <div class="pagination"><div class="page-info" id="m-page-info"></div><div class="page-btns" id="m-page-btns"></div></div>
+      <div class="pagination"><div class="pi" id="m-pi"></div><div class="pbtns" id="m-pb"></div></div>
+    </div>
+    <div class="card-grid" id="m-cg" style="display:none"></div>
+  </div>
+
+  <!-- ═══ PAGE: EINRICHTUNG ═══ -->
+  <div class="page" id="page-einrichtung">
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title">Ersteinrichtungs-Assistent</div><div style="font-size:12px;color:var(--text2);margin-top:2px">Richten Sie AJ Connect Schritt für Schritt ein</div></div>
+        <button class="btn btn-gold" onclick="toast('Wizard kommt im nächsten Release')">Wizard starten</button>
+      </div>
+      <div class="card-body">
+        <!-- Wizard steps -->
+        <div style="display:flex;gap:0;overflow-x:auto;scrollbar-width:none;padding-bottom:4px">
+          <div style="display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-width:90px">
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--green);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;z-index:1;position:relative"><svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+            <div style="font-size:10px;color:var(--green);margin-top:5px;font-weight:500">Gemeinde</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-width:90px">
+            <div style="position:absolute;top:13px;left:-50%;width:100%;height:2px;background:var(--navy)"></div>
+            <div style="width:26px;height:26px;border-radius:50%;background:var(--navy);border:2px solid var(--navy);display:flex;align-items:center;justify-content:center;z-index:1;position:relative;color:white;font-size:11px;font-weight:600">2</div>
+            <div style="font-size:10px;color:var(--navy);margin-top:5px;font-weight:600">Benutzer</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-width:90px">
+            <div style="position:absolute;top:13px;left:-50%;width:100%;height:2px;background:var(--border)"></div>
+            <div style="width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;z-index:1;position:relative;color:var(--text3);font-size:11px;font-weight:600">3</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:5px">Module</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-width:90px">
+            <div style="position:absolute;top:13px;left:-50%;width:100%;height:2px;background:var(--border)"></div>
+            <div style="width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;z-index:1;position:relative;color:var(--text3);font-size:11px;font-weight:600">4</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:5px">Finanzen</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-width:90px">
+            <div style="position:absolute;top:13px;left:-50%;width:100%;height:2px;background:var(--border)"></div>
+            <div style="width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;z-index:1;position:relative;color:var(--text3);font-size:11px;font-weight:600">5</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:5px">Twint</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-width:90px">
+            <div style="position:absolute;top:13px;left:-50%;width:100%;height:2px;background:var(--border)"></div>
+            <div style="width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;z-index:1;position:relative;color:var(--text3);font-size:11px;font-weight:600">6</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:5px">Bank</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-width:90px">
+            <div style="position:absolute;top:13px;left:-50%;width:100%;height:2px;background:var(--border)"></div>
+            <div style="width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;z-index:1;position:relative;color:var(--text3);font-size:11px;font-weight:600">7</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:5px">DMS</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-width:90px">
+            <div style="position:absolute;top:13px;left:-50%;width:100%;height:2px;background:var(--border)"></div>
+            <div style="width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;z-index:1;position:relative;color:var(--text3);font-size:11px;font-weight:600">8</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:5px">Fertig</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="setup-sec"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>Allgemeine Einstellungen</div>
+    <div class="setup-grid">
+      <div class="sc ok" onclick="openSetup('gemeinde')"><div class="sc-ico" style="background:var(--navy)"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13z"/></svg></div><div><div class="sc-title">Gemeinde-Stammdaten</div><div class="sc-desc">Name, Adresse, Logo, Sprache, Zeitzone</div><div class="sc-status">Konfiguriert</div></div></div>
+      <div class="sc ok" onclick="openSetup('benutzer')"><div class="sc-ico" style="background:#2563EB"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3z"/></svg></div><div><div class="sc-title">Benutzer & Rollen</div><div class="sc-desc">Admins, Leiter, Mitarbeitende, Zugriffsrechte</div><div class="sc-status">1 Benutzer aktiv</div></div></div>
+      <div class="sc" onclick="openSetup('module')"><div class="sc-ico" style="background:#7C3AED"><svg viewBox="0 0 24 24"><path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"/></svg></div><div><div class="sc-title">Module aktivieren</div><div class="sc-desc">Welche Module für Ihre Gemeinde aktiv sind</div><div class="sc-status">Nicht konfiguriert</div></div></div>
+      <div class="sc" onclick="openSetup('benachrichtigungen')"><div class="sc-ico" style="background:#0891B2"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div><div><div class="sc-title">Benachrichtigungen</div><div class="sc-desc">E-Mail, Push, Newsletter-Templates</div><div class="sc-status">Nicht konfiguriert</div></div></div>
+    </div>
+
+    <div class="setup-sec"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg>Finanz-Einrichtung</div>
+    <div class="setup-grid">
+      <div class="sc" onclick="openSetup('fibu')"><div class="sc-ico" style="background:#16A34A"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg></div><div><div class="sc-title">Finanzbuchhaltung</div><div class="sc-desc">Kontenplan, Kostenstellen, Geschäftsjahr, MWST</div><div class="sc-status">Nicht konfiguriert</div></div></div>
+      <div class="sc" onclick="openSetup('twint')"><div class="sc-ico" style="background:#00A0E4"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg></div><div><div class="sc-title">Twint / Payrexx</div><div class="sc-desc">API-Key, Spendenzwecke, Quittungsvorlagen</div><div class="sc-status">Nicht konfiguriert</div></div></div>
+      <div class="sc" onclick="openSetup('bank')"><div class="sc-ico" style="background:#C8941A"><svg viewBox="0 0 24 24"><path d="M11.5 2C6.81 2 3 5.81 3 10.5S6.81 19 11.5 19h.5v3c4.86-2.34 8-7 8-11.5C20 5.81 16.19 2 11.5 2z"/></svg></div><div><div class="sc-title">Bankanbindung</div><div class="sc-desc">ISO 20022 / camt.053, IBAN, automatischer Import</div><div class="sc-status">Nicht konfiguriert</div></div></div>
+      <div class="sc" onclick="openSetup('spendenzwecke')"><div class="sc-ico" style="background:#D97706"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13z"/></svg></div><div><div class="sc-title">Spendenzwecke</div><div class="sc-desc">Zwecke, Projekte und Kontozuordnungen</div><div class="sc-status">Nicht konfiguriert</div></div></div>
+    </div>
+
+    <div class="setup-sec"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg>Daten & Integrationen</div>
+    <div class="setup-grid">
+      <div class="sc" onclick="openSetup('dms')"><div class="sc-ico" style="background:#DC2626"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg></div><div><div class="sc-title">DMS / Exoscale Genf</div><div class="sc-desc">API-Key, Bucket, Ordnerstruktur, Verschlüsselung</div><div class="sc-status">Nicht konfiguriert — lokal</div></div></div>
+      <div class="sc" onclick="openSetup('email')"><div class="sc-ico" style="background:#7C3AED"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg></div><div><div class="sc-title">E-Mail / SMTP</div><div class="sc-desc">SMTP, Absenderadresse, E-Mail-Templates</div><div class="sc-status">Nicht konfiguriert</div></div></div>
+      <div class="sc" onclick="openSetup('datenschutz')"><div class="sc-ico" style="background:#059669"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg></div><div><div class="sc-title">Datenschutz (DSG)</div><div class="sc-desc">AVV, Datenschutzerklärung, Löschfristen</div><div class="sc-status">Nicht konfiguriert</div></div></div>
+      <div class="sc" onclick="openSetup('import')"><div class="sc-ico" style="background:#0891B2"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></div><div><div class="sc-title">Datenimport</div><div class="sc-desc">Excel/CSV Import für Mitglieder und historische Daten</div><div class="sc-status">Nicht konfiguriert</div></div></div>
+    </div>
+
+    <div class="setup-sec"><svg viewBox="0 0 24 24"><path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"/></svg>Modul-Einrichtungen</div>
+    <div class="setup-grid">
+      <div class="sc ok" onclick="openSetup('m-mitglieder')"><div class="sc-ico" style="background:#2563EB"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg></div><div><div class="sc-title">Mitglieder</div><div class="sc-desc">Rollen, Small Groups, Status, Pflichtfelder</div><div class="sc-status">Konfiguriert</div></div></div>
+      <div class="sc" onclick="openSetup('m-gottesdienst')"><div class="sc-ico" style="background:#1A3560"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13z"/></svg></div><div><div class="sc-title">Gottesdienste</div><div class="sc-desc">Orte, Räume, Standardzeiten, Prediger</div><div class="sc-status">Nicht konfiguriert</div></div></div>
+      <div class="sc" onclick="openSetup('m-worship')"><div class="sc-ico" style="background:#C8941A"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div><div><div class="sc-title">Worship</div><div class="sc-desc">Instrumente, Tonarten, Standard-Setlist</div><div class="sc-status">Nicht konfiguriert</div></div></div>
+      <div class="sc" onclick="openSetup('m-hr')"><div class="sc-ico" style="background:#DC2626"><svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.3C18 2.55 16.45 1 14.5 1c-1.13 0-2.08.53-2.75 1.36L12 3l-.75-.64C10.57 1.53 9.62 1 8.5 1 6.55 1 5 2.55 5 4.5c0 .42.11.86.18 1.3H3c-1.11 0-2 .89-2 2v14c0 1.1.89 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.11-.89-2-2-2z"/></svg></div><div><div class="sc-title">Personal / HR</div><div class="sc-desc">Lohnarten, Pensumstypen, Ferienregelung CH</div><div class="sc-status">Nicht konfiguriert</div></div></div>
     </div>
   </div>
 
-  <!-- ─ OTHER PAGES (Coming Soon) ─ -->
-  <div class="page" id="page-kontakte"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><h3>Kontakte & DMS</h3><p>Kontaktverwaltung mit Dokumentenablage. Wird als nächstes gebaut.</p></div></div>
+  <!-- ═══ COMING SOON PAGES ═══ -->
+  <div class="page" id="page-kontakte"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><h3>Kontakte</h3><p>Kontaktverwaltung mit Dokumentenablage. Kommt als nächstes.</p></div></div>
   <div class="page" id="page-smallgroups"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg><h3>Small Groups</h3><p>Hauskreise und Kleingruppen verwalten.</p></div></div>
-  <div class="page" id="page-gottesdienste"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13z"/></svg><h3>Gottesdienste</h3><p>Planung, Ablauf und Archiv aller Gottesdienste.</p></div></div>
-  <div class="page" id="page-worship"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg><h3>Worship</h3><p>Liederbuch, Setlists und Band-Planung.</p></div></div>
-  <div class="page" id="page-veranstaltungen"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg><h3>Veranstaltungen</h3><p>Events planen und Anmeldungen verwalten.</p></div></div>
-  <div class="page" id="page-spenden"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg><h3>Twint & Spenden</h3><p>Spendenerfassung, Twint-Integration und Steuerquittungen.</p></div></div>
+  <div class="page" id="page-gottesdienste"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13z"/></svg><h3>Gottesdienste</h3><p>Planung, Ablauf und Archiv.</p></div></div>
+  <div class="page" id="page-worship"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg><h3>Worship</h3><p>Liederbuch, Setlists, Band-Planung.</p></div></div>
+  <div class="page" id="page-events"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2z"/></svg><h3>Veranstaltungen</h3><p>Events planen und Anmeldungen verwalten.</p></div></div>
+  <div class="page" id="page-spenden"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg><h3>Twint & Spenden</h3><p>Spendenerfassung und Twint-Integration.</p></div></div>
   <div class="page" id="page-kreditoren"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg><h3>Kreditoren</h3><p>Eingangsrechnungen und Lieferanten.</p></div></div>
   <div class="page" id="page-debitoren"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg><h3>Debitoren</h3><p>Ausgangsrechnungen und Forderungen.</p></div></div>
-  <div class="page" id="page-verkauf"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M17.21 9l-4.38-6.56c-.19-.28-.51-.42-.83-.42s-.64.14-.83.43L6.79 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1h-4.79z"/></svg><h3>Verkauf</h3><p>Verkaufsaufträge verwalten.</p></div></div>
-  <div class="page" id="page-einkauf"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2z"/></svg><h3>Einkauf</h3><p>Bestellungen und Lieferanten.</p></div></div>
-  <div class="page" id="page-artikel"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M20 4H4v2l8 5 8-5V4z"/></svg><h3>Artikel</h3><p>Artikelstamm und Lagerverwaltung.</p></div></div>
-  <div class="page" id="page-personal"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.3C18 2.55 16.45 1 14.5 1z"/></svg><h3>Personal / HR</h3><p>Mitarbeitende, Freiwillige und Lohnverwaltung.</p></div></div>
-  <div class="page" id="page-dokumente"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg><h3>Dokumente (DMS)</h3><p>Zentrales Dokumentenmanagement. Daten gespeichert in Genf.</p></div></div>
-  <div class="page" id="page-einstellungen">
-    <div class="card">
-      <div class="card-header"><div class="card-title">Gemeinde-Einstellungen</div></div>
-      <div class="card-body">
-        <div class="form-grid">
-          <div class="form-group"><label class="form-label">Gemeindename</label><input class="form-input" id="set-name" value="Ev. Gemeinde Zürich" oninput="updateGemeindeName()"></div>
-          <div class="form-group"><label class="form-label">Lizenzplan</label><select class="form-select"><option>Professional (CHF 299/Mt.)</option><option>Starter (CHF 149/Mt.)</option></select></div>
-          <div class="form-group"><label class="form-label">Sprache</label><select class="form-select"><option>Deutsch</option><option>Französisch</option></select></div>
-          <div class="form-group"><label class="form-label">Zeitzone</label><select class="form-select"><option>Europe/Zurich</option></select></div>
-          <div class="form-group full"><label class="form-label">Adresse</label><input class="form-input" value="Musterstrasse 1, 8001 Zürich"></div>
+  <div class="page" id="page-dokumente"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg><h3>Dokumente (DMS)</h3><p>Zentrales Dokumentenmanagement. Daten in Genf.</p></div></div>
+  <div class="page" id="page-personal"><div class="coming-soon"><svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.3C18 2.55 16.45 1 14.5 1z"/></svg><h3>Personal / HR</h3><p>Mitarbeitende, Freiwillige, Lohnverwaltung.</p></div></div>
+
+</div><!-- end .main -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MITGLIEDERKARTE PANEL                       -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="karte-overlay" id="k-overlay" onclick="closeKarte()"></div>
+<div class="karte-panel" id="k-panel">
+  <div class="karte-topbar">
+    <div class="karte-caption">Mitgliederkarte</div>
+    <div style="display:flex;gap:6px;margin-left:auto">
+      <button class="btn btn-gold" style="font-size:11px" onclick="genQuittung()"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg>Spendenbescheinigung</button>
+      <button class="btn btn-primary" style="font-size:11px"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg>Bearbeiten</button>
+      <div class="karte-close" onclick="closeKarte()"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div>
+    </div>
+  </div>
+  <div class="karte-header">
+    <div class="karte-av" id="k-av"></div>
+    <div class="karte-info">
+      <div class="karte-name" id="k-name"></div>
+      <div class="karte-sub" id="k-sub"></div>
+      <div class="karte-badges" id="k-badges"></div>
+    </div>
+    <div class="kq-grid">
+      <div class="kq"><div class="kq-n" id="kq-j">—</div><div class="kq-l">Jahre</div></div>
+      <div class="kq"><div class="kq-n" id="kq-s">—</div><div class="kq-l">Spenden</div></div>
+      <div class="kq"><div class="kq-n">2</div><div class="kq-l">Dienste</div></div>
+      <div class="kq"><div class="kq-n">47</div><div class="kq-l">Events</div></div>
+    </div>
+  </div>
+  <div class="karte-actions">
+    <button class="btn btn-ghost" style="font-size:11px"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg>E-Mail</button>
+    <button class="btn btn-ghost" style="font-size:11px"><svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>Anrufen</button>
+    <button class="btn btn-ghost" style="font-size:11px"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Notiz</button>
+    <button class="btn btn-danger" style="font-size:11px;margin-left:auto" onclick="deleteCurrent()"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg>Löschen</button>
+  </div>
+  <div class="stl">
+    <div class="stl-step done"><div class="stl-dot done"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div><div class="stl-lbl">Interessent</div></div>
+    <div class="stl-step done"><div class="stl-dot done"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div><div class="stl-lbl">Taufkandidat</div></div>
+    <div class="stl-step done"><div class="stl-dot cur"></div><div class="stl-lbl">Mitglied</div></div>
+    <div class="stl-step"><div class="stl-dot"></div><div class="stl-lbl">Inaktiv</div></div>
+    <div class="stl-step"><div class="stl-dot"></div><div class="stl-lbl">Ausgetreten</div></div>
+  </div>
+  <div class="ktabs">
+    <div class="ktab active" onclick="sTab('stamm',this)">Stammdaten</div>
+    <div class="ktab" onclick="sTab('gemeinde',this)">Gemeinde</div>
+    <div class="ktab" onclick="sTab('familie',this)">Familie<span class="ktab-cnt">3</span></div>
+    <div class="ktab" onclick="sTab('finanzen',this)">Finanzen<span class="ktab-cnt" id="kt-sp">0</span></div>
+    <div class="ktab" onclick="sTab('notizen',this)">Notizen<span class="ktab-cnt">2</span></div>
+    <div class="ktab" onclick="sTab('dms',this)">Dokumente<span class="ktab-cnt" id="kt-dms">0</span></div>
+    <div class="ktab" onclick="sTab('dsgvo',this)">DSGVO</div>
+    <div class="ktab" onclick="sTab('links',this)">Verknüpfungen</div>
+  </div>
+  <div class="karte-body">
+    <!-- TAB: STAMMDATEN -->
+    <div class="tab-pane active" id="tab-stamm">
+      <div class="two-col">
+        <div class="cs" id="sec-pers">
+          <div class="cs-head"><div class="cs-title"><div class="cs-dot" style="background:#2563EB"></div>Persönliche Daten</div><span class="cs-edit" onclick="tEdit('sec-pers',this)">Bearbeiten</span></div>
+          <div class="cs-body">
+            <div class="frow"><span class="flbl">Anrede</span><span class="fval"><span class="fvt" id="k-anrede">—</span><select class="fvs" id="k-anrede-i"><option>Herr</option><option>Frau</option><option>Divers</option></select></span></div>
+            <div class="frow"><span class="flbl">Vorname</span><span class="fval"><span class="fvt" id="k-vorname">—</span><input class="fvi" id="k-vorname-i"></span></div>
+            <div class="frow"><span class="flbl">Nachname</span><span class="fval"><span class="fvt" id="k-nachname">—</span><input class="fvi" id="k-nachname-i"></span></div>
+            <div class="frow"><span class="flbl">Geburtsdatum</span><span class="fval"><span class="fvt" id="k-geburt">—</span><input class="fvi" id="k-geburt-i" type="date"></span></div>
+            <div class="frow"><span class="flbl">Geschlecht</span><span class="fval"><span class="fvt" id="k-geschlecht">—</span><select class="fvs" id="k-geschlecht-i"><option value="">—</option><option>Männlich</option><option>Weiblich</option><option>Divers</option></select></span></div>
+            <div class="frow"><span class="flbl">Nationalität</span><span class="fval"><span class="fvt" id="k-nation">—</span><select class="fvs" id="k-nation-i"><option>🇨🇭 Schweiz</option><option>🇩🇪 Deutschland</option><option>🇦🇹 Österreich</option><option>Andere</option></select></span></div>
+            <div class="frow"><span class="flbl">Muttersprache</span><span class="fval"><span class="fvt" id="k-sprache">—</span><select class="fvs" id="k-sprache-i"><option>Deutsch</option><option>Französisch</option><option>Italienisch</option><option>Englisch</option><option>Andere</option></select></span></div>
+            <div class="frow"><span class="flbl">Familienstand</span><span class="fval"><span class="fvt" id="k-fstand">—</span><select class="fvs" id="k-fstand-i"><option value="">—</option><option>Ledig</option><option>Verheiratet</option><option>Geschieden</option><option>Verwitwet</option></select></span></div>
+          </div>
         </div>
-        <div style="margin-top:16px"><button class="btn btn-primary">Speichern</button></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ MODALS ══════════════════════════════════════════ -->
-<!-- Neues Mitglied -->
-<div class="modal-overlay" id="modal-new-member">
-  <div class="modal">
-    <div class="modal-header"><div class="modal-title">Neues Mitglied erfassen</div><div class="modal-close" onclick="closeModal('modal-new-member')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div></div>
-    <div class="modal-body">
-      <div class="form-grid">
-        <div class="form-group"><label class="form-label">Anrede</label><select class="form-select" id="nm-anrede"><option>Herr</option><option>Frau</option><option>Divers</option></select></div>
-        <div class="form-group"><label class="form-label">Vorname <span class="req">*</span></label><input class="form-input" id="nm-vorname" placeholder="Max"></div>
-        <div class="form-group"><label class="form-label">Nachname <span class="req">*</span></label><input class="form-input" id="nm-nachname" placeholder="Mustermann"></div>
-        <div class="form-group"><label class="form-label">E-Mail</label><input class="form-input" id="nm-email" type="email" placeholder="max@beispiel.ch"></div>
-        <div class="form-group"><label class="form-label">Mobil</label><input class="form-input" id="nm-tel" placeholder="+41 79 123 45 67"></div>
-        <div class="form-group"><label class="form-label">Geburtsdatum</label><input class="form-input" id="nm-geburt" type="date"></div>
-        <div class="form-group"><label class="form-label">Status</label>
-          <select class="form-select" id="nm-status">
-            <option value="aktiv">Aktiv</option><option value="besucher">Besucher</option>
-            <option value="taufkandidat">Taufkandidat</option><option value="inaktiv">Inaktiv</option><option value="neu">Neu</option>
-          </select>
+        <div class="cs" id="sec-kont">
+          <div class="cs-head"><div class="cs-title"><div class="cs-dot" style="background:#7C3AED"></div>Kontaktdaten</div><span class="cs-edit" onclick="tEdit('sec-kont',this)">Bearbeiten</span></div>
+          <div class="cs-body">
+            <div class="frow"><span class="flbl">E-Mail</span><span class="fval"><span class="fvt" id="k-email">—</span><input class="fvi" id="k-email-i" type="email"></span></div>
+            <div class="frow"><span class="flbl">Mobil</span><span class="fval"><span class="fvt" id="k-mobil">—</span><input class="fvi" id="k-mobil-i"></span></div>
+            <div class="frow"><span class="flbl">Festnetz</span><span class="fval"><span class="fvt" id="k-fest">—</span><input class="fvi" id="k-fest-i"></span></div>
+            <div class="frow"><span class="flbl">Strasse / Nr.</span><span class="fval"><span class="fvt" id="k-str">—</span><input class="fvi" id="k-str-i"></span></div>
+            <div class="frow"><span class="flbl">PLZ / Ort</span><span class="fval"><span class="fvt" id="k-plz">—</span><input class="fvi" id="k-plz-i"></span></div>
+            <div class="frow"><span class="flbl">Kanton</span><span class="fval"><span class="fvt" id="k-kant">—</span><select class="fvs" id="k-kant-i"><option>ZH</option><option>BE</option><option>LU</option><option>AG</option><option>BS</option><option>SG</option><option>GR</option><option>VD</option><option>GE</option><option>TI</option></select></span></div>
+            <div class="frow"><span class="flbl">Notfallkontakt</span><span class="fval"><span class="fvt" id="k-notfall">—</span><input class="fvi" id="k-notfall-i"></span></div>
+          </div>
         </div>
-        <div class="form-group"><label class="form-label">Rolle</label><select class="form-select" id="nm-rolle" onchange="if(this.value==='__new__'){openRollenModal();this.value=''}"></select></div>
-        <div class="form-group"><label class="form-label">Small Group</label><select class="form-select" id="nm-group" onchange="if(this.value==='__new__'){openGruppenModal();this.value=''}"></select></div>
-        <div class="form-group"><label class="form-label">Eingetreten</label><input class="form-input" id="nm-eingetreten" type="date"></div>
-        <div class="form-group full"><label class="form-label">Adresse</label><input class="form-input" id="nm-adresse" placeholder="Musterstrasse 1, 8001 Zürich"></div>
-        <div class="form-group full"><label class="form-label">Notizen</label><textarea class="form-textarea" id="nm-notizen" placeholder="Hinweise..."></textarea></div>
+      </div>
+      <div class="cs">
+        <div class="cs-head"><div class="cs-title"><div class="cs-dot" style="background:#C8941A"></div>Social Media</div><span class="cs-edit">Verknüpfen</span></div>
+        <div class="cs-body"><div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div class="soc-btn"><svg viewBox="0 0 24 24" style="fill:#E1306C;width:13px;height:13px"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069z"/></svg>Instagram</div>
+          <div class="soc-btn"><svg viewBox="0 0 24 24" style="fill:#1877F2;width:13px;height:13px"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Facebook</div>
+          <div class="soc-btn"><svg viewBox="0 0 24 24" style="fill:#25D366;width:13px;height:13px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg>WhatsApp</div>
+        </div></div>
       </div>
     </div>
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-new-member')">Abbrechen</button><button class="btn btn-primary" onclick="saveMember()"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Speichern</button></div>
+
+    <!-- TAB: GEMEINDE -->
+    <div class="tab-pane" id="tab-gemeinde">
+      <div class="cs" style="margin-bottom:10px">
+        <div class="cs-head"><div class="cs-title"><div class="cs-dot" style="background:#16A34A"></div>Mitgliedschaft</div><span class="cs-edit">Bearbeiten</span></div>
+        <div class="cs-body">
+          <div class="frow"><span class="flbl">Status</span><span class="fval" id="k-status-v">—</span></div>
+          <div class="frow"><span class="flbl">Eingetreten</span><span class="fval" id="k-eingetreten">—</span></div>
+          <div class="frow"><span class="flbl">Taufdatum</span><span class="fval" id="k-taufe">—</span></div>
+          <div class="frow"><span class="flbl">Taufort</span><span class="fval">Ev. Gemeinde Zürich</span></div>
+          <div class="frow"><span class="flbl">Austrittsdatum</span><span class="fval mt">—</span></div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="cs">
+          <div class="cs-head"><div class="cs-title"><div class="cs-dot" style="background:#C8941A"></div>Dienste & Mitarbeit</div><span class="cs-edit">Verwalten</span></div>
+          <div class="cs-body">
+            <div style="font-size:11px;color:var(--text3);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.5px">Dienste</div>
+            <div class="chips"><div class="chip">Lobpreis</div><div class="chip">Kinderkirche</div><div class="chip add">+ Dienst</div></div>
+            <div style="font-size:11px;color:var(--text3);margin:10px 0 7px;text-transform:uppercase;letter-spacing:0.5px">Rollen & Ämter</div>
+            <div class="chips"><div class="chip purple" id="k-rolle-c">—</div><div class="chip add">+ Rolle</div></div>
+          </div>
+        </div>
+        <div class="cs">
+          <div class="cs-head"><div class="cs-title"><div class="cs-dot" style="background:#0891B2"></div>Gruppen</div><span class="cs-edit">Bearbeiten</span></div>
+          <div class="cs-body">
+            <div class="frow"><span class="flbl">Small Group</span><span class="fval" id="k-group-v">—</span></div>
+            <div class="frow"><span class="flbl">Abteilung</span><span class="fval">Worship-Team</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: FAMILIE -->
+    <div class="tab-pane" id="tab-familie">
+      <div class="two-col">
+        <div class="cs">
+          <div class="cs-head"><div class="cs-title"><div class="cs-dot" style="background:#059669"></div>Familie</div><span class="cs-edit">+ Verknüpfen</span></div>
+          <div class="cs-body">
+            <div class="fam-item"><div class="fam-av" style="background:#1A3560">TM</div><div><div style="font-size:13px;font-weight:500;color:var(--navy)">Thomas Meier</div><div style="font-size:11px;color:var(--text3)">Ehemann · Mitglied</div></div><span style="margin-left:auto;color:var(--text3)">›</span></div>
+            <div class="fam-item"><div class="fam-av" style="background:#C8941A">LM</div><div><div style="font-size:13px;font-weight:500;color:var(--navy)">Lena Meier</div><div style="font-size:11px;color:var(--text3)">Tochter · 7 J.</div></div><span style="margin-left:auto;color:var(--text3)">›</span></div>
+            <div class="fam-item"><div class="fam-av" style="background:#7C3AED">NM</div><div><div style="font-size:13px;font-weight:500;color:var(--navy)">Noah Meier</div><div style="font-size:11px;color:var(--text3)">Sohn · 4 J.</div></div><span style="margin-left:auto;color:var(--text3)">›</span></div>
+            <div class="fam-item" style="border:1.5px dashed var(--border2);cursor:pointer;color:var(--text3);justify-content:center;font-size:12px;background:var(--white)">+ Familienmitglied verknüpfen</div>
+          </div>
+        </div>
+        <div class="cs">
+          <div class="cs-head"><div class="cs-title">Lebensereignisse</div><span class="cs-edit">+ Ereignis</span></div>
+          <div class="cs-body">
+            <div class="frow"><span class="flbl">Familienstand</span><span class="fval" id="k-fstand-v">—</span></div>
+            <div class="frow"><span class="flbl">Hochzeit</span><span class="fval">15. Mai 2018 · Zürich</span></div>
+            <div class="frow"><span class="flbl">Taufe</span><span class="fval" id="k-taufe-v">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: FINANZEN -->
+    <div class="tab-pane" id="tab-finanzen">
+      <div class="sp-sum">
+        <div class="sp-c"><div class="sp-n" id="kf-t">CHF 0</div><div class="sp-l">Gesamt 2026</div></div>
+        <div class="sp-c"><div class="sp-n">CHF 3'420</div><div class="sp-l">Seit Eintritt</div></div>
+        <div class="sp-c"><div class="sp-n" id="kf-c">0</div><div class="sp-l">Total Spenden</div></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:12px;font-weight:600;color:var(--navy)">Spendenhistorie</div>
+        <button class="btn btn-gold" style="font-size:11px" onclick="genQuittung()"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg>Spendenbescheinigung 2026</button>
+      </div>
+      <table class="sp-tbl"><thead><tr><th>Datum</th><th>Betrag</th><th>Zahlungsweg</th><th>Zweck</th><th>Quittung</th></tr></thead><tbody id="kf-body"></tbody></table>
+      <div class="cs" style="margin-top:10px">
+        <div class="cs-head"><div class="cs-title">Bankverbindung</div><span class="cs-edit">Bearbeiten</span></div>
+        <div class="cs-body"><div class="frow"><span class="flbl">IBAN</span><span class="fval" id="k-iban">—</span></div><div class="frow"><span class="flbl">Bank</span><span class="fval" id="k-bank">—</span></div></div>
+      </div>
+    </div>
+
+    <!-- TAB: NOTIZEN -->
+    <div class="tab-pane" id="tab-notizen">
+      <div class="vertraulich"><svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:var(--red);flex-shrink:0"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>Nur für autorisierte Leiter sichtbar · DSG-geschützt</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font-size:12px;font-weight:600;color:var(--navy)">Interne Notizen</div><button class="btn btn-ghost" style="font-size:11px">+ Notiz</button></div>
+      <div class="notiz"><div class="notiz-head"><span class="notiz-autor">Pastor Thomas</span><span class="notiz-date">12.03.2026</span></div><div class="notiz-text">Sehr gut integriert. Zeigt Führungsqualitäten im Lobpreis-Team.</div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:10px 0 8px"><div style="font-size:12px;font-weight:600;color:var(--navy)">Gebetsanliegen</div><button class="btn btn-ghost" style="font-size:11px">+ Anliegen</button></div>
+      <div class="notiz g"><div class="notiz-head"><span class="notiz-autor">Aktiv seit 05.01.2026</span><span class="notiz-date">Vertraulich</span></div><div class="notiz-text">Gesundheit der Mutter, Arbeitssituation Ehemann</div><div class="nflag nf-v">Vertraulich</div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:10px 0 8px"><div style="font-size:12px;font-weight:600;color:var(--navy)">Seelsorgegespräche</div><button class="btn btn-ghost" style="font-size:11px">+ Gespräch</button></div>
+      <div class="notiz s"><div class="notiz-head"><span class="notiz-autor">Pastor Thomas Müller</span><span class="notiz-date">14.02.2026</span></div><div class="notiz-text">Gespräch geführt. Details vertraulich.</div><div class="nflag nf-s">Seelsorge</div></div>
+    </div>
+
+    <!-- TAB: DMS -->
+    <div class="tab-pane" id="tab-dms">
+      <div class="dms-note"><svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:var(--blue);flex-shrink:0"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>Lokal gespeichert. Exoscale Genf unter Einrichtung → DMS konfigurieren.</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="ftabs">
+          <div class="ftab active" onclick="dmsF('alle',this)">Alle</div>
+          <div class="ftab" onclick="dmsF('pdf',this)">PDF</div>
+          <div class="ftab" onclick="dmsF('docx',this)">Word</div>
+          <div class="ftab" onclick="dmsF('img',this)">Bilder</div>
+        </div>
+        <label class="btn btn-primary" style="font-size:11px;cursor:pointer">
+          <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Hochladen
+          <input type="file" id="dms-input" style="display:none" multiple onchange="dmsUpload(this)">
+        </label>
+      </div>
+      <div class="dms-drop" id="dms-drop" ondragover="dmsDrag(event,true)" ondragleave="dmsDrag(event,false)" ondrop="dmsDrop(event)">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg>
+        <div style="font-size:12px;color:var(--text3)">Dateien hierher ziehen oder Hochladen klicken</div>
+      </div>
+      <div id="dms-list"></div>
+    </div>
+
+    <!-- TAB: DSGVO -->
+    <div class="tab-pane" id="tab-dsgvo">
+      <div class="cs" style="margin-bottom:10px">
+        <div class="cs-head"><div class="cs-title">Einwilligungen (DSG Schweiz)</div></div>
+        <div class="cs-body">
+          <div class="consent-row"><div><div class="ct">Newsletter / E-Mail</div><div class="cm">Eingewilligt 12.04.2022</div></div><div class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></div></div>
+          <div class="consent-row"><div><div class="ct">Foto-Veröffentlichung</div><div class="cm">Eingewilligt 12.04.2022</div></div><div class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></div></div>
+          <div class="consent-row"><div><div class="ct">Datenweitergabe an Partner</div><div class="cm">Nicht eingewilligt</div></div><div class="toggle off" onclick="this.classList.toggle('on');this.classList.toggle('off')"></div></div>
+          <div class="consent-row"><div><div class="ct">SMS / WhatsApp</div><div class="cm">Eingewilligt 15.06.2023</div></div><div class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></div></div>
+          <div class="consent-row"><div><div class="ct">Verarbeitung Religionsdaten (Art. 5 DSG)</div><div class="cm">Eingewilligt 12.04.2022</div></div><div class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></div></div>
+        </div>
+      </div>
+      <div class="cs">
+        <div class="cs-head"><div class="cs-title">Datenschutz-Protokoll</div></div>
+        <div class="cs-body">
+          <div class="proto-item"><div class="proto-dot" style="background:var(--blue)"></div><div class="proto-text">Profil bearbeitet von <strong>Andreas Jost</strong></div><div class="proto-date">02.04.2026</div></div>
+          <div class="proto-item"><div class="proto-dot" style="background:var(--green)"></div><div class="proto-text">Spende erfasst von <strong>System</strong></div><div class="proto-date">02.04.2026</div></div>
+          <div class="proto-item"><div class="proto-dot"></div><div class="proto-text">Profil erstellt von <strong>Andreas Jost</strong></div><div class="proto-date">12.04.2022</div></div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn btn-ghost" style="flex:1;justify-content:center;font-size:11px">Daten exportieren</button>
+            <button class="btn btn-danger" style="flex:1;justify-content:center;font-size:11px">Löschen beantragen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: VERKNÜPFUNGEN -->
+    <div class="tab-pane" id="tab-links">
+      <div class="two-col">
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:8px">Verknüpfte Module</div>
+          <div class="lnk-item"><div class="lnk-ico" style="background:#2563EB"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5z"/></svg></div><div><div style="font-size:13px;font-weight:500;color:var(--navy)">Veranstaltungen</div><div style="font-size:11px;color:var(--text3)">47 Teilnahmen</div></div><span style="margin-left:auto;color:var(--text3)">›</span></div>
+          <div class="lnk-item"><div class="lnk-ico" style="background:#C8941A"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg></div><div><div style="font-size:13px;font-weight:500;color:var(--navy)">Twint & Spenden</div><div style="font-size:11px;color:var(--text3)" id="lnk-sp">—</div></div><span style="margin-left:auto;color:var(--text3)">›</span></div>
+          <div class="lnk-item"><div class="lnk-ico" style="background:#059669"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg></div><div><div style="font-size:13px;font-weight:500;color:var(--navy)">Small Groups</div><div style="font-size:11px;color:var(--text3)" id="lnk-gr">—</div></div><span style="margin-left:auto;color:var(--text3)">›</span></div>
+          <div class="lnk-item"><div class="lnk-ico" style="background:#DC2626"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg></div><div><div style="font-size:13px;font-weight:500;color:var(--navy)">Dokumente</div><div style="font-size:11px;color:var(--text3)" id="lnk-dms">0 Dokumente</div></div><span style="margin-left:auto;color:var(--text3)">›</span></div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:8px">Gottesdienst-Anwesenheit</div>
+          <div class="cs"><div class="cs-body"><div class="vgrid" id="k-visits"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- end karte-body -->
+</div><!-- end k-panel -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MODALS                                      -->
+<!-- ═══════════════════════════════════════════ -->
+
+<!-- Modal: Neues Mitglied -->
+<div class="mo" id="mo-nm">
+  <div class="modal modal-lg">
+    <div class="mh"><div class="mt">Neues Mitglied erfassen</div><div class="mx" onclick="closeMo('mo-nm')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div></div>
+    <div class="mb"><div class="fg">
+      <div class="fgg"><label class="fl">Anrede</label><select class="fs" id="nm-anr"><option>Herr</option><option>Frau</option><option>Divers</option></select></div>
+      <div class="fgg"><label class="fl">Vorname <span class="req">*</span></label><input class="fi" id="nm-vn" placeholder="Max"></div>
+      <div class="fgg"><label class="fl">Nachname <span class="req">*</span></label><input class="fi" id="nm-nn" placeholder="Mustermann"></div>
+      <div class="fgg"><label class="fl">E-Mail</label><input class="fi" id="nm-em" type="email" placeholder="max@beispiel.ch"></div>
+      <div class="fgg"><label class="fl">Mobil</label><input class="fi" id="nm-mob" placeholder="+41 79 123 45 67"></div>
+      <div class="fgg"><label class="fl">Geburtsdatum</label><input class="fi" id="nm-geb" type="date"></div>
+      <div class="fgg"><label class="fl">Geschlecht</label><select class="fs" id="nm-ges"><option value="">—</option><option>Männlich</option><option>Weiblich</option><option>Divers</option></select></div>
+      <div class="fgg"><label class="fl">Nationalität</label><select class="fs" id="nm-nat"><option>🇨🇭 Schweiz</option><option>🇩🇪 Deutschland</option><option>🇦🇹 Österreich</option><option>Andere</option></select></div>
+      <div class="fgg"><label class="fl">Strasse</label><input class="fi" id="nm-str" placeholder="Musterstrasse"></div>
+      <div class="fgg"><label class="fl">Nr.</label><input class="fi" id="nm-nr" placeholder="1"></div>
+      <div class="fgg"><label class="fl">PLZ</label><input class="fi" id="nm-plz" placeholder="8001" maxlength="6"></div>
+      <div class="fgg"><label class="fl">Ort</label><input class="fi" id="nm-ort" placeholder="Zürich"></div>
+      <div class="fgg"><label class="fl">Status</label><select class="fs" id="nm-st"><option value="aktiv">Aktiv</option><option value="besucher">Besucher</option><option value="taufkandidat">Taufkandidat</option><option value="inaktiv">Inaktiv</option><option value="neu">Neu</option></select></div>
+      <div class="fgg"><label class="fl">Eingetreten</label><input class="fi" id="nm-ein" type="date"></div>
+      <div class="fgg"><label class="fl">Rolle</label><select class="fs" id="nm-rol" onchange="if(this.value==='__n'){openRM();this.value=''}"></select></div>
+      <div class="fgg"><label class="fl">Small Group</label><select class="fs" id="nm-grp" onchange="if(this.value==='__n'){openGM();this.value=''}"></select></div>
+      <div class="fgg full"><label class="fl">Notfallkontakt</label><input class="fi" id="nm-nf" placeholder="Name, Telefon"></div>
+      <div class="fgg full"><label class="fl">Notizen</label><textarea class="fta" id="nm-not" placeholder="Interne Hinweise..."></textarea></div>
+    </div></div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeMo('mo-nm')">Abbrechen</button><button class="btn btn-primary" onclick="saveM()"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Speichern</button></div>
   </div>
 </div>
 
-<!-- Rollen verwalten -->
-<div class="modal-overlay" id="modal-rollen">
+<!-- Modal: Rollen -->
+<div class="mo" id="mo-rollen">
   <div class="modal modal-lg">
-    <div class="modal-header"><div class="modal-title">Rollen & Ämter verwalten</div><div class="modal-close" onclick="closeModal('modal-rollen')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div></div>
-    <div class="modal-body">
-      <p style="font-size:13px;color:var(--text2);margin-bottom:14px">Diese Rollen erscheinen als Dropdown in der Mitgliedertabelle.</p>
-      <div class="sub-toolbar">
-        <div class="sub-search"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5S13.09 3 9.5 3 3 5.91 3 9.5s2.91 6.5 6.5 6.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg><input placeholder="Rolle suchen..." oninput="renderRollenTable(this.value)"></div>
-        <button class="btn btn-primary" style="font-size:12px" onclick="toggleInlineAdd('rollen-add')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Neue Rolle</button>
+    <div class="mh"><div class="mt">Rollen & Dienste</div><div class="mx" onclick="closeMo('mo-rollen')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div></div>
+    <div class="mb">
+      <div class="sub-toolbar"><div class="sub-s"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5S13.09 3 9.5 3 3 5.91 3 9.5s2.91 6.5 6.5 6.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg><input placeholder="Suchen..." oninput="rndrR(this.value)"></div><button class="btn btn-primary" style="font-size:11px" onclick="tIA('r-add')">+ Neue Rolle</button></div>
+      <div class="iadd" id="r-add">
+        <div style="flex:1"><label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">Bezeichnung *</label><input class="fi" id="r-name" placeholder="z.B. Worship Leader" style="padding:5px 9px;font-size:12px"></div>
+        <div><label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">Kategorie</label><select class="fs" id="r-kat" style="padding:5px 9px;font-size:12px"><option>Leitung</option><option>Dienst</option><option>Amt</option><option>Technik</option><option>Jugend</option><option>Andere</option></select></div>
+        <button class="btn btn-primary" style="font-size:11px;align-self:flex-end" onclick="addR()">Hinzufügen</button>
+        <button class="btn btn-ghost" style="font-size:11px;align-self:flex-end" onclick="tIA('r-add')">Abbrechen</button>
       </div>
-      <div class="inline-add" id="rollen-add">
-        <div style="display:flex;flex-direction:column;gap:4px;flex:1"><label style="font-size:11px;color:var(--text2);font-weight:500">Bezeichnung *</label><input class="form-input" id="r-name" placeholder="z.B. Worship Leader"></div>
-        <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:11px;color:var(--text2);font-weight:500">Kategorie</label><select class="form-select" id="r-kat"><option>Leitung</option><option>Dienst</option><option>Amt</option><option>Technik</option><option>Jugend</option><option>Andere</option></select></div>
-        <button class="btn btn-primary" style="font-size:12px;align-self:flex-end" onclick="addRolle()">Hinzufügen</button>
-        <button class="btn btn-ghost" style="font-size:12px;align-self:flex-end" onclick="toggleInlineAdd('rollen-add')">Abbrechen</button>
-      </div>
-      <div class="sub-table-wrap" style="margin-top:10px"><table><thead><tr><th>Bezeichnung</th><th>Kategorie</th><th>Mitglieder</th><th style="width:60px"></th></tr></thead><tbody id="rollen-tbody"></tbody></table></div>
+      <div class="sub-tbl" style="margin-top:10px"><table><thead><tr><th>Bezeichnung</th><th>Kategorie</th><th>Mitglieder</th><th style="width:44px"></th></tr></thead><tbody id="r-tbody"></tbody></table></div>
     </div>
-    <div class="modal-footer"><button class="btn btn-primary" onclick="closeModal('modal-rollen');refreshMemberSelects();renderMemberTable()">Übernehmen</button></div>
+    <div class="mf"><button class="btn btn-primary" onclick="closeMo('mo-rollen');refreshSel();rndrTbl()">Übernehmen</button></div>
   </div>
 </div>
 
-<!-- Gruppen verwalten -->
-<div class="modal-overlay" id="modal-gruppen">
+<!-- Modal: Gruppen -->
+<div class="mo" id="mo-gruppen">
   <div class="modal modal-lg">
-    <div class="modal-header"><div class="modal-title">Small Groups verwalten</div><div class="modal-close" onclick="closeModal('modal-gruppen')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div></div>
-    <div class="modal-body">
-      <div class="sub-toolbar">
-        <div class="sub-search"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5S13.09 3 9.5 3 3 5.91 3 9.5s2.91 6.5 6.5 6.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg><input placeholder="Gruppe suchen..." oninput="renderGruppenTable(this.value)"></div>
-        <button class="btn btn-primary" style="font-size:12px" onclick="toggleInlineAdd('gruppen-add')"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Neue Gruppe</button>
+    <div class="mh"><div class="mt">Small Groups</div><div class="mx" onclick="closeMo('mo-gruppen')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div></div>
+    <div class="mb">
+      <div class="sub-toolbar"><div class="sub-s"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5S13.09 3 9.5 3 3 5.91 3 9.5s2.91 6.5 6.5 6.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg><input placeholder="Suchen..." oninput="rndrG(this.value)"></div><button class="btn btn-primary" style="font-size:11px" onclick="tIA('g-add')">+ Neue Gruppe</button></div>
+      <div class="iadd" id="g-add">
+        <div style="flex:1"><label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">Name *</label><input class="fi" id="g-name" placeholder="z.B. Hauskreis Winterthur" style="padding:5px 9px;font-size:12px"></div>
+        <div><label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">Leitung</label><input class="fi" id="g-leit" placeholder="Name" style="padding:5px 9px;font-size:12px;width:130px"></div>
+        <div><label style="font-size:11px;color:var(--text2);display:block;margin-bottom:3px">Tag</label><select class="fs" id="g-tag" style="padding:5px 9px;font-size:12px"><option>Montag</option><option>Dienstag</option><option>Mittwoch</option><option>Donnerstag</option><option>Freitag</option><option>Samstag</option></select></div>
+        <button class="btn btn-primary" style="font-size:11px;align-self:flex-end" onclick="addG()">Hinzufügen</button>
+        <button class="btn btn-ghost" style="font-size:11px;align-self:flex-end" onclick="tIA('g-add')">Abbrechen</button>
       </div>
-      <div class="inline-add" id="gruppen-add">
-        <div style="display:flex;flex-direction:column;gap:4px;flex:1"><label style="font-size:11px;color:var(--text2);font-weight:500">Name *</label><input class="form-input" id="g-name" placeholder="z.B. Hauskreis Winterthur"></div>
-        <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:11px;color:var(--text2);font-weight:500">Leitung</label><input class="form-input" id="g-leiter" placeholder="Name Leiter/in" style="width:140px"></div>
-        <div style="display:flex;flex-direction:column;gap:4px"><label style="font-size:11px;color:var(--text2);font-weight:500">Tag</label><select class="form-select" id="g-tag"><option>Montag</option><option>Dienstag</option><option>Mittwoch</option><option>Donnerstag</option><option>Freitag</option><option>Samstag</option></select></div>
-        <button class="btn btn-primary" style="font-size:12px;align-self:flex-end" onclick="addGruppe()">Hinzufügen</button>
-        <button class="btn btn-ghost" style="font-size:12px;align-self:flex-end" onclick="toggleInlineAdd('gruppen-add')">Abbrechen</button>
-      </div>
-      <div class="sub-table-wrap" style="margin-top:10px"><table><thead><tr><th>Name</th><th>Leitung</th><th>Tag</th><th>Mitglieder</th><th style="width:60px"></th></tr></thead><tbody id="gruppen-tbody"></tbody></table></div>
+      <div class="sub-tbl" style="margin-top:10px"><table><thead><tr><th>Name</th><th>Leitung</th><th>Tag</th><th>Mitglieder</th><th style="width:44px"></th></tr></thead><tbody id="g-tbody"></tbody></table></div>
     </div>
-    <div class="modal-footer"><button class="btn btn-primary" onclick="closeModal('modal-gruppen');refreshMemberSelects();renderMemberTable()">Übernehmen</button></div>
+    <div class="mf"><button class="btn btn-primary" onclick="closeMo('mo-gruppen');refreshSel();rndrTbl()">Übernehmen</button></div>
+  </div>
+</div>
+
+<!-- Modal: Einrichtung Detail -->
+<div class="mo" id="mo-setup">
+  <div class="modal modal-lg">
+    <div class="mh"><div class="mt" id="setup-title">Einrichtung</div><div class="mx" onclick="closeMo('mo-setup')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div></div>
+    <div class="mb" id="setup-body"></div>
+    <div class="mf"><button class="btn btn-ghost" onclick="closeMo('mo-setup')">Abbrechen</button><button class="btn btn-primary" onclick="saveSetup()"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Speichern</button></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script>
-// ═══════════════════════════════════════════════════════
-//  DATA
-// ═══════════════════════════════════════════════════════
-const COLORS=['#2563EB','#16A34A','#C8941A','#7C3AED','#DC2626','#0891B2','#D97706','#059669'];
-const LS_COLS='ajc_m_cols_v1';
-
-let rollen=[
-  {id:1,name:'Pastor',kat:'Leitung'},{id:2,name:'Ältester',kat:'Amt'},
-  {id:3,name:'Diakon',kat:'Amt'},{id:4,name:'Worship Leader',kat:'Dienst'},
-  {id:5,name:'Gruppenleiter',kat:'Leitung'},{id:6,name:'Kinderkirche',kat:'Dienst'},
-  {id:7,name:'Technik',kat:'Technik'},{id:8,name:'Jugendleiter',kat:'Jugend'},
-];
-let gruppen=[
-  {id:1,name:'Hauskreis Zürich Nord',leiter:'Anna Müller',tag:'Dienstag'},
-  {id:2,name:'Junge Erwachsene',leiter:'Peter Keller',tag:'Freitag'},
-  {id:3,name:'Familienkreis',leiter:'Maria Weber',tag:'Mittwoch'},
-  {id:4,name:'Seniorengruppe',leiter:'Hans Gerber',tag:'Donnerstag'},
-  {id:5,name:'Jugendgruppe',leiter:'Laura Brunner',tag:'Samstag'},
-];
-let rIdSeq=9,gIdSeq=6;
-
-const NAMEN=[
-  ['Sarah','Meier'],['Peter','Keller'],['Laura','Brunner'],['Marco','Zimmermann'],
-  ['Anna','Fischer'],['Thomas','Müller'],['Elena','Huber'],['David','Schmid'],
-  ['Maria','Weber'],['Jonas','Meyer'],['Lisa','Schneider'],['Markus','Bauer'],
-  ['Sandra','Keller'],['Michael','Hofmann'],['Julia','Wagner'],['Andreas','Steiner'],
-  ['Claudia','Moser'],['Stefan','Lehmann'],['Petra','Arnold'],['Daniel','Maurer'],
-  ['Christine','Baumann'],['Patrick','Gerber'],['Nicole','Roth'],['Christian','Wyss'],['Monika','Frei']
-];
-const STATS=['aktiv','aktiv','aktiv','aktiv','besucher','besucher','inaktiv','neu'];
-let members=NAMEN.map((n,i)=>({
-  id:i+1,vorname:n[0],nachname:n[1],
-  email:`${n[0].toLowerCase()}.${n[1].toLowerCase()}@example.ch`,
-  telefon:`+41 ${70+Math.floor(Math.random()*9)} ${100+Math.floor(Math.random()*899)} ${10+Math.floor(Math.random()*89)} ${10+Math.floor(Math.random()*89)}`,
-  status:STATS[Math.floor(Math.random()*STATS.length)],
-  rolleId:rollen[Math.floor(Math.random()*rollen.length)].id,
-  groupId:gruppen[Math.floor(Math.random()*gruppen.length)].id,
-  eingetreten:`${2016+Math.floor(Math.random()*9)}-${String(1+Math.floor(Math.random()*12)).padStart(2,'0')}-01`,
-  geburt:`${1960+Math.floor(Math.random()*45)}-${String(1+Math.floor(Math.random()*12)).padStart(2,'0')}-15`,
-  adresse:`Musterstrasse ${i+1}, 80${String(i).padStart(2,'0')} Zürich`,
-  notizen:'',color:COLORS[Math.floor(Math.random()*COLORS.length)]
-}));
-let mIdSeq=NAMEN.length+1;
-let mFiltered=[...members],mFilter='alle',mPage=1;
-const M_PER_PAGE=10;
-
-// ═══════════════════════════════════════════════════════
-//  COLUMNS
-// ═══════════════════════════════════════════════════════
-const M_COLS=[
-  {key:'name',label:'Name',req:true,vis:true},
-  {key:'email',label:'E-Mail',req:false,vis:true},
-  {key:'telefon',label:'Telefon',req:false,vis:true},
-  {key:'status',label:'Status',req:false,vis:true},
-  {key:'rolle',label:'Rolle',req:false,vis:true},
-  {key:'group',label:'Small Group',req:false,vis:true},
-  {key:'eingetreten',label:'Eingetreten',req:false,vis:true},
-  {key:'geburt',label:'Geburtsdatum',req:false,vis:false},
-  {key:'adresse',label:'Adresse',req:false,vis:false},
-  {key:'notizen',label:'Notizen',req:false,vis:false},
-];
-function loadCols(){
-  try{const s=JSON.parse(localStorage.getItem(LS_COLS));if(s)M_COLS.forEach(c=>{const f=s.find(x=>x.key===c.key);if(f&&!c.req)c.vis=f.vis});}catch(e){}
-}
-function saveCols(){localStorage.setItem(LS_COLS,JSON.stringify(M_COLS.map(c=>({key:c.key,vis:c.vis}))));}
-function resetMemberCols(){M_COLS.forEach(c=>{if(!c.req)c.vis=c.key==='geburt'||c.key==='adresse'||c.key==='notizen'?false:true;});saveCols();buildGearItems();renderMemberTable();showToast('Spalten zurückgesetzt');}
-function buildGearItems(){
-  document.getElementById('m-gear-items').innerHTML=M_COLS.map(c=>`
-    <div class="gear-item" onclick="${c.req?'':` toggleMCol('${c.key}',event)`}" style="${c.req?'opacity:.55;cursor:default':''}">
-      <div class="gear-cb ${c.req?'req':c.vis?'on':''}" id="gcb-${c.key}"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
-      <span class="gear-item-lbl">${c.label}</span>
-      ${c.req?'<span class="req-tag">Pflicht</span>':''}
-    </div>`).join('');
-}
-function toggleMCol(key,e){
-  e.stopPropagation();
-  const c=M_COLS.find(x=>x.key===key);if(!c||c.req)return;
-  c.vis=!c.vis;saveCols();
-  document.getElementById('gcb-'+key).className='gear-cb'+(c.vis?' on':'');
-  renderMemberTable();
-}
-
-// ═══════════════════════════════════════════════════════
-//  GEAR
-// ═══════════════════════════════════════════════════════
-function toggleGear(e,id){e.stopPropagation();document.getElementById(id).classList.toggle('open');}
-document.addEventListener('click',()=>document.querySelectorAll('.gear-dropdown').forEach(d=>d.classList.remove('open')));
-
-// ═══════════════════════════════════════════════════════
-//  NAVIGATION
-// ═══════════════════════════════════════════════════════
-const PAGE_TITLES={dashboard:'Dashboard',mitglieder:'Mitglieder',kontakte:'Kontakte & DMS',smallgroups:'Small Groups',gottesdienste:'Gottesdienste',worship:'Worship',veranstaltungen:'Veranstaltungen',spenden:'Twint & Spenden',kreditoren:'Kreditoren',debitoren:'Debitoren',verkauf:'Verkauf',einkauf:'Einkauf',artikel:'Artikel',personal:'Personal / HR',dokumente:'Dokumente (DMS)',einstellungen:'Einstellungen'};
-function navigate(page,el){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const pg=document.getElementById('page-'+page);
-  if(pg)pg.classList.add('active');
-  if(el)el.classList.add('active');
-  else{const nav=document.querySelector(`[data-page="${page}"]`);if(nav)nav.classList.add('active');}
-  document.getElementById('topbarTitle').textContent=PAGE_TITLES[page]||page;
-  if(page==='mitglieder'){updateMemberStats();renderMemberTable();}
-}
-
-// ═══════════════════════════════════════════════════════
-//  HELPERS
-// ═══════════════════════════════════════════════════════
-function ini(m){return(m.vorname[0]+m.nachname[0]).toUpperCase()}
-function fmtDate(d){if(!d)return'—';const p=d.split('-');return`${p[2]}.${p[1]}.${p[0]}`}
-function sLabel(s){return{aktiv:'Aktiv',besucher:'Besucher',inaktiv:'Inaktiv',neu:'Neu',taufkandidat:'Taufkandidat'}[s]||s}
-function sCls(s){return{aktiv:'s-aktiv',besucher:'s-besucher',inaktiv:'s-inaktiv',neu:'s-neu',taufkandidat:'s-taufkandidat'}[s]||'s-inaktiv'}
-function getRolle(id){return rollen.find(r=>r.id===id)}
-function getGroup(id){return gruppen.find(g=>g.id===id)}
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-function openModal(id){document.getElementById(id).classList.add('open');}
-function toggleInlineAdd(id){document.getElementById(id).classList.toggle('open');}
-
-// ═══════════════════════════════════════════════════════
-//  MEMBER FILTERS & TABLE
-// ═══════════════════════════════════════════════════════
-function setMemberFilter(f,el){
-  mFilter=f;
-  document.querySelectorAll('#page-mitglieder .ftab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');applyMemberFilters();
-}
-function applyMemberFilters(){
-  const q=(document.getElementById('m-search').value||'').toLowerCase();
-  const gid=parseInt(document.getElementById('m-group-filter').value)||0;
-  const rid=parseInt(document.getElementById('m-role-filter').value)||0;
-  mFiltered=members.filter(m=>{
-    return(mFilter==='alle'||m.status===mFilter)&&
-      (!q||(m.vorname+' '+m.nachname+m.email).toLowerCase().includes(q))&&
-      (!gid||m.groupId===gid)&&(!rid||m.rolleId===rid);
-  });
-  mPage=1;renderMemberTable();
-}
-function renderMemberTable(){
-  const vis=M_COLS.filter(c=>c.vis);
-  const start=(mPage-1)*M_PER_PAGE;
-  const page=mFiltered.slice(start,start+M_PER_PAGE);
-  // HEAD
-  document.getElementById('m-thead').innerHTML=
-    vis.map(c=>`<th class="${c.req?'no-sort':''}">${c.label}</th>`).join('')+
-    '<th class="no-sort" style="width:44px"></th>';
-  // BODY
-  document.getElementById('m-tbody').innerHTML=page.map(m=>{
-    const cells=vis.map(c=>{
-      switch(c.key){
-        case'name':return`<td><div class="td-name"><div class="m-av" style="background:${m.color}">${ini(m)}</div><div><div class="m-fn">${m.vorname} ${m.nachname}</div><div class="m-em">${m.email}</div></div></div></td>`;
-        case'email':return`<td style="color:var(--text2)">${m.email}</td>`;
-        case'telefon':return`<td style="color:var(--text2)">${m.telefon}</td>`;
-        case'status':return`<td><span class="s-badge ${sCls(m.status)}">${sLabel(m.status)}</span></td>`;
-        case'rolle':{
-          return`<td><select class="edit-sel" onclick="event.stopPropagation()" onchange="handleRolleChange(this,${m.id})">${rollen.map(r=>`<option value="${r.id}"${m.rolleId===r.id?' selected':''}>${r.name}</option>`).join('')}<option value="__new__">+ Neue Rolle...</option></select></td>`;
-        }
-        case'group':{
-          return`<td><select class="edit-sel" onclick="event.stopPropagation()" onchange="handleGroupChange(this,${m.id})"><option value="0">— keine —</option>${gruppen.map(g=>`<option value="${g.id}"${m.groupId===g.id?' selected':''}>${g.name}</option>`).join('')}<option value="__new__">+ Neue Gruppe...</option></select></td>`;
-        }
-        case'eingetreten':return`<td style="color:var(--text2)">${fmtDate(m.eingetreten)}</td>`;
-        case'geburt':return`<td style="color:var(--text2)">${fmtDate(m.geburt)}</td>`;
-        case'adresse':return`<td style="color:var(--text2);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.adresse||'—'}</td>`;
-        case'notizen':return`<td style="color:var(--text2);max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.notizen||'—'}</td>`;
-        default:return'<td>—</td>';
-      }
-    }).join('');
-    return`<tr>${cells}<td><div class="row-del" onclick="event.stopPropagation();deleteMember(${m.id})"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div></td></tr>`;
-  }).join('');
-  // COUNT
-  document.getElementById('m-table-count').textContent=`${mFiltered.length} Mitglieder`;
-  // PAGINATION
-  document.getElementById('m-page-info').textContent=`${start+1}–${Math.min(start+M_PER_PAGE,mFiltered.length)} von ${mFiltered.length}`;
-  const total=Math.ceil(mFiltered.length/M_PER_PAGE);
-  const pb=document.getElementById('m-page-btns');pb.innerHTML='';
-  for(let i=1;i<=Math.min(total,8);i++){
-    const b=document.createElement('div');b.className='page-btn'+(i===mPage?' active':'');b.textContent=i;
-    b.onclick=()=>{mPage=i;renderMemberTable()};pb.appendChild(b);
-  }
-}
-function handleRolleChange(sel,mid){
-  if(sel.value==='__new__'){openRollenModal();sel.value='';return;}
-  const m=members.find(x=>x.id===mid);if(m)m.rolleId=parseInt(sel.value);
-}
-function handleGroupChange(sel,mid){
-  if(sel.value==='__new__'){openGruppenModal();sel.value='';return;}
-  const m=members.find(x=>x.id===mid);if(m)m.groupId=parseInt(sel.value)||0;
-}
-
-// ═══════════════════════════════════════════════════════
-//  MEMBER STATS
-// ═══════════════════════════════════════════════════════
-function updateMemberStats(){
-  const t=members.length,a=members.filter(m=>m.status==='aktiv').length,
-        b=members.filter(m=>m.status==='besucher').length,n=members.filter(m=>m.status==='neu').length;
-  document.getElementById('ms-total').textContent=t;
-  document.getElementById('ms-aktiv').textContent=a;
-  document.getElementById('ms-besucher').textContent=b;
-  document.getElementById('ms-neu').textContent=n;
-  document.getElementById('db-members').textContent=t;
-  document.getElementById('db-members-delta').textContent=`↑ ${n} diesen Monat`;
-  document.getElementById('nav-badge-mitglieder').textContent=t;
-}
-
-// ═══════════════════════════════════════════════════════
-//  MEMBER CRUD
-// ═══════════════════════════════════════════════════════
-function openNewMemberModal(){
-  refreshMemberSelects();
-  document.getElementById('nm-eingetreten').value=new Date().toISOString().split('T')[0];
-  ['nm-vorname','nm-nachname','nm-email','nm-tel','nm-adresse','nm-notizen'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.value='';
-  });
-  openModal('modal-new-member');
-}
-function saveMember(){
-  const v=document.getElementById('nm-vorname').value.trim();
-  const n=document.getElementById('nm-nachname').value.trim();
-  if(!v||!n){alert('Vorname und Nachname sind Pflichtfelder.');return;}
-  members.unshift({
-    id:mIdSeq++,vorname:v,nachname:n,
-    email:document.getElementById('nm-email').value,
-    telefon:document.getElementById('nm-tel').value,
-    status:document.getElementById('nm-status').value,
-    rolleId:parseInt(document.getElementById('nm-rolle').value)||rollen[0].id,
-    groupId:parseInt(document.getElementById('nm-group').value)||0,
-    eingetreten:document.getElementById('nm-eingetreten').value,
-    adresse:document.getElementById('nm-adresse').value,
-    notizen:document.getElementById('nm-notizen').value,
-    geburt:'',color:COLORS[Math.floor(Math.random()*COLORS.length)]
-  });
-  closeModal('modal-new-member');
-  applyMemberFilters();updateMemberStats();
-  showToast(`${v} ${n} erfolgreich gespeichert`);
-}
-function deleteMember(id){
-  if(!confirm('Mitglied wirklich löschen?'))return;
-  members=members.filter(m=>m.id!==id);
-  applyMemberFilters();updateMemberStats();showToast('Mitglied gelöscht');
-}
-function exportMembersCSV(){
-  const rows=[['Vorname','Nachname','E-Mail','Telefon','Status','Rolle','Small Group','Eingetreten']];
-  members.forEach(m=>{const r=getRolle(m.rolleId),g=getGroup(m.groupId);rows.push([m.vorname,m.nachname,m.email,m.telefon,m.status,r?r.name:'',g?g.name:'',m.eingetreten]);});
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download='mitglieder.csv';a.click();
-  showToast('CSV exportiert');
-}
-
-// ═══════════════════════════════════════════════════════
-//  SELECTS REFRESH
-// ═══════════════════════════════════════════════════════
-function refreshMemberSelects(){
-  const rolSel=document.getElementById('nm-rolle');
-  if(rolSel)rolSel.innerHTML=rollen.map(r=>`<option value="${r.id}">${r.name}</option>`).join('')+'<option value="__new__">+ Neue Rolle...</option>';
-  const grpSel=document.getElementById('nm-group');
-  if(grpSel)grpSel.innerHTML='<option value="0">— keine —</option>'+gruppen.map(g=>`<option value="${g.id}">${g.name}</option>`).join('')+'<option value="__new__">+ Neue Gruppe...</option>';
-  const mrf=document.getElementById('m-role-filter');
-  if(mrf)mrf.innerHTML='<option value="">Alle Rollen</option>'+rollen.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
-  const mgf=document.getElementById('m-group-filter');
-  if(mgf)mgf.innerHTML='<option value="">Alle Gruppen</option>'+gruppen.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
-}
-
-// ═══════════════════════════════════════════════════════
-//  ROLLEN CRUD
-// ═══════════════════════════════════════════════════════
-function openRollenModal(){renderRollenTable();openModal('modal-rollen');}
-function renderRollenTable(filter=''){
-  const rows=rollen.filter(r=>!filter||r.name.toLowerCase().includes(filter.toLowerCase()));
-  document.getElementById('rollen-tbody').innerHTML=rows.map(r=>`
-    <tr><td><strong>${r.name}</strong></td>
-    <td><span style="background:var(--bg);padding:2px 8px;border-radius:4px;font-size:11px;color:var(--text2)">${r.kat}</span></td>
-    <td>${members.filter(m=>m.rolleId===r.id).length}</td>
-    <td><div class="mini-del" onclick="deleteRolle(${r.id})"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div></td></tr>`).join('');
-}
-function addRolle(){
-  const name=document.getElementById('r-name').value.trim();
-  if(!name){alert('Bezeichnung ist Pflicht');return;}
-  if(rollen.some(r=>r.name.toLowerCase()===name.toLowerCase())){alert('Diese Rolle existiert bereits');return;}
-  rollen.push({id:rIdSeq++,name,kat:document.getElementById('r-kat').value});
-  document.getElementById('r-name').value='';
-  renderRollenTable();showToast(`Rolle "${name}" hinzugefügt`);
-}
-function deleteRolle(id){
-  if(members.some(m=>m.rolleId===id)){alert('Rolle wird noch verwendet und kann nicht gelöscht werden.');return;}
-  rollen=rollen.filter(r=>r.id!==id);renderRollenTable();showToast('Rolle gelöscht');
-}
-
-// ═══════════════════════════════════════════════════════
-//  GRUPPEN CRUD
-// ═══════════════════════════════════════════════════════
-function openGruppenModal(){renderGruppenTable();openModal('modal-gruppen');}
-function renderGruppenTable(filter=''){
-  const rows=gruppen.filter(g=>!filter||g.name.toLowerCase().includes(filter.toLowerCase()));
-  document.getElementById('gruppen-tbody').innerHTML=rows.map(g=>`
-    <tr><td><strong>${g.name}</strong></td><td>${g.leiter||'—'}</td><td>${g.tag}</td>
-    <td>${members.filter(m=>m.groupId===g.id).length}</td>
-    <td><div class="mini-del" onclick="deleteGruppe(${g.id})"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div></td></tr>`).join('');
-}
-function addGruppe(){
-  const name=document.getElementById('g-name').value.trim();
-  if(!name){alert('Name ist Pflicht');return;}
-  gruppen.push({id:gIdSeq++,name,leiter:document.getElementById('g-leiter').value.trim(),tag:document.getElementById('g-tag').value});
-  document.getElementById('g-name').value='';document.getElementById('g-leiter').value='';
-  renderGruppenTable();showToast(`Gruppe "${name}" hinzugefügt`);
-}
-function deleteGruppe(id){
-  if(members.some(m=>m.groupId===id)){alert('Gruppe hat noch Mitglieder und kann nicht gelöscht werden.');return;}
-  gruppen=gruppen.filter(g=>g.id!==id);renderGruppenTable();showToast('Gruppe gelöscht');
-}
-
-// ═══════════════════════════════════════════════════════
-//  EINSTELLUNGEN
-// ═══════════════════════════════════════════════════════
-function updateGemeindeName(){
-  document.getElementById('gemeindeName').textContent=document.getElementById('set-name').value||'Gemeinde';
-}
-
-// ═══════════════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════════════
-(function init(){
-  // Date in topbar
-  const d=new Date();
-  const days=['So','Mo','Di','Mi','Do','Fr','Sa'];
-  const months=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-  document.getElementById('topbarDate').textContent=`${days[d.getDay()]}, ${d.getDate()}. ${months[d.getMonth()]} ${d.getFullYear()}`;
-  // Cols
-  loadCols();buildGearItems();
-  // Selects
-  refreshMemberSelects();
-  // Stats
-  updateMemberStats();
-  // Filtered
-  mFiltered=[...members];
-})();
-</script>
+<script src="app.js"></script>
 </body>
 </html>
