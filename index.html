@@ -1561,6 +1561,436 @@ function refreshSel(){
   const gf=document.getElementById('m-gf');if(gf)gf.innerHTML='<option value="">Alle Gruppen</option>'+gruppen.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
   const rf=document.getElementById('m-rf');if(rf)rf.innerHTML='<option value="">Alle Rollen</option>'+rollen.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
 }
+
+
+// ═══════════════════════════════════════════
+// KONTAKTE
+// ═══════════════════════════════════════════
+let kontakte=[
+  {id:'k1',vorname:'Tobias',nachname:'Brunner',email:'tobias.brunner@example.ch',telefon:'+41 76 234 56 78',status:'interessent',quelle:'Gottesdienst',datum:'2026-03-15',notizen:[{text:'War am Ostergottesdienst.',datum:'2026-03-15'}],mitgliedGeworden:false,color:'#2563EB'},
+  {id:'k2',vorname:'Claudia',nachname:'Sommer',email:'claudia.sommer@example.ch',telefon:'+41 79 876 54 32',status:'besucher',quelle:'Empfehlung',datum:'2026-02-20',notizen:[],mitgliedGeworden:false,color:'#16A34A'},
+  {id:'k3',vorname:'René',nachname:'Müller',email:'rene.mueller@example.ch',telefon:'+41 77 111 22 33',status:'interessent',quelle:'Website',datum:'2026-01-10',notizen:[],mitgliedGeworden:false,color:'#C8941A'},
+];
+let kIdSeq=4,kFilt=[...kontakte],kFilter='alle',activeKK=null;
+const kStatusLbl={interessent:'Interessent',besucher:'Besucher',inaktiv:'Inaktiv'};
+const kStatusCss={interessent:'background:#FEF3C7;color:#D97706',besucher:'background:#DBEAFE;color:#2563EB',inaktiv:'background:#F4F5F7;color:#9CA3AF'};
+
+function filterKontakte(){
+  const q=(document.getElementById('kt-srch')?.value||'').toLowerCase();
+  kFilt=kontakte.filter(k=>(kFilter==='alle'||k.status===kFilter)&&(!q||(k.vorname+' '+k.nachname+(k.email||'')+(k.telefon||'')).toLowerCase().includes(q)));
+  rndrKontakte();
+}
+function setKF(f,el){kFilter=f;document.querySelectorAll('#pg-kontakte .ftab').forEach(t=>t.classList.remove('on'));el.classList.add('on');filterKontakte();}
+function rndrKontakte(){
+  const tb=document.getElementById('kt-tbody');if(!tb)return;
+  document.getElementById('kt-cnt').textContent=kFilt.length+' Kontakte';
+  const e=id=>document.getElementById(id);
+  if(e('kt-total'))e('kt-total').textContent=kontakte.length;
+  if(e('kt-offen'))e('kt-offen').textContent=kontakte.filter(k=>k.status==='interessent').length;
+  if(e('kt-monat'))e('kt-monat').textContent=kontakte.filter(k=>(k.datum||'').startsWith(new Date().toISOString().substring(0,7))).length;
+  if(e('kt-mitgl'))e('kt-mitgl').textContent=kontakte.filter(k=>k.mitgliedGeworden).length;
+  if(!kFilt.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:#9CA3AF">Keine Kontakte gefunden</td></tr>';return;}
+  tb.innerHTML=kFilt.map(k=>`<tr id="kr-${k.id}" onclick="openKK('${k.id}')" style="cursor:pointer">
+    <td><div class="td-n"><div class="m-av" style="background:${k.color}">${k.vorname[0]+k.nachname[0]}</div><div><div class="m-fn">${k.vorname} ${k.nachname}</div></div></div></td>
+    <td style="color:#6B7280">${k.email||'—'}</td><td style="color:#6B7280">${k.telefon||'—'}</td>
+    <td><span style="padding:2px 8px;border-radius:5px;font-size:11px;font-weight:500;${kStatusCss[k.status]||''}">${kStatusLbl[k.status]||k.status}</span></td>
+    <td style="color:#6B7280;font-size:12px">${k.datum?k.datum.split('-').reverse().join('.'):'—'}</td>
+    <td style="color:#6B7280;font-size:12px">${k.quelle||'—'}</td>
+    <td style="display:flex;gap:5px">
+      <button onclick="event.stopPropagation();if('${k.email||''}')window.location.href='mailto:${k.email||''}'" style="padding:3px 8px;font-size:11px;border:1px solid #E5E7EB;border-radius:5px;background:white;cursor:pointer">✉</button>
+      <button onclick="event.stopPropagation();konvertKontakt('${k.id}')" style="padding:3px 8px;font-size:11px;border:1px solid #1A3560;border-radius:5px;background:#1A3560;color:white;cursor:pointer">→ Mitglied</button>
+    </td>
+  </tr>`).join('');
+}
+function openNK(){
+  ['nk-vn','nk-nn','nk-em','nk-tel','nk-not'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('mo-nk').classList.add('open');
+}
+async function saveNK(){
+  const vn=document.getElementById('nk-vn').value.trim(),nn=document.getElementById('nk-nn').value.trim();
+  if(!vn||!nn){toast('Vor- und Nachname Pflicht');return;}
+  const notizTxt=document.getElementById('nk-not').value.trim();
+  const notizen=notizTxt?[{text:notizTxt,datum:new Date().toISOString().split('T')[0]}]:[];
+  const payload={vorname:vn,nachname:nn,email:document.getElementById('nk-em').value,telefon:document.getElementById('nk-tel').value,status:document.getElementById('nk-st').value,quelle:document.getElementById('nk-src').value,notizen};
+  const saved=await dbSave('kontakte',payload);
+  const color=COLORS[Math.floor(Math.random()*COLORS.length)];
+  kontakte.unshift({id:saved?.id||('k'+(kIdSeq++)),_dbId:saved?.id,vorname:vn,nachname:nn,email:payload.email,telefon:payload.telefon,status:payload.status,quelle:payload.quelle,datum:new Date().toISOString().split('T')[0],notizen,mitgliedGeworden:false,color});
+  closeMo('mo-nk');filterKontakte();toast(vn+' '+nn+' erfasst');
+}
+function openKK(id){
+  const k=kontakte.find(x=>x.id===id);if(!k)return;activeKK=id;
+  document.querySelectorAll('#kt-tbody tr').forEach(r=>r.style.background='');
+  const row=document.getElementById('kr-'+id);if(row)row.style.background='#EFF6FF';
+  document.getElementById('kk-av').textContent=k.vorname[0]+k.nachname[0];
+  document.getElementById('kk-name').textContent=k.vorname+' '+k.nachname;
+  document.getElementById('kk-sub').textContent=(k.email||'')+(k.telefon?' · '+k.telefon:'');
+  document.getElementById('kk-badges').innerHTML='<span style="padding:2px 9px;border-radius:5px;font-size:11px;font-weight:500;'+kStatusCss[k.status]+'">'+kStatusLbl[k.status]+'</span>';
+  const sv=(i2,v)=>{const e=document.getElementById(i2);if(e)e.textContent=v||'—';};
+  const si=(i2,v)=>{const e=document.getElementById(i2);if(e)e.value=v||'';};
+  sv('kk-vn',k.vorname);si('kk-vn-i',k.vorname);sv('kk-nn',k.nachname);si('kk-nn-i',k.nachname);
+  sv('kk-em',k.email);si('kk-em-i',k.email);sv('kk-tel',k.telefon);si('kk-tel-i',k.telefon);
+  sv('kk-st',kStatusLbl[k.status]);si('kk-st-i',k.status);sv('kk-src',k.quelle||'—');si('kk-src-i',k.quelle);
+  sv('kk-date',k.datum?k.datum.split('-').reverse().join('.'):'—');
+  const nb=document.getElementById('kk-notes-body');
+  if(nb)nb.innerHTML=k.notizen.length?k.notizen.map(n=>'<div style="background:#F4F5F7;border-radius:7px;padding:9px;margin-bottom:7px;border-left:3px solid #2563EB"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;font-weight:500;color:#1A3560">Notiz</span><span style="font-size:11px;color:#9CA3AF">'+n.datum+'</span></div><div style="font-size:13px">'+n.text+'</div></div>').join(''):'<div style="color:#9CA3AF;font-size:13px;padding:10px">Noch keine Notizen.</div>';
+  document.querySelectorAll('#kk-panel .cs').forEach(s=>s.classList.remove('editing'));
+  document.querySelectorAll('#kk-panel .cse').forEach(b=>{b.textContent='Bearbeiten';b.style.color='';});
+  const delBtn=document.getElementById('kk-del-btn');
+  if(delBtn)delBtn.style.display=(_S&&['superadmin','admin'].includes(_S.rolle))?'block':'none';
+  sTabKK('kk-stamm',document.querySelector('#kk-panel .ktab'));
+  document.getElementById('kk-ov').classList.add('open');document.getElementById('kk-panel').classList.add('open');
+}
+function closeKK(){document.getElementById('kk-ov').classList.remove('open');document.getElementById('kk-panel').classList.remove('open');document.querySelectorAll('#kt-tbody tr').forEach(r=>r.style.background='');activeKK=null;}
+function sTabKK(name,el){document.querySelectorAll('#kk-panel .ktab').forEach(t=>t.classList.remove('on'));document.querySelectorAll('#kk-panel .tpane').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');const tp=document.getElementById(name);if(tp)tp.classList.add('on');}
+function tEditKK(secId,btn){
+  const sec=document.getElementById(secId),isE=sec.classList.contains('editing');
+  if(isE){
+    const k=kontakte.find(x=>x.id===activeKK);
+    if(k){
+      const MAP={'kk-vn':'vorname','kk-nn':'nachname','kk-em':'email','kk-tel':'telefon','kk-src':'quelle','kk-st':'status'};
+      sec.querySelectorAll('.fvi,.fvs').forEach(inp=>{const bid=inp.id.replace(/-i$/,'');const key=MAP[bid];if(key){k[key]=inp.value;const t=document.getElementById(bid);if(t)t.textContent=inp.value||'—';}});
+      document.getElementById('kk-name').textContent=k.vorname+' '+k.nachname;
+      if(k._dbId)dbUpdate('kontakte',k._dbId,{vorname:k.vorname,nachname:k.nachname,email:k.email,telefon:k.telefon,quelle:k.quelle,status:k.status});
+      filterKontakte();
+    }
+    sec.classList.remove('editing');btn.textContent='Bearbeiten';btn.style.color='';toast('Gespeichert');
+  }else{sec.classList.add('editing');btn.textContent='Fertig';btn.style.color='#16A34A';}
+}
+async function deleteKK(){if(!activeKK||!confirm('Kontakt löschen?'))return;const k=kontakte.find(x=>x.id===activeKK);if(k?._dbId)await dbDelete('kontakte',k._dbId);kontakte=kontakte.filter(x=>x.id!==activeKK);closeKK();filterKontakte();toast('Gelöscht');}
+function addKKNote(){const txt=prompt('Notiz:');if(!txt)return;const k=kontakte.find(x=>x.id===activeKK);if(k){k.notizen.push({text:txt,datum:new Date().toISOString().split('T')[0]});if(k._dbId)dbUpdate('kontakte',k._dbId,{notizen:k.notizen});openKK(activeKK);}}
+function konvertKontakt(id){
+  const k=kontakte.find(x=>x.id===id);if(!k)return;
+  navTo('mitglieder');
+  setTimeout(()=>{openNM();const s=(eid,val)=>{const e=document.getElementById(eid);if(e)e.value=val||'';};s('nm-vn',k.vorname);s('nm-nn',k.nachname);s('nm-em',k.email);s('nm-mob',k.telefon);document.getElementById('nm-st').value='besucher';k.mitgliedGeworden=true;if(activeKK)closeKK();toast('Kontaktdaten übernommen');},300);
+}
+
+// ═══════════════════════════════════════════
+// SMALL GROUPS
+// ═══════════════════════════════════════════
+let sgData=[
+  {id:'sg1',name:'Hauskreis Zürich Nord',leiter:'Anna Müller',koleiter:'Beat Müller',tag:'Dienstag',zeit:'19:30',ort:'Bergstrasse 12, 8050 Zürich',typ:'Hauskreis',ziel:'Alle',desc:'Offener Hauskreis.',proto:[]},
+  {id:'sg2',name:'Junge Erwachsene',leiter:'Peter Keller',koleiter:'',tag:'Freitag',zeit:'20:00',ort:'Gemeindehaus',typ:'Jugendgruppe',ziel:'18-30',desc:'',proto:[]},
+  {id:'sg3',name:'Familienkreis',leiter:'Maria Weber',koleiter:'',tag:'Mittwoch',zeit:'19:00',ort:'Kirchgemeindehaus',typ:'Bibelkreis',ziel:'Familien',desc:'',proto:[]},
+  {id:'sg4',name:'Seniorengruppe',leiter:'Hans Gerber',koleiter:'',tag:'Donnerstag',zeit:'14:30',ort:'Kirchgemeindehaus',typ:'Seniorengruppe',ziel:'65+',desc:'',proto:[]},
+  {id:'sg5',name:'Jugendgruppe',leiter:'Laura Brunner',koleiter:'',tag:'Samstag',zeit:'18:00',ort:'Jugendraum',typ:'Jugendgruppe',ziel:'14-18',desc:'',proto:[]},
+];
+let sgIdSeq=6,activeSG=null;
+function rndrSGGrid(){
+  const grid=document.getElementById('sg-grid');if(!grid)return;
+  const e=id=>document.getElementById(id);
+  if(e('sg-total'))e('sg-total').textContent=sgData.length;if(e('sg-aktiv'))e('sg-aktiv').textContent=sgData.length;
+  let tot=0;sgData.forEach(sg=>{tot+=members.filter(m=>m.groupId===sg.id).length;});
+  if(e('sg-mitgl'))e('sg-mitgl').textContent=tot;
+  const cols=['#7C3AED','#2563EB','#16A34A','#C8941A','#DC2626','#0891B2'];
+  grid.innerHTML=sgData.map((sg,i)=>{
+    const cnt=members.filter(m=>m.groupId===sg.id).length;
+    const col=cols[i%cols.length];
+    const avs=members.filter(m=>m.groupId===sg.id).slice(0,5).map(m=>'<div style="width:24px;height:24px;border-radius:50%;background:'+m.color+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:white;margin-left:-6px;border:2px solid white">'+ini(m)+'</div>').join('');
+    return'<div onclick="openSGK(\''+sg.id+'\')" style="background:white;border:1px solid #E5E7EB;border-radius:12px;padding:18px;cursor:pointer;transition:all 0.15s" onmouseover="this.style.borderColor=\''+col+'\';this.style.boxShadow=\'0 4px 16px rgba(0,0,0,0.1)\'" onmouseout="this.style.borderColor=\'#E5E7EB\';this.style.boxShadow=\'none\'">'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'
+      +'<div style="width:44px;height:44px;border-radius:10px;background:'+col+';display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:white"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>'
+      +'<div><div style="font-size:14px;font-weight:600;color:#1A3560">'+sg.name+'</div><div style="font-size:11px;color:#9CA3AF">'+sg.typ+'</div></div></div>'
+      +'<div style="display:flex;gap:12px;margin-bottom:10px;font-size:12px;color:#6B7280"><span>📅 '+sg.tag+(sg.zeit?' · '+sg.zeit:'')+'</span><span>📍 '+(sg.ort||'').split(',')[0]+'</span></div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;padding-left:6px">'+avs+'<span style="font-size:11px;color:#9CA3AF;margin-left:'+(cnt>0?10:0)+'px">'+cnt+' Mitglieder</span></div>'
+      +'<div style="font-size:11px;color:#6B7280">👤 '+(sg.leiter||'—')+'</div></div></div>';
+  }).join('');
+}
+function openNSG(){['nsg-name','nsg-leiter','nsg-koleiter','nsg-ort','nsg-ziel','nsg-desc'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});const t=document.getElementById('nsg-zeit');if(t)t.value='';document.getElementById('mo-nsg').classList.add('open');}
+async function saveNSG(){
+  const name=document.getElementById('nsg-name').value.trim();if(!name){toast('Name Pflicht');return;}
+  const payload={name,leiter:document.getElementById('nsg-leiter').value,koleiter:document.getElementById('nsg-koleiter').value,tag:document.getElementById('nsg-tag').value,zeit:document.getElementById('nsg-zeit').value,ort:document.getElementById('nsg-ort').value,typ:document.getElementById('nsg-typ').value,ziel:document.getElementById('nsg-ziel').value,beschreibung:document.getElementById('nsg-desc').value};
+  const saved=await dbSave('small_groups',payload);
+  const newId=saved?.id||('sg'+(sgIdSeq++));
+  sgData.unshift({id:newId,_dbId:saved?.id,...payload,desc:payload.beschreibung,proto:[]});
+  gruppen.push({id:newId,name,leiter:payload.leiter,tag:payload.tag});
+  closeMo('mo-nsg');rndrSGGrid();refreshSel();toast(name+' erstellt');
+}
+function openSGK(id){
+  const sg=sgData.find(x=>x.id===id);if(!sg)return;activeSG=sg.id;
+  document.getElementById('sg-name').textContent=sg.name;
+  document.getElementById('sg-sub').textContent=(sg.tag||'')+(sg.zeit?' · '+sg.zeit:'')+(sg.ort?' · '+sg.ort:'');
+  document.getElementById('sg-typ-badge').textContent=sg.typ||'Hauskreis';
+  document.getElementById('sg-cnt').textContent=members.filter(m=>m.groupId===sg.id).length;
+  const sv=(i,v)=>{const e=document.getElementById(i);if(e)e.textContent=v||'—';};
+  const si=(i,v)=>{const e=document.getElementById(i);if(e)e.value=v||'';};
+  sv('sg-leiter',sg.leiter);si('sg-leiter-i',sg.leiter);sv('sg-koleiter',sg.koleiter);si('sg-koleiter-i',sg.koleiter);
+  sv('sg-tag',sg.tag);si('sg-tag-i',sg.tag);sv('sg-zeit',sg.zeit);si('sg-zeit-i',sg.zeit);
+  sv('sg-ort',sg.ort);si('sg-ort-i',sg.ort);sv('sg-ziel',sg.ziel);si('sg-ziel-i',sg.ziel);sv('sg-desc',sg.desc);si('sg-desc-i',sg.desc);
+  rndrSGMembers(sg);rndrSGProto(sg);
+  document.querySelectorAll('#sg-panel .cs').forEach(s=>s.classList.remove('editing'));
+  document.querySelectorAll('#sg-panel .cse').forEach(b=>{b.textContent='Bearbeiten';b.style.color='';});
+  sTabSG('sg-info',document.querySelector('#sg-panel .ktab'));
+  document.getElementById('sg-ov').classList.add('open');document.getElementById('sg-panel').classList.add('open');
+}
+function rndrSGMembers(sg){
+  const ml=document.getElementById('sg-members-list');if(!ml)return;
+  const mgs=members.filter(m=>m.groupId===sg.id);
+  ml.innerHTML=mgs.length?mgs.map(m=>'<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:#F4F5F7;border-radius:9px;margin-bottom:6px"><div class="m-av" style="background:'+m.color+';width:34px;height:34px;font-size:12px">'+ini(m)+'</div><div style="flex:1"><div style="font-weight:500;color:#1A3560;font-size:13px">'+m.vorname+' '+m.nachname+'</div><div style="font-size:11px;color:#9CA3AF">'+m.email+'</div></div><span class="sbadge '+sC(m.status)+'">'+sL(m.status)+'</span><button onclick="removeMemberSG(\''+m.id+'\',\''+sg.id+'\')" style="padding:3px 9px;font-size:11px;border:1px solid #fca5a5;border-radius:5px;background:#FEE2E2;color:#DC2626;cursor:pointer">Entfernen</button></div>').join(''):'<div style="color:#9CA3AF;font-size:13px;text-align:center;padding:20px">Keine Mitglieder in dieser Gruppe.</div>';
+}
+function rndrSGProto(sg){
+  const pl=document.getElementById('sg-proto-list');if(!pl)return;
+  if(!sg.proto||!sg.proto.length){pl.innerHTML='<div style="color:#9CA3AF;font-size:13px;text-align:center;padding:20px">Noch keine Protokolle.</div>';return;}
+  pl.innerHTML=sg.proto.map(p=>'<div style="background:#F4F5F7;border-radius:7px;padding:10px;margin-bottom:7px;border-left:3px solid #7C3AED"><div style="font-size:11px;color:#9CA3AF;margin-bottom:4px">'+p.datum+(p.anwesend?' · '+p.anwesend+' anwesend':'')+'</div><div style="font-size:13px">'+p.text+'</div></div>').join('');
+}
+function closeSGK(){document.getElementById('sg-ov').classList.remove('open');document.getElementById('sg-panel').classList.remove('open');activeSG=null;}
+function sTabSG(name,el){document.querySelectorAll('#sg-panel .ktab').forEach(t=>t.classList.remove('on'));document.querySelectorAll('#sg-panel .tpane').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');const tp=document.getElementById(name);if(tp)tp.classList.add('on');}
+function tEditSG(secId,btn){
+  const sec=document.getElementById(secId),isE=sec.classList.contains('editing');
+  if(isE){
+    const sg=sgData.find(x=>x.id===activeSG);
+    if(sg){
+      const MAP={'sg-leiter':'leiter','sg-koleiter':'koleiter','sg-tag':'tag','sg-zeit':'zeit','sg-ort':'ort','sg-ziel':'ziel','sg-desc':'desc'};
+      sec.querySelectorAll('.fvi,.fvs').forEach(inp=>{const bid=inp.id.replace(/-i$/,'');const key=MAP[bid];if(key){sg[key]=inp.value;const t=document.getElementById(bid);if(t)t.textContent=inp.value||'—';}});
+      document.getElementById('sg-sub').textContent=(sg.tag||'')+(sg.zeit?' · '+sg.zeit:'')+(sg.ort?' · '+sg.ort:'');
+      if(sg._dbId)dbUpdate('small_groups',sg._dbId,{name:sg.name,leiter:sg.leiter,koleiter:sg.koleiter,tag:sg.tag,zeit:sg.zeit,ort:sg.ort,ziel:sg.ziel,beschreibung:sg.desc});
+      rndrSGGrid();
+    }
+    sec.classList.remove('editing');btn.textContent='Bearbeiten';btn.style.color='';toast('Gespeichert');
+  }else{sec.classList.add('editing');btn.textContent='Fertig';btn.style.color='#16A34A';}
+}
+function addMemberToSG(){
+  if(!activeSG)return;
+  const avail=members.filter(m=>!m.groupId||m.groupId==='0'||m.groupId===0);
+  if(!avail.length){toast('Alle Mitglieder sind bereits in einer Gruppe');return;}
+  const div=document.createElement('div');
+  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center';
+  const opts=avail.map(m=>'<option value="'+m.id+'">'+m.vorname+' '+m.nachname+' ('+sL(m.status)+')</option>').join('');
+  div.innerHTML='<div style="background:white;border-radius:12px;padding:24px;width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2)"><div style="font-size:15px;font-weight:600;color:#1A3560;margin-bottom:16px">Mitglied hinzufügen</div><select id="sg-add-sel" size="6" style="width:100%;padding:6px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;margin-bottom:16px">'+opts+'</select><div style="display:flex;gap:8px;justify-content:flex-end"><button onclick="this.closest(\'[style]\').remove()" style="padding:8px 16px;border:1px solid #E5E7EB;border-radius:7px;background:white;cursor:pointer;font-family:inherit">Abbrechen</button><button onclick="doAddMemberSG(\''+activeSG+'\');this.closest(\'[style]\').remove()" style="padding:8px 16px;background:#1A3560;color:white;border:none;border-radius:7px;cursor:pointer;font-family:inherit;font-weight:500">Hinzufügen</button></div></div>';
+  document.body.appendChild(div);
+}
+function doAddMemberSG(sgId){const sel=document.getElementById('sg-add-sel');if(!sel)return;const m=members.find(x=>x.id===sel.value);if(!m)return;m.groupId=sgId;const sg=sgData.find(x=>x.id===sgId);if(sg){rndrSGMembers(sg);document.getElementById('sg-cnt').textContent=members.filter(x=>x.groupId===sgId).length;}rndrSGGrid();toast(m.vorname+' '+m.nachname+' hinzugefügt');}
+function removeMemberSG(mid,sgId){if(!confirm('Aus Gruppe entfernen?'))return;const m=members.find(x=>x.id===mid);if(m)m.groupId=0;const sg=sgData.find(x=>x.id===sgId);if(sg){rndrSGMembers(sg);document.getElementById('sg-cnt').textContent=members.filter(x=>x.groupId===sgId).length;}rndrSGGrid();toast('Entfernt');}
+function addSGProto(){
+  if(!activeSG)return;
+  const div=document.createElement('div');
+  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center';
+  div.innerHTML='<div style="background:white;border-radius:12px;padding:24px;width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.2)"><div style="font-size:15px;font-weight:600;color:#1A3560;margin-bottom:16px">Treffen-Protokoll</div><div style="margin-bottom:10px"><label style="font-size:12px;color:#6B7280;display:block;margin-bottom:4px">Datum</label><input type="date" id="proto-datum" value="'+new Date().toISOString().split('T')[0]+'" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px"></div><div style="margin-bottom:10px"><label style="font-size:12px;color:#6B7280;display:block;margin-bottom:4px">Anwesende</label><input type="text" id="proto-anw" placeholder="z.B. 8 Personen" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px"></div><div style="margin-bottom:16px"><label style="font-size:12px;color:#6B7280;display:block;margin-bottom:4px">Notizen *</label><textarea id="proto-txt" rows="4" placeholder="Thema, Gebetsanliegen..." style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;resize:vertical;font-family:inherit"></textarea></div><div style="display:flex;gap:8px;justify-content:flex-end"><button onclick="this.closest(\'[style]\').remove()" style="padding:8px 16px;border:1px solid #E5E7EB;border-radius:7px;background:white;cursor:pointer;font-family:inherit">Abbrechen</button><button onclick="doSGProto(\''+activeSG+'\');this.closest(\'[style]\').remove()" style="padding:8px 16px;background:#7C3AED;color:white;border:none;border-radius:7px;cursor:pointer;font-family:inherit;font-weight:500">Speichern</button></div></div>';
+  document.body.appendChild(div);
+}
+function doSGProto(sgId){const sg=sgData.find(x=>x.id===sgId);if(!sg)return;const txt=document.getElementById('proto-txt')?.value.trim();if(!txt){toast('Notiz Pflicht');return;}const entry={datum:document.getElementById('proto-datum')?.value||new Date().toISOString().split('T')[0],text:txt,anwesend:document.getElementById('proto-anw')?.value||''};if(!sg.proto)sg.proto=[];sg.proto.unshift(entry);if(sg._dbId)dbUpdate('small_groups',sg._dbId,{protokolle:sg.proto});rndrSGProto(sg);toast('Protokoll gespeichert');}
+
+// ═══════════════════════════════════════════
+// GOTTESDIENSTE
+// ═══════════════════════════════════════════
+let gottesdienste=[
+  {id:'gd1',datum:'2026-04-20',zeit:'10:00',titel:'Ostern — Er ist auferstanden!',bibel:'Lukas 24:1-12',prediger:'Pastor Thomas Müller',ort:'Hauptsaal',besucher:187,typ:'Ostern',status:'durchgefuehrt',notizen:'3 Taufen'},
+  {id:'gd2',datum:'2026-04-13',zeit:'10:00',titel:'Palmsonntag',bibel:'Matthäus 21:1-11',prediger:'Pastor Thomas Müller',ort:'Hauptsaal',besucher:142,typ:'Sonntagsgottesdienst',status:'durchgefuehrt',notizen:''},
+  {id:'gd3',datum:'2026-04-27',zeit:'10:00',titel:'Glaube der Berge versetzt',bibel:'Markus 11:22-24',prediger:'Peter Keller',ort:'Hauptsaal',besucher:0,typ:'Sonntagsgottesdienst',status:'geplant',notizen:''},
+  {id:'gd4',datum:'2026-05-04',zeit:'10:00',titel:'Gebet als Kraftquelle',bibel:'Philipper 4:6-7',prediger:'Pastor Thomas Müller',ort:'Hauptsaal',besucher:0,typ:'Sonntagsgottesdienst',status:'geplant',notizen:''},
+  {id:'gd5',datum:'2026-06-07',zeit:'10:00',titel:'Pfingsten — Kraft von oben',bibel:'Apostelgeschichte 2:1-12',prediger:'Pastor Thomas Müller',ort:'Hauptsaal',besucher:0,typ:'Pfingsten',status:'geplant',notizen:'Mit Abendmahl'},
+];
+let gdIdSeq=6,activeGDP=null;
+const gdSL={geplant:'Geplant',bestaetigt:'Bestätigt',durchgefuehrt:'Durchgeführt'};
+const gdSC={geplant:'background:#DBEAFE;color:#2563EB',bestaetigt:'background:#DCFCE7;color:#16A34A',durchgefuehrt:'background:#F4F5F7;color:#6B7280'};
+function rndrGD(){
+  const tb=document.getElementById('gd-tbody');if(!tb)return;
+  const e=id=>document.getElementById(id);
+  const withBes=gottesdienste.filter(g=>g.besucher>0);
+  const avg=withBes.length?Math.round(withBes.reduce((s,g)=>s+g.besucher,0)/withBes.length):0;
+  const naechst=gottesdienste.find(g=>g.status==='geplant');
+  if(e('gd-total'))e('gd-total').textContent=gottesdienste.length;
+  if(e('gd-besucher'))e('gd-besucher').textContent=avg||'—';
+  if(e('gd-naechster'))e('gd-naechster').textContent=naechst?fD(naechst.datum):'—';
+  if(e('gd-lieder'))e('gd-lieder').textContent=lieder.reduce((s,l)=>s+(l.gespielt||0),0);
+  tb.innerHTML=gottesdienste.map(g=>'<tr onclick="openGDP(\''+g.id+'\')" style="cursor:pointer" id="gdr-'+g.id+'"><td style="font-weight:500;color:#1A3560">'+fD(g.datum)+'<div style="font-size:11px;color:#9CA3AF">'+g.zeit+' Uhr</div></td><td><div style="font-weight:500">'+g.titel+'</div><div style="font-size:11px;color:#9CA3AF">'+(g.bibel||'')+'</div></td><td style="font-size:12px;color:#6B7280">'+(g.prediger||'—')+'</td><td style="font-size:12px;text-align:center;font-weight:500;color:#1A3560">'+(g.besucher||'—')+'</td><td><span style="padding:2px 8px;border-radius:5px;font-size:11px;font-weight:500;'+(gdSC[g.status]||'')+'">'+(gdSL[g.status]||g.status)+'</span></td></tr>').join('');
+}
+function openNGD(){const e=id=>document.getElementById(id);['gd-titel','gd-bibel','gd-prediger','gd-notizen'].forEach(id=>{if(e(id))e(id).value='';});if(e('gd-datum'))e('gd-datum').value=new Date().toISOString().split('T')[0];if(e('gd-zeit'))e('gd-zeit').value='10:00';if(e('gd-ort'))e('gd-ort').value='Hauptsaal';if(e('gd-besucher'))e('gd-besucher').value='';if(e('gd-status'))e('gd-status').value='geplant';document.getElementById('mo-ngd').classList.add('open');}
+async function saveGD(){
+  const titel=document.getElementById('gd-titel').value.trim(),datum=document.getElementById('gd-datum').value;
+  if(!titel||!datum){toast('Titel und Datum Pflicht');return;}
+  const p={datum,zeit:document.getElementById('gd-zeit').value,titel,bibel:document.getElementById('gd-bibel').value,prediger:document.getElementById('gd-prediger').value,ort:document.getElementById('gd-ort').value,besucher:parseInt(document.getElementById('gd-besucher').value)||0,typ:document.getElementById('gd-typ').value,status:document.getElementById('gd-status').value,notizen:document.getElementById('gd-notizen').value};
+  const saved=await dbSave('gottesdienste',p);
+  gottesdienste.unshift({id:saved?.id||('gd'+(gdIdSeq++)),_dbId:saved?.id,...p});
+  closeMo('mo-ngd');rndrGD();toast('Gottesdienst gespeichert');
+}
+function openGDP(id){
+  const g=gottesdienste.find(x=>x.id===id);if(!g)return;activeGDP=id;
+  document.querySelectorAll('#gd-tbody tr').forEach(r=>r.style.background='');
+  const row=document.getElementById('gdr-'+id);if(row)row.style.background='#EFF6FF';
+  document.getElementById('gdp-titel').textContent=g.titel;
+  document.getElementById('gdp-sub').textContent=fD(g.datum)+' · '+g.zeit+' Uhr · '+(g.ort||'');
+  const sb=document.getElementById('gdp-status-badge');if(sb){sb.textContent=gdSL[g.status]||g.status;sb.style.cssText=gdSC[g.status]||'';}
+  document.getElementById('gdp-typ-badge').textContent=g.typ||'';
+  document.getElementById('gdp-besucher').textContent=g.besucher||'—';
+  const sv=(i,v)=>{const e=document.getElementById(i);if(e)e.textContent=v||'—';};
+  const si=(i,v)=>{const e=document.getElementById(i);if(e)e.value=v||'';};
+  sv('gdp-datum',fD(g.datum));si('gdp-datum-i',g.datum);sv('gdp-zeit',g.zeit+' Uhr');si('gdp-zeit-i',g.zeit);
+  sv('gdp-titel2',g.titel);si('gdp-titel2-i',g.titel);sv('gdp-bibel',g.bibel);si('gdp-bibel-i',g.bibel);
+  sv('gdp-prediger',g.prediger);si('gdp-prediger-i',g.prediger);sv('gdp-ort',g.ort);si('gdp-ort-i',g.ort);
+  sv('gdp-besucher2',String(g.besucher||0));si('gdp-besucher2-i',g.besucher);
+  sv('gdp-typ',g.typ);si('gdp-typ-i',g.typ);sv('gdp-st',gdSL[g.status]);si('gdp-st-i',g.status);sv('gdp-notiz',g.notizen);si('gdp-notiz-i',g.notizen);
+  document.querySelectorAll('#gd-panel .cs').forEach(s=>s.classList.remove('editing'));
+  document.querySelectorAll('#gd-panel .cse').forEach(b=>{b.textContent='Bearbeiten';b.style.color='';});
+  const del=document.getElementById('gd-panel-del-wrap');if(del)del.style.display=(_S&&['superadmin','admin'].includes(_S.rolle))?'block':'none';
+  document.getElementById('gd-ov').classList.add('open');document.getElementById('gd-panel').classList.add('open');
+}
+function closeGDP(){document.getElementById('gd-ov').classList.remove('open');document.getElementById('gd-panel').classList.remove('open');document.querySelectorAll('#gd-tbody tr').forEach(r=>r.style.background='');activeGDP=null;}
+function tEditGDP(secId,btn){
+  const sec=document.getElementById(secId),isE=sec.classList.contains('editing');
+  if(isE){
+    const g=gottesdienste.find(x=>x.id===activeGDP);
+    if(g){
+      const MAP={'gdp-datum':'datum','gdp-zeit':'zeit','gdp-titel2':'titel','gdp-bibel':'bibel','gdp-prediger':'prediger','gdp-ort':'ort','gdp-besucher2':'besucher','gdp-typ':'typ','gdp-st':'status','gdp-notiz':'notizen'};
+      sec.querySelectorAll('.fvi,.fvs').forEach(inp=>{const bid=inp.id.replace(/-i$/,'');const key=MAP[bid];if(key){g[key]=key==='besucher'?parseInt(inp.value)||0:inp.value;const t=document.getElementById(bid);if(t){if(bid==='gdp-datum')t.textContent=fD(inp.value);else if(bid==='gdp-st')t.textContent=gdSL[inp.value]||inp.value;else t.textContent=inp.value||'—';}}});
+      document.getElementById('gdp-titel').textContent=g.titel;
+      document.getElementById('gdp-sub').textContent=fD(g.datum)+' · '+g.zeit+' Uhr · '+g.ort;
+      document.getElementById('gdp-besucher').textContent=g.besucher||'—';
+      if(g._dbId)dbUpdate('gottesdienste',g._dbId,{datum:g.datum,zeit:g.zeit,titel:g.titel,bibel:g.bibel,prediger:g.prediger,ort:g.ort,besucher:g.besucher,typ:g.typ,status:g.status,notizen:g.notizen});
+      rndrGD();
+    }
+    sec.classList.remove('editing');btn.textContent='Bearbeiten';btn.style.color='';toast('Gespeichert');
+  }else{sec.classList.add('editing');btn.textContent='Fertig';btn.style.color='#16A34A';}
+}
+async function deleteGD(){if(!activeGDP||!confirm('Löschen?'))return;const g=gottesdienste.find(x=>x.id===activeGDP);if(g?._dbId)await dbDelete('gottesdienste',g._dbId);gottesdienste=gottesdienste.filter(x=>x.id!==activeGDP);closeGDP();rndrGD();toast('Gelöscht');}
+
+// ═══════════════════════════════════════════
+// WORSHIP
+// ═══════════════════════════════════════════
+let lieder=[
+  {id:'l1',titel:'Großer Gott wir loben dich',artist:'Traditional',tonart:'D',bpm:80,lang:'Deutsch',ccli:'',gespielt:12,notiz:'Klassiker'},
+  {id:'l2',titel:'10,000 Reasons',artist:'Matt Redman',tonart:'G',bpm:72,lang:'Englisch',ccli:'6016351',gespielt:18,notiz:''},
+  {id:'l3',titel:'Herr dein Licht',artist:'Lothar Kosse',tonart:'A',bpm:76,lang:'Deutsch',ccli:'',gespielt:8,notiz:''},
+  {id:'l4',titel:'Oceans',artist:'Hillsong UNITED',tonart:'D',bpm:70,lang:'Englisch',ccli:'6428767',gespielt:15,notiz:''},
+  {id:'l5',titel:'Way Maker',artist:'Sinach',tonart:'B',bpm:74,lang:'Englisch',ccli:'7115744',gespielt:14,notiz:''},
+  {id:'l6',titel:'Dein ist die Ehre',artist:'Loblied',tonart:'C',bpm:88,lang:'Deutsch',ccli:'',gespielt:6,notiz:''},
+  {id:'l7',titel:'Mighty to Save',artist:'Hillsong',tonart:'A',bpm:76,lang:'Englisch',ccli:'4591782',gespielt:10,notiz:''},
+  {id:'l8',titel:'Immer höher',artist:'Feiert Jesus',tonart:'E',bpm:120,lang:'Deutsch',ccli:'',gespielt:9,notiz:''},
+];
+let liedIdSeq=9;
+let setlisten=[{id:'s1',name:'Ostersonntag 2026',datum:'2026-04-20',lieder:['l1','l3','l2','l6']}];
+function rndrWorship(){
+  const e=id=>document.getElementById(id);
+  if(e('wp-lieder'))e('wp-lieder').textContent=lieder.length;
+  const top=[...lieder].sort((a,b)=>(b.gespielt||0)-(a.gespielt||0))[0];
+  if(e('wp-top'))e('wp-top').textContent=top?(top.titel.length>14?top.titel.substring(0,14)+'…':top.titel):'—';
+  const teamM=members.filter(m=>m.rolleId===4);
+  if(e('wp-team'))e('wp-team').textContent=teamM.length;
+  if(e('wp-naechst'))e('wp-naechst').textContent='Fr 18.04.';
+  const tb=e('wp-team-body');
+  if(tb)tb.innerHTML=teamM.length?teamM.map(m=>'<div style="display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid #E5E7EB"><div class="m-av" style="background:'+m.color+';width:30px;height:30px;font-size:10px">'+ini(m)+'</div><div><div style="font-size:13px;font-weight:500;color:#1A3560">'+m.vorname+' '+m.nachname+'</div><div style="font-size:11px;color:#9CA3AF">Worship Leader</div></div></div>').join(''):'<div style="color:#9CA3AF;font-size:12px;padding:8px">Keine Team-Mitglieder.<br><span style="color:#C8941A;cursor:pointer" onclick="navTo(\'mitglieder\')">→ Mitglied Rolle zuweisen</span></div>';
+  const sl=e('wp-setlist-body');
+  if(sl){const latest=setlisten[setlisten.length-1];sl.innerHTML=latest?'<div style="font-size:12px;font-weight:600;color:#1A3560;margin-bottom:8px">'+latest.name+'</div>'+latest.lieder.map((lid,i)=>{const l=lieder.find(x=>x.id===lid);return l?'<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #E5E7EB"><span style="width:20px;height:20px;background:#1A3560;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0">'+(i+1)+'</span><div><div style="font-size:13px">'+l.titel+'</div><div style="font-size:11px;color:#9CA3AF">'+l.artist+' · '+l.tonart+'</div></div></div>':''}).join(''):'<div style="color:#9CA3AF;font-size:12px">Keine Setliste.</div>';}
+  filterLieder('');
+}
+function filterLieder(q){
+  const tb=document.getElementById('wp-tbody');if(!tb)return;
+  const f=q?lieder.filter(l=>(l.titel+l.artist).toLowerCase().includes(q.toLowerCase())):[...lieder];
+  tb.innerHTML=f.map(l=>'<tr><td><div style="font-weight:500;color:#1A3560">'+l.titel+'</div>'+(l.notiz?'<div style="font-size:11px;color:#9CA3AF">'+l.notiz+'</div>':'')+'</td><td style="font-size:12px;color:#6B7280">'+(l.artist||'—')+'</td><td><span style="background:#EDE9FE;color:#7C3AED;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500">'+l.tonart+'</span>'+(l.bpm?'<span style="font-size:10px;color:#9CA3AF;margin-left:6px">'+l.bpm+' BPM</span>':'')+'</td><td style="font-size:12px;color:#9CA3AF;text-align:center">'+(l.gespielt||0)+'×</td><td style="display:flex;gap:5px"><button onclick="addToSetlist(\''+l.id+'\')" style="padding:3px 9px;font-size:11px;border:1px solid #E5E7EB;border-radius:5px;background:white;cursor:pointer">+ Setlist</button><button onclick="deleteLied(\''+l.id+'\')" style="padding:3px 9px;font-size:11px;border:1px solid #fca5a5;border-radius:5px;background:#FEE2E2;color:#DC2626;cursor:pointer">✕</button></td></tr>').join('');
+}
+function openNLied(){['lied-titel','lied-artist','lied-bpm','lied-ccli','lied-notiz'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});document.getElementById('mo-nlied').classList.add('open');}
+async function saveLied(){
+  const t=document.getElementById('lied-titel').value.trim();if(!t){toast('Titel Pflicht');return;}
+  const p={titel:t,artist:document.getElementById('lied-artist').value,tonart:document.getElementById('lied-tonart').value,bpm:parseInt(document.getElementById('lied-bpm').value)||0,sprache:document.getElementById('lied-lang').value,ccli:document.getElementById('lied-ccli').value,gespielt:0,notiz:document.getElementById('lied-notiz').value};
+  const saved=await dbSave('lieder',p);
+  lieder.push({id:saved?.id||('l'+(liedIdSeq++)),_dbId:saved?.id,titel:t,artist:p.artist,tonart:p.tonart,bpm:p.bpm,lang:p.sprache,ccli:p.ccli,gespielt:0,notiz:p.notiz});
+  closeMo('mo-nlied');rndrWorship();toast(t+' hinzugefügt');
+}
+async function deleteLied(id){if(!confirm('Lied löschen?'))return;const l=lieder.find(x=>x.id===id);if(l?._dbId)await dbDelete('lieder',l._dbId);lieder=lieder.filter(x=>x.id!==id);filterLieder('');}
+function openNSetlist(){const n=prompt('Name der Setlist:');if(!n)return;setlisten.push({id:'s'+(setlisten.length+1),name:n,datum:new Date().toISOString().split('T')[0],lieder:[]});toast('Setlist "'+n+'" erstellt');rndrWorship();}
+function addToSetlist(lid){if(!setlisten.length){toast('Erst Setlist erstellen');return;}const sl=setlisten[setlisten.length-1];if(sl.lieder.includes(lid)){toast('Bereits in Setlist');return;}sl.lieder.push(lid);const l=lieder.find(x=>x.id===lid);toast((l?.titel||'Lied')+' hinzugefügt');rndrWorship();}
+
+// ═══════════════════════════════════════════
+// EVENTS
+// ═══════════════════════════════════════════
+let events=[
+  {id:'ev1',name:'Gemeindefest Sommer 2026',datum:'2026-07-05',zeit:'14:00',end:'20:00',typ:'Gemeindefest',ort:'Gemeindepark',verantw:'Anna Müller',max:200,anmeld:'ja',status:'geplant',desc:'Jährliches Gemeindefest mit Grill und Musik',anmeldungen:47},
+  {id:'ev2',name:'Lobpreis-Abend',datum:'2026-05-08',zeit:'19:30',end:'21:30',typ:'Konzert',ort:'Hauptsaal',verantw:'Peter Keller',max:150,anmeld:'nein',status:'geplant',desc:'',anmeldungen:0},
+  {id:'ev3',name:'Jugend-Retreat 2026',datum:'2026-06-12',zeit:'17:00',end:'',typ:'Retreat',ort:'Waldhütte Albis',verantw:'Laura Brunner',max:40,anmeld:'ja',status:'bestaetigt',desc:'Wochenend-Retreat für Jugendliche',anmeldungen:28},
+  {id:'ev4',name:'Taufgottesdienst',datum:'2026-05-17',zeit:'10:00',end:'12:30',typ:'Taufe',ort:'Hauptsaal',verantw:'Pastor Thomas',max:0,anmeld:'nein',status:'geplant',desc:'5 Täuflinge',anmeldungen:0},
+  {id:'ev5',name:'Osterbrunch',datum:'2026-04-20',zeit:'12:30',end:'14:30',typ:'Gemeindefest',ort:'Gemeindehaus',verantw:'Christine Baumann',max:80,anmeld:'ja',status:'durchgefuehrt',desc:'',anmeldungen:73},
+];
+let evIdSeq=6,evFilter='alle',activeEVP=null;
+const evSL={geplant:'In Planung',bestaetigt:'Bestätigt',durchgefuehrt:'Durchgeführt',abgesagt:'Abgesagt'};
+const evSC={geplant:'background:#DBEAFE;color:#2563EB',bestaetigt:'background:#DCFCE7;color:#16A34A',durchgefuehrt:'background:#F4F5F7;color:#6B7280',abgesagt:'background:#FEE2E2;color:#DC2626'};
+const evTE={Gemeindefest:'🎉',Konzert:'🎵',Seminar:'📚',Retreat:'🏕',Taufe:'💧',Trauung:'💍','Jugend-Event':'🎯','Kinder-Event':'🎨',Ausflug:'🚌',Konferenz:'🎤'};
+function rndrEvents(){
+  const tb=document.getElementById('ev-tbody');if(!tb)return;
+  const e=id=>document.getElementById(id);
+  const today=new Date().toISOString().split('T')[0];
+  const geplant=events.filter(x=>x.status==='geplant'||x.status==='bestaetigt');
+  const naechst=[...geplant].sort((a,b)=>a.datum.localeCompare(b.datum))[0];
+  if(e('ev-total'))e('ev-total').textContent=events.length;
+  if(e('ev-geplant'))e('ev-geplant').textContent=geplant.length;
+  if(e('ev-anmeld'))e('ev-anmeld').textContent=events.reduce((s,x)=>s+(x.anmeldungen||0),0);
+  if(e('ev-naechst'))e('ev-naechst').textContent=naechst?fD(naechst.datum):'—';
+  const f=evFilter==='alle'?events:evFilter==='geplant'?geplant:events.filter(x=>x.status==='durchgefuehrt');
+  tb.innerHTML=f.map(ev=>'<tr onclick="openEVP(\''+ev.id+'\')" style="cursor:pointer" id="evr-'+ev.id+'"><td style="font-weight:500;color:#1A3560">'+fD(ev.datum)+'<div style="font-size:11px;color:#9CA3AF">'+ev.zeit+' Uhr</div></td><td><div style="font-weight:500">'+(evTE[ev.typ]||'📅')+' '+ev.name+'</div><div style="font-size:11px;color:#9CA3AF">'+(ev.desc||'').substring(0,50)+'</div></td><td><span style="background:#F4F5F7;color:#6B7280;padding:2px 7px;border-radius:4px;font-size:11px">'+ev.typ+'</span></td><td style="font-size:12px;color:#6B7280">'+(ev.ort||'—')+'</td><td style="font-size:12px;text-align:center">'+(ev.anmeld==='ja'?'<span style="font-weight:500;color:#1A3560">'+(ev.anmeldungen||0)+'</span>/'+(ev.max||'∞'):'—')+'</td><td><span style="padding:2px 8px;border-radius:5px;font-size:11px;font-weight:500;'+(evSC[ev.status]||'')+'">'+(evSL[ev.status]||ev.status)+'</span></td></tr>').join('');
+  const cal=e('ev-cal-body');
+  if(cal){const up=[...events].filter(x=>x.datum>=today).sort((a,b)=>a.datum.localeCompare(b.datum)).slice(0,6);cal.innerHTML=up.length?up.map(ev=>{const d=new Date(ev.datum);return'<div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #E5E7EB;cursor:pointer" onclick="openEVP(\''+ev.id+'\')"><div style="width:38px;height:38px;background:#FDF3DC;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0"><div style="font-size:15px;font-weight:600;color:#C8941A;line-height:1">'+d.getDate()+'</div><div style="font-size:9px;color:#C8941A;text-transform:uppercase">'+['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][d.getMonth()]+'</div></div><div><div style="font-size:13px;font-weight:500;color:#1A3560">'+ev.name+'</div><div style="font-size:11px;color:#9CA3AF">'+ev.zeit+' · '+(ev.ort||'')+'</div></div></div>';}).join(''):'<div style="color:#9CA3AF;font-size:12px;text-align:center;padding:16px">Keine kommenden Events</div>';}
+}
+function setEvTab(f,el2){evFilter=f;document.querySelectorAll('#pg-events .ftab').forEach(t=>t.classList.remove('on'));el2.classList.add('on');rndrEvents();}
+function openNEv(){const e=id=>document.getElementById(id);['ev-name','ev-ort','ev-verantw','ev-desc'].forEach(id=>{if(e(id))e(id).value='';});if(e('ev-datum'))e('ev-datum').value=new Date().toISOString().split('T')[0];if(e('ev-zeit'))e('ev-zeit').value='';if(e('ev-end'))e('ev-end').value='';if(e('ev-max'))e('ev-max').value='';if(e('ev-status'))e('ev-status').value='geplant';if(e('ev-anmeld'))e('ev-anmeld').value='nein';document.getElementById('mo-nev').classList.add('open');}
+async function saveEv(){
+  const name=document.getElementById('ev-name').value.trim(),datum=document.getElementById('ev-datum').value;
+  if(!name||!datum){toast('Name und Datum Pflicht');return;}
+  const p={name,datum,zeit:document.getElementById('ev-zeit').value,end_zeit:document.getElementById('ev-end').value,typ:document.getElementById('ev-typ').value,ort:document.getElementById('ev-ort').value,verantwortlicher:document.getElementById('ev-verantw').value,max_teilnehmer:parseInt(document.getElementById('ev-max').value)||0,anmeldung_erforderlich:document.getElementById('ev-anmeld').value==='ja',status:document.getElementById('ev-status').value,beschreibung:document.getElementById('ev-desc').value,anmeldungen:0};
+  const saved=await dbSave('events',p);
+  events.unshift({id:saved?.id||('ev'+(evIdSeq++)),_dbId:saved?.id,name,datum,zeit:p.zeit,end:p.end_zeit,typ:p.typ,ort:p.ort,verantw:p.verantwortlicher,max:p.max_teilnehmer,anmeld:p.anmeldung_erforderlich?'ja':'nein',status:p.status,desc:p.beschreibung,anmeldungen:0});
+  closeMo('mo-nev');rndrEvents();toast(name+' erstellt');
+}
+function openEVP(id){
+  const ev=events.find(x=>x.id===id);if(!ev)return;activeEVP=id;
+  document.querySelectorAll('#ev-tbody tr').forEach(r=>r.style.background='');
+  const row=document.getElementById('evr-'+id);if(row)row.style.background='#EFF6FF';
+  document.getElementById('evp-name').textContent=ev.name;
+  document.getElementById('evp-sub').textContent=fD(ev.datum)+' · '+(ev.zeit||'')+' Uhr · '+(ev.ort||'');
+  const sb=document.getElementById('evp-status-badge');if(sb){sb.textContent=evSL[ev.status]||ev.status;sb.style.cssText=evSC[ev.status]||'';}
+  document.getElementById('evp-typ-badge').textContent=ev.typ||'';
+  document.getElementById('ev-panel-emoji').textContent=evTE[ev.typ]||'📅';
+  document.getElementById('evp-anmeld').textContent=ev.anmeld==='ja'?(ev.anmeldungen||0)+'/'+(ev.max||'∞'):'—';
+  const sv=(i,v)=>{const e=document.getElementById(i);if(e)e.textContent=v||'—';};
+  const si=(i,v)=>{const e=document.getElementById(i);if(e)e.value=v||'';};
+  sv('evp-name2',ev.name);si('evp-name2-i',ev.name);sv('evp-datum',fD(ev.datum));si('evp-datum-i',ev.datum);
+  sv('evp-zeit',ev.zeit||'—');si('evp-zeit-i',ev.zeit);sv('evp-typ',ev.typ);si('evp-typ-i',ev.typ);
+  sv('evp-ort',ev.ort||'—');si('evp-ort-i',ev.ort);sv('evp-verantw',ev.verantw||'—');si('evp-verantw-i',ev.verantw);
+  sv('evp-max',ev.max||'Unbegrenzt');si('evp-max-i',ev.max);sv('evp-anmeld2',String(ev.anmeldungen||0));si('evp-anmeld2-i',ev.anmeldungen);
+  sv('evp-st',evSL[ev.status]);si('evp-st-i',ev.status);sv('evp-desc',ev.desc||'—');si('evp-desc-i',ev.desc);
+  document.querySelectorAll('#ev-panel .cs').forEach(s=>s.classList.remove('editing'));
+  document.querySelectorAll('#ev-panel .cse').forEach(b=>{b.textContent='Bearbeiten';b.style.color='';});
+  const del=document.getElementById('ev-panel-del-wrap');if(del)del.style.display=(_S&&['superadmin','admin'].includes(_S.rolle))?'block':'none';
+  document.getElementById('ev-ov').classList.add('open');document.getElementById('ev-panel').classList.add('open');
+}
+function closeEVP(){document.getElementById('ev-ov').classList.remove('open');document.getElementById('ev-panel').classList.remove('open');document.querySelectorAll('#ev-tbody tr').forEach(r=>r.style.background='');activeEVP=null;}
+function tEditEVP(secId,btn){
+  const sec=document.getElementById(secId),isE=sec.classList.contains('editing');
+  if(isE){
+    const ev=events.find(x=>x.id===activeEVP);
+    if(ev){
+      const MAP={'evp-name2':'name','evp-datum':'datum','evp-zeit':'zeit','evp-typ':'typ','evp-ort':'ort','evp-verantw':'verantw','evp-max':'max','evp-anmeld2':'anmeldungen','evp-st':'status','evp-desc':'desc'};
+      sec.querySelectorAll('.fvi,.fvs').forEach(inp=>{const bid=inp.id.replace(/-i$/,'');const key=MAP[bid];if(key){ev[key]=['max','anmeldungen'].includes(key)?parseInt(inp.value)||0:inp.value;const t=document.getElementById(bid);if(t){if(bid==='evp-datum')t.textContent=fD(inp.value);else if(bid==='evp-st')t.textContent=evSL[inp.value]||inp.value;else t.textContent=inp.value||'—';}}});
+      document.getElementById('evp-name').textContent=ev.name;
+      document.getElementById('evp-sub').textContent=fD(ev.datum)+' · '+ev.zeit+' Uhr · '+ev.ort;
+      document.getElementById('evp-anmeld').textContent=ev.anmeld==='ja'?ev.anmeldungen+'/'+( ev.max||'∞'):'—';
+      if(ev._dbId)dbUpdate('events',ev._dbId,{name:ev.name,datum:ev.datum,zeit:ev.zeit,typ:ev.typ,ort:ev.ort,verantwortlicher:ev.verantw,max_teilnehmer:ev.max,anmeldungen:ev.anmeldungen,status:ev.status,beschreibung:ev.desc});
+      rndrEvents();
+    }
+    sec.classList.remove('editing');btn.textContent='Bearbeiten';btn.style.color='';toast('Gespeichert');
+  }else{sec.classList.add('editing');btn.textContent='Fertig';btn.style.color='#16A34A';}
+}
+async function deleteEV(){if(!activeEVP||!confirm('Löschen?'))return;const ev=events.find(x=>x.id===activeEVP);if(ev?._dbId)await dbDelete('events',ev._dbId);events=events.filter(x=>x.id!==activeEVP);closeEVP();rndrEvents();toast('Gelöscht');}
+
+// ═══════════════════════════════════════════
+// NAVIGATION (override)
+// ═══════════════════════════════════════════
+function navTo(p,el2){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('active'));
+  const pg=document.getElementById('pg-'+p);if(pg)pg.classList.add('on');
+  if(el2)el2.classList.add('active');
+  const titles={dashboard:'Dashboard',mitglieder:'Mitglieder',kontakte:'Kontakte',groups:'Small Groups',gottesdienste:'Gottesdienste',worship:'Worship',events:'Veranstaltungen',spenden:'Twint & Spenden',kreditoren:'Kreditoren',dokumente:'Dokumente',einrichtung:'Einrichtung'};
+  document.getElementById('tb-title').textContent=titles[p]||p;
+  const isM=p==='mitglieder';
+  document.getElementById('vt-wrap').style.display=isM?'block':'none';
+  document.getElementById('btn-exp').style.display=isM?'inline-flex':'none';
+  document.getElementById('btn-new').style.display=isM?'inline-flex':'none';
+  if(isM){updStats();rndrTbl();}
+  if(p==='kontakte'){kFilt=[...kontakte];filterKontakte();}
+  if(p==='groups'){rndrSGGrid();}
+  if(p==='gottesdienste'){rndrGD();}
+  if(p==='worship'){rndrWorship();}
+  if(p==='events'){rndrEvents();}
+}
+
 </script>
 
 <!-- KONTAKT MODAL -->
