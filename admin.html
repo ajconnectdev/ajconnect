@@ -239,16 +239,15 @@ const sb = createClient(SUPA_URL, SUPA_ANON);
 let allUsers = [], allMandanten = [], userTabFilter = 'alle';
 let editingMandantId = null;
 
-// Auth guard - KEIN Loop, nur einmal prüfen
+// Auth guard
 (async () => {
-  const sess = sessionStorage.getItem('ajc_session');
-  if (!sess) {
-    window.location.replace('index.html');
-    return;
-  }
-  let s;
-  try { s = JSON.parse(sess); } catch(e) { 
-    sessionStorage.clear();
+  let s = null;
+  try {
+    const sess = sessionStorage.getItem('ajc_session');
+    if (sess) s = JSON.parse(sess);
+  } catch(e) {}
+  
+  if (!s) {
     window.location.replace('index.html');
     return;
   }
@@ -256,7 +255,9 @@ let editingMandantId = null;
     window.location.replace('app.html');
     return;
   }
-  document.getElementById('admin-name').textContent = s.name || s.email;
+  
+  const nameEl = document.getElementById('admin-name');
+  if (nameEl) nameEl.textContent = s.name || s.email || 'Admin';
   await loadAll();
 })();
 
