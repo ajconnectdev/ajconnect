@@ -138,15 +138,26 @@ const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIs
 const { createClient } = supabase;
 const sb = createClient(SUPA_URL, SUPA_ANON);
 
-// Check existing session on load
-(async () => {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) await checkAndRedirect(session.user);
-})();
+// ANTI-LOOP: nur auf index.html prüfen, niemals auf app/admin
+const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+const isLoginPage = currentPage === '' || currentPage === 'index.html';
+
+if (isLoginPage) {
+  (async () => {
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        await checkAndRedirect(session.user);
+      }
+    } catch(e) {
+      // Session check failed, stay on login
+    }
+  })();
+}
 
 function showView(v) {
-  document.getElementById('view-login').style.display = v==='login'?'block':'none';
-  document.getElementById('view-reset').style.display = v==='reset'?'block':'none';
+  document.getElementById('view-login').style.display = v==='login' ? 'block' : 'none';
+  document.getElementById('view-reset').style.display = v==='reset' ? 'block' : 'none';
 }
 function showMsg(id, type, text) {
   const el = document.getElementById(id);
@@ -155,20 +166,20 @@ function showMsg(id, type, text) {
   el.style.display = 'flex';
 }
 function hideMsg(id) { document.getElementById(id).style.display = 'none'; }
-function setLoading(on, text='Wird geladen...') {
-  document.getElementById('lo-text').textContent = text;
+function setLoading(on, text) {
+  if (text) document.getElementById('lo-text').textContent = text;
   document.getElementById('loading-overlay').classList.toggle('show', on);
 }
 function togglePw() {
   const i = document.getElementById('password');
   const t = document.querySelector('.pw-toggle');
-  i.type = i.type==='password' ? 'text' : 'password';
-  t.textContent = i.type==='password' ? 'Anzeigen' : 'Verbergen';
+  i.type = i.type === 'password' ? 'text' : 'password';
+  t.textContent = i.type === 'password' ? 'Anzeigen' : 'Verbergen';
 }
 function setBtnLoading(id, on) {
-  const btn = document.getElementById('btn-'+id);
-  const txt = document.getElementById('btn-'+id+'-text');
-  const spin = document.getElementById('spinner-'+id);
+  const btn = document.getElementById('btn-' + id);
+  const txt = document.getElementById('btn-' + id + '-text');
+  const spin = document.getElementById('spinner-' + id);
   btn.disabled = on;
   txt.style.display = on ? 'none' : 'inline';
   spin.style.display = on ? 'block' : 'none';
@@ -192,20 +203,21 @@ async function checkAndRedirect(user) {
     if (!profile.aktiv) {
       await sb.auth.signOut();
       setLoading(false);
-      showMsg('msg-login', 'err', 'Ihr Konto wurde noch nicht freigeschaltet. Sie werden benachrichtigt sobald dies erfolgt ist.');
+      showMsg('msg-login', 'err', 'Ihr Konto wurde noch nicht freigeschaltet.');
       return;
     }
-    // Superadmin braucht keinen Mandanten
+
+    // Superadmin: kein Mandant nötig
     if (profile.rolle !== 'superadmin') {
       if (!profile.mandanten || !profile.mandanten.aktiv) {
         await sb.auth.signOut();
         setLoading(false);
-        showMsg('msg-login', 'err', 'Ihre Gemeinde hat keine aktive AJ Connect Lizenz. Kontaktieren Sie info@ajconnect.ch.');
+        showMsg('msg-login', 'err', 'Ihre Gemeinde hat keine aktive Lizenz. Kontaktieren Sie info@ajconnect.ch.');
         return;
       }
     }
 
-    // Save session info
+    // Session speichern
     sessionStorage.setItem('ajc_session', JSON.stringify({
       user_id: user.id,
       email: user.email,
@@ -216,14 +228,14 @@ async function checkAndRedirect(user) {
       lizenz: profile.mandanten?.lizenz || 'professional',
     }));
 
-    setLoading(true, 'Gemeinde wird geladen...');
-    setTimeout(() => {
-      if (profile.rolle === 'superadmin') {
-        window.location.href = 'admin.html';
-      } else {
-        window.location.href = 'app.html';
-      }
-    }, 400);
+    setLoading(true, 'Weiterleitung...');
+
+    // WICHTIG: replace statt href damit kein Back-Loop entsteht
+    if (profile.rolle === 'superadmin') {
+      window.location.replace('admin.html');
+    } else {
+      window.location.replace('app.html');
+    }
   } catch(e) {
     setLoading(false);
     showMsg('msg-login', 'err', 'Verbindungsfehler. Bitte Seite neu laden.');
@@ -234,17 +246,24 @@ async function doLogin() {
   const email = document.getElementById('email').value.trim();
   const pw = document.getElementById('password').value;
   hideMsg('msg-login');
-  if (!email || !pw) { showMsg('msg-login','err','Bitte E-Mail und Passwort eingeben.'); return; }
-
+  if (!email || !pw) {
+    showMsg('msg-login', 'err', 'Bitte E-Mail und Passwort eingeben.');
+    return;
+  }
   setBtnLoading('login', true);
   const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
   if (error) {
     setBtnLoading('login', false);
     const m = error.message;
-    if (m.includes('Invalid login') || m.includes('invalid_credentials')) showMsg('msg-login','err','E-Mail oder Passwort ist falsch.');
-    else if (m.includes('Email not confirmed')) showMsg('msg-login','err','Bitte bestätigen Sie zuerst Ihre E-Mail-Adresse (Postfach prüfen).');
-    else if (m.includes('Too many requests')) showMsg('msg-login','err','Zu viele Versuche. Bitte warten Sie einige Minuten.');
-    else showMsg('msg-login','err','Anmeldung fehlgeschlagen: ' + m);
+    if (m.includes('Invalid login') || m.includes('invalid_credentials')) {
+      showMsg('msg-login', 'err', 'E-Mail oder Passwort ist falsch.');
+    } else if (m.includes('Email not confirmed')) {
+      showMsg('msg-login', 'err', 'Bitte bestätigen Sie Ihre E-Mail-Adresse (Postfach prüfen).');
+    } else if (m.includes('Too many requests')) {
+      showMsg('msg-login', 'err', 'Zu viele Versuche. Bitte warten Sie einige Minuten.');
+    } else {
+      showMsg('msg-login', 'err', 'Anmeldung fehlgeschlagen: ' + m);
+    }
     return;
   }
   await checkAndRedirect(data.user);
@@ -253,20 +272,26 @@ async function doLogin() {
 async function doReset() {
   const email = document.getElementById('reset-email').value.trim();
   hideMsg('msg-reset');
-  if (!email) { showMsg('msg-reset','err','Bitte E-Mail eingeben.'); return; }
+  if (!email) { showMsg('msg-reset', 'err', 'Bitte E-Mail eingeben.'); return; }
   setBtnLoading('reset', true);
   const { error } = await sb.auth.resetPasswordForEmail(email, {
     redirectTo: window.location.origin + '/index.html'
   });
   setBtnLoading('reset', false);
-  if (error) showMsg('msg-reset','err','Fehler: ' + error.message);
-  else showMsg('msg-reset','ok','Reset-Link wurde gesendet! Prüfen Sie Ihr E-Mail-Postfach (auch Spam).');
+  if (error) {
+    showMsg('msg-reset', 'err', 'Fehler: ' + error.message);
+  } else {
+    showMsg('msg-reset', 'ok', 'Reset-Link gesendet! Prüfen Sie Ihr E-Mail-Postfach (auch Spam).');
+  }
 }
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
-    const v = document.getElementById('view-reset').style.display === 'block';
-    v ? doReset() : doLogin();
+    if (document.getElementById('view-reset').style.display === 'block') {
+      doReset();
+    } else {
+      doLogin();
+    }
   }
 });
 </script>
