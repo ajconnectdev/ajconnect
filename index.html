@@ -400,7 +400,7 @@ td{padding:10px 13px;font-size:13px;vertical-align:middle}
 .toast.show{opacity:1;transform:translateY(0)}
 
 /* LOGIN */
-#login-screen{position:fixed;inset:0;background:#0F1F3D;display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}
+#login-screen{position:fixed;inset:0;background:#0F1F3D;display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
 
 
 .lcard{background:#fff;border-radius:16px;padding:36px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,0.3)}
@@ -458,6 +458,15 @@ td{padding:10px 13px;font-size:13px;vertical-align:middle}
 </style>
 </head>
 <body>
+<div id="init-loader" style="position:fixed;inset:0;background:#0F1F3D;display:flex;align-items:center;justify-content:center;z-index:99999;flex-direction:column;gap:16px">
+  <div style="width:46px;height:46px;background:#C8941A;border-radius:10px;position:relative">
+    <div style="position:absolute;left:50%;top:9px;transform:translateX(-50%);width:6px;height:28px;background:#fff;border-radius:3px"></div>
+    <div style="position:absolute;top:18px;left:9px;width:28px;height:6px;background:#fff;border-radius:3px"></div>
+  </div>
+  <div style="width:32px;height:32px;border:3px solid rgba(255,255,255,0.15);border-top-color:#C8941A;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+  <div style="color:rgba(255,255,255,0.4);font-size:13px;font-family:system-ui">AJ Connect lädt...</div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 <script>
 // Immediately hide app and admin screens before page renders
 document.addEventListener('DOMContentLoaded', function() {
@@ -1219,6 +1228,9 @@ const sb = supabase.createClient(SB_URL, SB_KEY);
 let _S = null; // current session data
 
 function showScreen(name) {
+  // Hide loading spinner
+  const loader = document.getElementById('init-loader');
+  if (loader) loader.style.display = 'none';
   // Hide all screens first
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('admin-screen').style.display = 'none';
@@ -1231,14 +1243,23 @@ function showScreen(name) {
   } else if (name === 'app') {
     document.getElementById('app-screen').style.display = 'block';
   }
-  // Close any open modals
+  // Close any open modals when switching screens
   document.querySelectorAll('.mo.open').forEach(m => m.classList.remove('open'));
 }
 
 // On load: check existing session
 (async () => {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) await loadAndShow(session.user);
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      await loadAndShow(session.user);
+    } else {
+      // No session - show login
+      showScreen('login');
+    }
+  } catch(e) {
+    showScreen('login');
+  }
 })();
 
 async function loadAndShow(user) {
