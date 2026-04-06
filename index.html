@@ -195,11 +195,14 @@ async function checkAndRedirect(user) {
       showMsg('msg-login', 'err', 'Ihr Konto wurde noch nicht freigeschaltet. Sie werden benachrichtigt sobald dies erfolgt ist.');
       return;
     }
-    if (!profile.mandanten || !profile.mandanten.aktiv) {
-      await sb.auth.signOut();
-      setLoading(false);
-      showMsg('msg-login', 'err', 'Ihre Gemeinde hat keine aktive AJ Connect Lizenz. Kontaktieren Sie info@ajconnect.ch.');
-      return;
+    // Superadmin braucht keinen Mandanten
+    if (profile.rolle !== 'superadmin') {
+      if (!profile.mandanten || !profile.mandanten.aktiv) {
+        await sb.auth.signOut();
+        setLoading(false);
+        showMsg('msg-login', 'err', 'Ihre Gemeinde hat keine aktive AJ Connect Lizenz. Kontaktieren Sie info@ajconnect.ch.');
+        return;
+      }
     }
 
     // Save session info
@@ -208,9 +211,9 @@ async function checkAndRedirect(user) {
       email: user.email,
       name: profile.name || user.email,
       rolle: profile.rolle,
-      mandant_id: profile.mandant_id,
-      mandant_name: profile.mandanten.name,
-      lizenz: profile.mandanten.lizenz,
+      mandant_id: profile.mandant_id || null,
+      mandant_name: profile.mandanten?.name || 'AJ Connect Admin',
+      lizenz: profile.mandanten?.lizenz || 'professional',
     }));
 
     setLoading(true, 'Gemeinde wird geladen...');
