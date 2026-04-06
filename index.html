@@ -247,7 +247,7 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
 .iadd{background:#FDF3DC;border:1px solid #e8c97a;border-radius:7px;padding:10px;display:none;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-top:8px}
 .iadd.open{display:flex}
 /* Mitgliederkarte */
-.kpanel{position:fixed;top:0;right:-740px;width:740px;height:100vh;background:white;border-left:1px solid #E5E7EB;z-index:400;display:flex;flex-direction:column;transition:right 0.3s;box-shadow:-4px 0 32px rgba(0,0,0,0.1)}
+.kpanel{position:fixed;top:0;right:-1120px;width:1120px;max-width:95vw;height:100vh;background:white;border-left:1px solid #E5E7EB;z-index:400;display:flex;flex-direction:column;transition:right 0.3s;box-shadow:-8px 0 48px rgba(0,0,0,0.15)}
 .kpanel.open{right:0}
 .kov{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:300;display:none}
 .kov.open{display:block}
@@ -756,13 +756,15 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
           </span></div>
         </div>
       </div>
-      <div class="cs">
-        <div class="csh"><div class="cst"><div class="csdot" style="background:#7C3AED"></div>Lebensereignisse</div></div>
+      <div class="cs" id="sec-leben">
+        <div class="csh"><div class="cst"><div class="csdot" style="background:#7C3AED"></div>Lebensereignisse</div><span class="cse" onclick="tEdit('sec-leben',this)">Bearbeiten</span></div>
         <div class="csb">
-          <div class="frow"><span class="flbl">Taufe</span><span class="fval" id="k-taufe-v">—</span></div>
-          <div class="frow"><span class="flbl">Konfirmation</span><span class="fval" style="color:#9CA3AF;font-style:italic">Nicht erfasst</span></div>
-          <div class="frow"><span class="flbl">Heirat</span><span class="fval" style="color:#9CA3AF;font-style:italic">Nicht erfasst</span></div>
-          <div class="frow"><span class="flbl">Beerdigung</span><span class="fval" style="color:#9CA3AF;font-style:italic">Nicht erfasst</span></div>
+          <div class="frow"><span class="flbl">Taufe</span><span class="fval"><span class="fvt" id="k-taufe-v">—</span><input class="fvi" id="k-taufe-v-i" type="date"></span></div>
+          <div class="frow"><span class="flbl">Taufort</span><span class="fval"><span class="fvt" id="k-taufort">—</span><input class="fvi" id="k-taufort-i" placeholder="z.B. Hauptsaal"></span></div>
+          <div class="frow"><span class="flbl">Konfirmation</span><span class="fval"><span class="fvt" id="k-konfirm">—</span><input class="fvi" id="k-konfirm-i" type="date"></span></div>
+          <div class="frow"><span class="flbl">Hochzeit</span><span class="fval"><span class="fvt" id="k-hochzeit">—</span><input class="fvi" id="k-hochzeit-i" type="date"></span></div>
+          <div class="frow"><span class="flbl">Beerdigung</span><span class="fval"><span class="fvt" id="k-beerdigung">—</span><input class="fvi" id="k-beerdigung-i" type="date"></span></div>
+          <div class="frow"><span class="flbl">Notizen</span><span class="fval"><span class="fvt" id="k-leben-notiz">—</span><input class="fvi" id="k-leben-notiz-i" placeholder="Besonderheiten..."></span></div>
         </div>
       </div>
     </div>
@@ -1357,23 +1359,7 @@ function zwB(w){return{twint:'<span style="background:#E0F2FE;color:#0369A1;padd
 
 const PT={dashboard:'Dashboard',mitglieder:'Mitglieder',kontakte:'Kontakte',groups:'Small Groups',gottesdienste:'Gottesdienste',worship:'Worship',events:'Veranstaltungen',spenden:'Twint & Spenden',kreditoren:'Kreditoren',dokumente:'Dokumente',einrichtung:'Einrichtung'};
 
-function navTo(p,el){
-  document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
-  document.querySelectorAll('.sb-item').forEach(x=>x.classList.remove('active'));
-  const pg=document.getElementById('pg-'+p);if(pg)pg.classList.add('on');
-  if(el)el.classList.add('active');
-  document.getElementById('tb-title').textContent=PT[p]||p;
-  const isM=p==='mitglieder';
-  document.getElementById('vt-wrap').style.display=isM?'block':'none';
-  document.getElementById('btn-exp').style.display=isM?'inline-flex':'none';
-  document.getElementById('btn-new').style.display=isM?'inline-flex':'none';
-  if(isM){updStats();rndrTbl();}
-  if(p==='kontakte'){kFilt=[...kontakte];filterKontakte();}
-  if(p==='groups'){rndrSGGrid();}
-  if(p==='gottesdienste'){rndrGD();}
-  if(p==='worship'){rndrWorship();}
-  if(p==='events'){rndrEvents();}
-}
+
 
 function setView(v){
   mView=v;
@@ -1534,7 +1520,12 @@ function closeKarte(){
 }
 function deleteCurrent(){if(!activeId||!confirm('Mitglied löschen?'))return;members=members.filter(m=>m.id!==activeId);closeKarte();applyMF();updStats();toast('Gelöscht');}
 function sTab(name,el){document.querySelectorAll('.ktab').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.tpane').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');const tp=document.getElementById('tab-'+name);if(tp)tp.classList.add('on');if(name==='dms')rndrDms();}
-function tEdit(secId,btn){const sec=document.getElementById(secId);const isE=sec.classList.contains('editing');if(isE){sec.querySelectorAll('.fvi,.fvs').forEach(inp=>{const bid=inp.id.replace(/-i$/,'');const tel=document.getElementById(bid);if(tel&&inp.value){tel.textContent=inp.value;if(activeId){const m=members.find(x=>x.id===activeId);if(m){const MAP={'k-vn':'vorname','k-nn':'nachname','k-geb':'geburt','k-ges':'geschlecht','k-em':'email','k-mob':'mobil','k-str':'strasse','k-plz':'plzort'};const key=MAP[bid];if(key)m[key]=inp.value;if(['k-vn','k-nn'].includes(bid)){document.getElementById('k-name').textContent=`${m.anrede} ${m.vorname} ${m.nachname}`;rndrTbl();}}}}});sec.classList.remove('editing');btn.textContent='Bearbeiten';btn.style.color='';toast('Gespeichert');}else{sec.classList.add('editing');btn.textContent='✓ Fertig';btn.style.color='#16A34A';}}
+function tEdit(secId,btn){const sec=document.getElementById(secId);const isE=sec.classList.contains('editing');if(isE){sec.querySelectorAll('.fvi,.fvs').forEach(inp=>{const bid=inp.id.replace(/-i$/,'');const tel=document.getElementById(bid);if(tel&&inp.value){tel.textContent=inp.value;if(activeId){const m=members.find(x=>x.id===activeId);if(m){const MAP={'k-vn':'vorname','k-nn':'nachname','k-geb':'geburt','k-ges':'geschlecht','k-em':'email','k-mob':'mobil','k-str':'strasse','k-plz':'plzort','k-ein':'eingetreten','k-taufe-v':'taufe','k-taufort':'taufort','k-konfirm':'konfirm','k-hochzeit':'hochzeit','k-beerdigung':'beerdigung','k-leben-notiz':'lebenNotiz','k-fstand':'familienstand','k-nat':'nationalitaet','k-lang':'sprache','k-rolle-i':'rolleId','k-grp-i':'groupId','k-st-i':'status'};const key=MAP[bid];
+              if(key){
+                if(['rolleId','groupId'].includes(key)) m[key]=parseInt(inp.value)||0;
+                else m[key]=inp.value;
+              }
+              if(['k-vn','k-nn'].includes(bid)){document.getElementById('k-name').textContent=`${m.anrede} ${m.vorname} ${m.nachname}`;rndrTbl();}}}}});sec.classList.remove('editing');btn.textContent='Bearbeiten';btn.style.color='';toast('Gespeichert');}else{sec.classList.add('editing');btn.textContent='✓ Fertig';btn.style.color='#16A34A';}}
 
 const getDms=()=>dmsStore[activeId]||[];
 const extC=e=>({'pdf':'#DC2626','docx':'#2563EB','doc':'#2563EB','xlsx':'#16A34A','png':'#7C3AED','jpg':'#7C3AED','jpeg':'#7C3AED'}[e.toLowerCase()]||'#6B7280');
@@ -1660,8 +1651,22 @@ async function deleteKK(){if(!activeKK||!confirm('Kontakt löschen?'))return;con
 function addKKNote(){const txt=prompt('Notiz:');if(!txt)return;const k=kontakte.find(x=>x.id===activeKK);if(k){k.notizen.push({text:txt,datum:new Date().toISOString().split('T')[0]});if(k._dbId)dbUpdate('kontakte',k._dbId,{notizen:k.notizen});openKK(activeKK);}}
 function konvertKontakt(id){
   const k=kontakte.find(x=>x.id===id);if(!k)return;
-  navTo('mitglieder');
-  setTimeout(()=>{openNM();const s=(eid,val)=>{const e=document.getElementById(eid);if(e)e.value=val||'';};s('nm-vn',k.vorname);s('nm-nn',k.nachname);s('nm-em',k.email);s('nm-mob',k.telefon);document.getElementById('nm-st').value='besucher';k.mitgliedGeworden=true;if(activeKK)closeKK();toast('Kontaktdaten übernommen');},300);
+  // Navigate to Mitglieder tab
+  const mNav=document.querySelector('.sb-item[onclick*="mitglieder"]');
+  navTo('mitglieder', mNav);
+  k.mitgliedGeworden=true;
+  if(activeKK)closeKK();
+  // Small delay to let page render
+  setTimeout(()=>{
+    openNM();
+    const s=(eid,val)=>{const e=document.getElementById(eid);if(e)e.value=val||'';};
+    s('nm-vn',k.vorname);
+    s('nm-nn',k.nachname);
+    s('nm-em',k.email);
+    s('nm-mob',k.telefon);
+    document.getElementById('nm-st').value='besucher';
+    toast('Kontaktdaten übernommen — bitte ergänzen und Speichern klicken');
+  },400);
 }
 
 // ═══════════════════════════════════════════
@@ -1678,23 +1683,40 @@ let sgIdSeq=6,activeSG=null;
 function rndrSGGrid(){
   const grid=document.getElementById('sg-grid');if(!grid)return;
   const e=id=>document.getElementById(id);
-  if(e('sg-total'))e('sg-total').textContent=sgData.length;if(e('sg-aktiv'))e('sg-aktiv').textContent=sgData.length;
+  if(e('sg-total'))e('sg-total').textContent=sgData.length;
+  if(e('sg-aktiv'))e('sg-aktiv').textContent=sgData.length;
   let tot=0;sgData.forEach(sg=>{tot+=members.filter(m=>m.groupId===sg.id).length;});
   if(e('sg-mitgl'))e('sg-mitgl').textContent=tot;
   const cols=['#7C3AED','#2563EB','#16A34A','#C8941A','#DC2626','#0891B2'];
-  grid.innerHTML=sgData.map((sg,i)=>{
+  grid.innerHTML='';
+  sgData.forEach((sg,i)=>{
     const cnt=members.filter(m=>m.groupId===sg.id).length;
     const col=cols[i%cols.length];
-    const avs=members.filter(m=>m.groupId===sg.id).slice(0,5).map(m=>'<div style="width:24px;height:24px;border-radius:50%;background:'+m.color+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:white;margin-left:-6px;border:2px solid white">'+ini(m)+'</div>').join('');
-    return'<div onclick="openSGK(\''+sg.id+'\')" style="background:white;border:1px solid #E5E7EB;border-radius:12px;padding:18px;cursor:pointer;transition:all 0.15s" onmouseover="this.style.borderColor=\''+col+'\';this.style.boxShadow=\'0 4px 16px rgba(0,0,0,0.1)\'" onmouseout="this.style.borderColor=\'#E5E7EB\';this.style.boxShadow=\'none\'">'
-      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'
-      +'<div style="width:44px;height:44px;border-radius:10px;background:'+col+';display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:white"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>'
-      +'<div><div style="font-size:14px;font-weight:600;color:#1A3560">'+sg.name+'</div><div style="font-size:11px;color:#9CA3AF">'+sg.typ+'</div></div></div>'
-      +'<div style="display:flex;gap:12px;margin-bottom:10px;font-size:12px;color:#6B7280"><span>📅 '+sg.tag+(sg.zeit?' · '+sg.zeit:'')+'</span><span>📍 '+(sg.ort||'').split(',')[0]+'</span></div>'
-      +'<div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;padding-left:6px">'+avs+'<span style="font-size:11px;color:#9CA3AF;margin-left:'+(cnt>0?10:0)+'px">'+cnt+' Mitglieder</span></div>'
-      +'<div style="font-size:11px;color:#6B7280">👤 '+(sg.leiter||'—')+'</div></div></div>';
-  }).join('');
+    const avHTML=members.filter(m=>m.groupId===sg.id).slice(0,5).map(m=>
+      '<div style="width:24px;height:24px;border-radius:50%;background:'+m.color+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:white;margin-left:-6px;border:2px solid white">'+ini(m)+'</div>'
+    ).join('');
+    const card=document.createElement('div');
+    card.style.cssText='background:white;border:1px solid #E5E7EB;border-radius:12px;padding:18px;cursor:pointer;transition:all 0.15s';
+    card.dataset.sgid=sg.id;
+    card.innerHTML=
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'
+      +'<div style="width:44px;height:44px;border-radius:10px;background:'+col+';display:flex;align-items:center;justify-content:center;flex-shrink:0">'
+      +'<svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:white"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>'
+      +'<div><div style="font-size:14px;font-weight:600;color:#1A3560">'+sg.name+'</div><div style="font-size:11px;color:#9CA3AF;margin-top:1px">'+sg.typ+'</div></div></div>'
+      +'<div style="display:flex;gap:12px;margin-bottom:10px;font-size:12px;color:#6B7280">'
+      +'<span>📅 '+sg.tag+(sg.zeit?' · '+sg.zeit:'')+'</span>'
+      +'<span>📍 '+(sg.ort||'').split(',')[0]+'</span></div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between">'
+      +'<div style="display:flex;align-items:center;padding-left:6px">'+avHTML
+      +'<span style="font-size:11px;color:#9CA3AF;margin-left:'+(cnt>0?10:0)+'px">'+cnt+' Mitglieder</span></div>'
+      +'<div style="font-size:11px;color:#6B7280">👤 '+(sg.leiter||'—')+'</div></div>';
+    card.addEventListener('mouseover',()=>{card.style.borderColor=col;card.style.boxShadow='0 4px 16px rgba(0,0,0,0.1)';});
+    card.addEventListener('mouseout',()=>{card.style.borderColor='#E5E7EB';card.style.boxShadow='none';});
+    card.addEventListener('click',()=>openSGK(sg.id));
+    grid.appendChild(card);
+  });
 }
+
 function openNSG(){['nsg-name','nsg-leiter','nsg-koleiter','nsg-ort','nsg-ziel','nsg-desc'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});const t=document.getElementById('nsg-zeit');if(t)t.value='';document.getElementById('mo-nsg').classList.add('open');}
 async function saveNSG(){
   const name=document.getElementById('nsg-name').value.trim();if(!name){toast('Name Pflicht');return;}
@@ -2084,7 +2106,7 @@ function navTo(p,el2){
 
 <!-- SMALL GROUP KARTE -->
 <div class="kov" id="sg-ov" onclick="closeSGK()"></div>
-<div class="kpanel" id="sg-panel" style="width:800px;right:-800px">
+<div class="kpanel" id="sg-panel">
   <div class="ktop">
     <div class="kcap">Small Group Karte</div>
     <div class="kclose" onclick="closeSGK()"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div>
