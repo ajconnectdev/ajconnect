@@ -515,11 +515,130 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
           <div class="cg" id="m-cg" style="display:none"></div>
         </div>
         <!-- OTHER PAGES -->
-        <div class="page" id="pg-kontakte"><div class="soon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><h3>Kontakte</h3><p>Kommt bald.</p></div></div>
-        <div class="page" id="pg-groups"><div class="soon"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg><h3>Small Groups</h3><p>Kommt bald.</p></div></div>
-        <div class="page" id="pg-gottesdienste"><div class="soon"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13z"/></svg><h3>Gottesdienste</h3><p>Kommt bald.</p></div></div>
-        <div class="page" id="pg-worship"><div class="soon"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg><h3>Worship</h3><p>Kommt bald.</p></div></div>
-        <div class="page" id="pg-events"><div class="soon"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5z"/></svg><h3>Veranstaltungen</h3><p>Kommt bald.</p></div></div>
+        <div class="page" id="pg-kontakte">
+          <div class="sgrid4">
+            <div class="scard"><div class="sico" style="background:#EFF6FF"><svg viewBox="0 0 24 24" style="fill:#2563EB"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div><div><div class="sn" id="kt-total">0</div><div class="sl">Total Kontakte</div></div></div>
+            <div class="scard"><div class="sico" style="background:#DCFCE7"><svg viewBox="0 0 24 24" style="fill:#16A34A"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div><div><div class="sn" id="kt-offen">0</div><div class="sl">Offen / Interessenten</div></div></div>
+            <div class="scard"><div class="sico" style="background:#FEF3C7"><svg viewBox="0 0 24 24" style="fill:#D97706"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13z"/></svg></div><div><div class="sn" id="kt-monat">0</div><div class="sl">Diesen Monat</div></div></div>
+            <div class="scard"><div class="sico" style="background:#EDE9FE"><svg viewBox="0 0 24 24" style="fill:#7C3AED"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg></div><div><div class="sn" id="kt-mitgl">0</div><div class="sl">Zu Mitglied geworden</div></div></div>
+          </div>
+          <div class="tblwrap">
+            <div class="tbltoolbar">
+              <div class="sbox"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5S13.09 3 9.5 3 3 5.91 3 9.5s2.91 6.5 6.5 6.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg><input id="kt-srch" placeholder="Name, E-Mail, Telefon..." oninput="filterKontakte()"></div>
+              <div class="ftabs">
+                <div class="ftab on" onclick="setKF('alle',this)">Alle</div>
+                <div class="ftab" onclick="setKF('interessent',this)">Interessent</div>
+                <div class="ftab" onclick="setKF('besucher',this)">Besucher</div>
+                <div class="ftab" onclick="setKF('inaktiv',this)">Inaktiv</div>
+              </div>
+              <button class="tbtn tbtn-navy" style="font-size:12px" onclick="openNK()">+ Neuer Kontakt</button>
+            </div>
+            <div class="tbltop"><div class="tbltitle" id="kt-cnt">0 Kontakte</div></div>
+            <div style="overflow-x:auto"><table><thead><tr><th>Name</th><th>E-Mail</th><th>Telefon</th><th>Status</th><th>Erstkontakt</th><th>Quelle</th><th style="width:140px">Aktionen</th></tr></thead><tbody id="kt-tbody"></tbody></table></div>
+          </div>
+        </div>
+        <div class="page" id="pg-groups">
+          <div class="sgrid4">
+            <div class="scard"><div class="sico" style="background:#EDE9FE"><svg viewBox="0 0 24 24" style="fill:#7C3AED"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg></div><div><div class="sn" id="sg-total">0</div><div class="sl">Gruppen total</div></div></div>
+            <div class="scard"><div class="sico" style="background:#DCFCE7"><svg viewBox="0 0 24 24" style="fill:#16A34A"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div><div><div class="sn" id="sg-mitgl">0</div><div class="sl">Mitglieder total</div></div></div>
+            <div class="scard"><div class="sico" style="background:#FDF3DC"><svg viewBox="0 0 24 24" style="fill:#C8941A"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg></div><div><div class="sn">Dienstag</div><div class="sl">Nächstes Treffen</div></div></div>
+            <div class="scard"><div class="sico" style="background:#EFF6FF"><svg viewBox="0 0 24 24" style="fill:#2563EB"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2z"/></svg></div><div><div class="sn" id="sg-aktiv">0</div><div class="sl">Aktive Gruppen</div></div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px" id="sg-grid"></div>
+          <button class="tbtn tbtn-navy" style="margin-top:4px;align-self:flex-start" onclick="openNSG()">+ Neue Small Group</button>
+        </div>
+        <div class="page" id="pg-gottesdienste">
+          <div class="sgrid4">
+            <div class="scard"><div class="sico" style="background:#EFF6FF"><svg viewBox="0 0 24 24" style="fill:#2563EB"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2z"/></svg></div><div><div class="sn" id="gd-total">0</div><div class="sl">Gottesdienste total</div></div></div>
+            <div class="scard"><div class="sico" style="background:#DCFCE7"><svg viewBox="0 0 24 24" style="fill:#16A34A"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div><div><div class="sn" id="gd-besucher">0</div><div class="sl">Ø Besucher</div></div></div>
+            <div class="scard"><div class="sico" style="background:#FDF3DC"><svg viewBox="0 0 24 24" style="fill:#C8941A"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg></div><div><div class="sn" id="gd-naechster">—</div><div class="sl">Nächster GD</div></div></div>
+            <div class="scard"><div class="sico" style="background:#EDE9FE"><svg viewBox="0 0 24 24" style="fill:#7C3AED"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div><div><div class="sn" id="gd-lieder">0</div><div class="sl">Lieder gespielt</div></div></div>
+          </div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap">
+            <div style="flex:1;min-width:300px">
+              <div class="tblwrap">
+                <div class="tbltop" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px">
+                  <div class="tbltitle">Gottesdienste</div>
+                  <button class="tbtn tbtn-navy" style="font-size:12px" onclick="openNGD()">+ Neuer GD</button>
+                </div>
+                <div style="overflow-x:auto"><table><thead><tr><th>Datum</th><th>Titel / Thema</th><th>Prediger</th><th>Besucher</th><th>Status</th></tr></thead><tbody id="gd-tbody"></tbody></table></div>
+              </div>
+            </div>
+            <div style="width:320px;flex-shrink:0">
+              <div class="card">
+                <div class="cardh"><div class="cardtitle">Nächster Gottesdienst</div></div>
+                <div class="cardbody" id="gd-next-body">
+                  <div style="font-size:15px;font-weight:600;color:#1A3560;margin-bottom:8px">Sonntag · 10:00 Uhr</div>
+                  <div style="font-size:12px;color:#6B7280;margin-bottom:6px">📍 Hauptsaal</div>
+                  <div style="font-size:12px;color:#6B7280;margin-bottom:12px">🎤 Pastor Thomas Müller</div>
+                  <div style="background:#DCFCE7;border-radius:8px;padding:8px 12px;font-size:12px;color:#16A34A;font-weight:500">✓ Team bestätigt</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="page" id="pg-worship">
+          <div class="sgrid4">
+            <div class="scard"><div class="sico" style="background:#EDE9FE"><svg viewBox="0 0 24 24" style="fill:#7C3AED"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div><div><div class="sn" id="wp-lieder">0</div><div class="sl">Lieder total</div></div></div>
+            <div class="scard"><div class="sico" style="background:#DCFCE7"><svg viewBox="0 0 24 24" style="fill:#16A34A"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg></div><div><div class="sn" id="wp-team">0</div><div class="sl">Team Mitglieder</div></div></div>
+            <div class="scard"><div class="sico" style="background:#FDF3DC"><svg viewBox="0 0 24 24" style="fill:#C8941A"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div><div><div class="sn" id="wp-top">—</div><div class="sl">Meist gespielt</div></div></div>
+            <div class="scard"><div class="sico" style="background:#EFF6FF"><svg viewBox="0 0 24 24" style="fill:#2563EB"><path d="M17 12h-5v5h5v-5z"/></svg></div><div><div class="sn" id="wp-naechst">—</div><div class="sl">Nächste Probe</div></div></div>
+          </div>
+          <div class="g2">
+            <div class="tblwrap">
+              <div class="tbltop" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px">
+                <div class="tbltitle">Liederbibliothek</div>
+                <button class="tbtn tbtn-navy" style="font-size:12px" onclick="openNLied()">+ Neues Lied</button>
+              </div>
+              <div style="padding:8px 14px;border-bottom:1px solid #E5E7EB">
+                <div class="sbox"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5S13.09 3 9.5 3 3 5.91 3 9.5s2.91 6.5 6.5 6.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg><input placeholder="Lied suchen..." oninput="filterLieder(this.value)"></div>
+              </div>
+              <div style="overflow-x:auto"><table><thead><tr><th>Titel</th><th>Künstler</th><th>Tonart</th><th>Gespielt</th><th></th></tr></thead><tbody id="wp-tbody"></tbody></table></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div class="card">
+                <div class="cardh"><div class="cardtitle">Worship-Team</div><button class="tbtn tbtn-ghost" style="font-size:11px" onclick="toast('Team-Verwaltung folgt')">Verwalten</button></div>
+                <div class="cardbody" id="wp-team-body"></div>
+              </div>
+              <div class="card">
+                <div class="cardh"><div class="cardtitle">Nächste Setlist</div><button class="tbtn tbtn-navy" style="font-size:11px" onclick="openNSetlist()">+ Setlist</button></div>
+                <div class="cardbody" id="wp-setlist-body"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="page" id="pg-events">
+          <div class="sgrid4">
+            <div class="scard"><div class="sico" style="background:#EFF6FF"><svg viewBox="0 0 24 24" style="fill:#2563EB"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2z"/></svg></div><div><div class="sn" id="ev-total">0</div><div class="sl">Events total</div></div></div>
+            <div class="scard"><div class="sico" style="background:#DCFCE7"><svg viewBox="0 0 24 24" style="fill:#16A34A"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div><div><div class="sn" id="ev-geplant">0</div><div class="sl">Geplant</div></div></div>
+            <div class="scard"><div class="sico" style="background:#FDF3DC"><svg viewBox="0 0 24 24" style="fill:#C8941A"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg></div><div><div class="sn" id="ev-anmeld">0</div><div class="sl">Anmeldungen</div></div></div>
+            <div class="scard"><div class="sico" style="background:#FEF3C7"><svg viewBox="0 0 24 24" style="fill:#D97706"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2z"/></svg></div><div><div class="sn" id="ev-naechst">—</div><div class="sl">Nächstes Event</div></div></div>
+          </div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap">
+            <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:14px">
+              <div class="tblwrap">
+                <div class="tbltop" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px">
+                  <div class="tbltitle">Veranstaltungen</div>
+                  <div style="display:flex;gap:6px">
+                    <div class="ftabs">
+                      <div class="ftab on" onclick="setEvTab('alle',this)">Alle</div>
+                      <div class="ftab" onclick="setEvTab('geplant',this)">Geplant</div>
+                      <div class="ftab" onclick="setEvTab('vergangen',this)">Vergangen</div>
+                    </div>
+                    <button class="tbtn tbtn-navy" style="font-size:12px" onclick="openNEv()">+ Neues Event</button>
+                  </div>
+                </div>
+                <div style="overflow-x:auto"><table><thead><tr><th>Datum</th><th>Event</th><th>Typ</th><th>Ort</th><th>Anmeldungen</th><th>Status</th></tr></thead><tbody id="ev-tbody"></tbody></table></div>
+              </div>
+            </div>
+            <div style="width:300px;flex-shrink:0">
+              <div class="card">
+                <div class="cardh"><div class="cardtitle">Kalender Mai 2026</div></div>
+                <div class="cardbody" id="ev-cal-body" style="font-size:12px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="page" id="pg-spenden"><div class="soon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg><h3>Twint & Spenden</h3><p>Kommt bald.</p></div></div>
         <div class="page" id="pg-kreditoren"><div class="soon"><svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg><h3>Kreditoren</h3><p>Kommt bald.</p></div></div>
         <div class="page" id="pg-dokumente"><div class="soon"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg><h3>Dokumente (DMS)</h3><p>Kommt bald.</p></div></div>
@@ -554,9 +673,9 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
     </div>
   </div>
   <div class="kacts">
-    <button class="tbtn tbtn-ghost" style="font-size:11px">E-Mail</button>
-    <button class="tbtn tbtn-ghost" style="font-size:11px">Anrufen</button>
-    <button style="padding:6px 12px;border-radius:7px;font-size:11px;background:#FEE2E2;color:#DC2626;border:1px solid #fca5a5;cursor:pointer;font-family:inherit;margin-left:auto" onclick="deleteCurrent()">Löschen</button>
+    <button class="tbtn tbtn-ghost" style="font-size:11px" id="k-email-btn" onclick="mailTo()">✉ E-Mail</button>
+    
+    <button id="k-del-btn" style="padding:6px 12px;border-radius:7px;font-size:11px;background:#FEE2E2;color:#DC2626;border:1px solid #fca5a5;cursor:pointer;font-family:inherit;margin-left:auto;display:none" onclick="deleteCurrent()">Löschen</button>
   </div>
   <div class="ktabs">
     <div class="ktab on" onclick="sTab('stamm',this)">Stammdaten</div>
@@ -591,13 +710,59 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
       </div>
     </div>
     <div class="tpane" id="tab-gemeinde">
-      <div class="cs"><div class="csh"><div class="cst"><div class="csdot" style="background:#16A34A"></div>Mitgliedschaft</div></div>
+      <div class="cs" id="sec-mgl">
+        <div class="csh"><div class="cst"><div class="csdot" style="background:#16A34A"></div>Mitgliedschaft</div><span class="cse" onclick="tEdit('sec-mgl',this)">Bearbeiten</span></div>
         <div class="csb">
-          <div class="frow"><span class="flbl">Status</span><span class="fval" id="k-st-v">—</span></div>
-          <div class="frow"><span class="flbl">Eingetreten</span><span class="fval" id="k-ein">—</span></div>
-          <div class="frow"><span class="flbl">Taufdatum</span><span class="fval" id="k-taufe">—</span></div>
-          <div class="frow"><span class="flbl">Rolle</span><span class="fval"><span style="background:#1A3560;color:white;padding:2px 9px;border-radius:5px;font-size:11px;font-weight:500" id="k-rolle-c">—</span></span></div>
-          <div class="frow"><span class="flbl">Small Group</span><span class="fval" id="k-grp-v">—</span></div>
+          <div class="frow"><span class="flbl">Status</span><span class="fval">
+            <span class="fvt" id="k-st-v">—</span>
+            <select class="fvs" id="k-st-i" onchange="updStatus(this.value)">
+              <option value="aktiv">Aktiv</option>
+              <option value="besucher">Besucher</option>
+              <option value="taufkandidat">Taufkandidat</option>
+              <option value="inaktiv">Inaktiv</option>
+              <option value="neu">Neu</option>
+              <option value="ausgetreten">Ausgetreten</option>
+            </select>
+          </span></div>
+          <div class="frow"><span class="flbl">Eingetreten</span><span class="fval">
+            <span class="fvt" id="k-ein">—</span><input class="fvi" id="k-ein-i" type="date">
+          </span></div>
+          <div class="frow"><span class="flbl">Taufdatum</span><span class="fval">
+            <span class="fvt" id="k-taufe">—</span><input class="fvi" id="k-taufe-i" type="date">
+          </span></div>
+          <div class="frow"><span class="flbl">Familienstand</span><span class="fval">
+            <span class="fvt" id="k-fstand">—</span>
+            <select class="fvs" id="k-fstand-i"><option value="">—</option><option>Ledig</option><option>Verheiratet</option><option>Geschieden</option><option>Verwitwet</option></select>
+          </span></div>
+          <div class="frow"><span class="flbl">Nationalität</span><span class="fval">
+            <span class="fvt" id="k-nat">—</span><input class="fvi" id="k-nat-i" placeholder="Schweiz">
+          </span></div>
+          <div class="frow"><span class="flbl">Sprache</span><span class="fval">
+            <span class="fvt" id="k-lang">—</span>
+            <select class="fvs" id="k-lang-i"><option>Deutsch</option><option>Französisch</option><option>Italienisch</option><option>Englisch</option><option>Spanisch</option><option>Portugiesisch</option><option>Albanisch</option><option>Türkisch</option></select>
+          </span></div>
+        </div>
+      </div>
+      <div class="cs" id="sec-dienst">
+        <div class="csh"><div class="cst"><div class="csdot" style="background:#C8941A"></div>Dienst & Gruppe</div><span class="cse" onclick="tEdit('sec-dienst',this)">Bearbeiten</span></div>
+        <div class="csb">
+          <div class="frow"><span class="flbl">Rolle / Dienst</span><span class="fval">
+            <span class="fvt" id="k-rolle-c">—</span>
+            <select class="fvs" id="k-rolle-i"></select>
+          </span></div>
+          <div class="frow"><span class="flbl">Small Group</span><span class="fval">
+            <span class="fvt" id="k-grp-v">—</span>
+            <select class="fvs" id="k-grp-i"><option value="0">— keine —</option></select>
+          </span></div>
+        </div>
+      </div>
+      <div class="cs">
+        <div class="csh"><div class="cst"><div class="csdot" style="background:#7C3AED"></div>Lebensereignisse</div></div>
+        <div class="csb">
+          <div class="frow"><span class="flbl">Taufe</span><span class="fval" id="k-taufe-v">—</span></div>
+          <div class="frow"><span class="flbl">Konfirmation</span><span class="fval" style="color:#9CA3AF;font-style:italic">Nicht erfasst</span></div>
+          <div class="frow"><span class="flbl">Heirat</span><span class="fval" style="color:#9CA3AF;font-style:italic">Nicht erfasst</span></div>
+          <div class="frow"><span class="flbl">Beerdigung</span><span class="fval" style="color:#9CA3AF;font-style:italic">Nicht erfasst</span></div>
         </div>
       </div>
     </div>
@@ -758,6 +923,151 @@ function showPage(name) {
     showPage('login');
   }
 })();
+
+// ═══════════════════════════════════════════
+// DB HELPERS
+// ═══════════════════════════════════════════
+async function dbLoad(table, order='created_at') {
+  if(!_S?.mandant_id && _S?.rolle !== 'superadmin') return [];
+  try {
+    const q = sb.from(table).select('*');
+    if(_S?.mandant_id) q.eq('mandant_id', _S.mandant_id);
+    q.order(order, {ascending: order==='datum' ? true : false});
+    const {data, error} = await q;
+    if(error) { console.warn('DB load error:', table, error.message); return []; }
+    return data || [];
+  } catch(e) { console.warn('DB error:', e); return []; }
+}
+
+async function dbSave(table, payload) {
+  if(!_S?.mandant_id) return null;
+  try {
+    const {data, error} = await sb.from(table).insert({...payload, mandant_id: _S.mandant_id}).select().single();
+    if(error) { toast('Speicherfehler: '+error.message); return null; }
+    return data;
+  } catch(e) { toast('Fehler: '+e.message); return null; }
+}
+
+async function dbUpdate(table, id, payload) {
+  try {
+    const {error} = await sb.from(table).update({...payload, updated_at: new Date().toISOString()}).eq('id', id);
+    if(error) { toast('Updatefehler: '+error.message); return false; }
+    return true;
+  } catch(e) { toast('Fehler: '+e.message); return false; }
+}
+
+async function dbDelete(table, id) {
+  try {
+    const {error} = await sb.from(table).delete().eq('id', id);
+    if(error) { toast('Löschfehler: '+error.message); return false; }
+    return true;
+  } catch(e) { return false; }
+}
+
+// ═══════════════════════════════════════════
+// LOAD ALL DATA FROM DB
+// ═══════════════════════════════════════════
+async function loadAllData() {
+  const loader = document.getElementById('loader');
+  if(loader) { loader.style.display='flex'; document.getElementById('lo-txt').textContent='Daten werden geladen...'; }
+  try {
+    const [mgl, kont, sg, godi, lied, ev, set] = await Promise.all([
+      dbLoad('mitglieder','nachname'),
+      dbLoad('kontakte','created_at'),
+      dbLoad('small_groups','name'),
+      dbLoad('gottesdienste','datum'),
+      dbLoad('lieder','titel'),
+      dbLoad('events','datum'),
+      dbLoad('setlisten','datum'),
+    ]);
+    // Map DB data to app format
+    if(mgl.length > 0) {
+      members = mgl.map(m => ({
+        id: m.id, _dbId: m.id,
+        anrede: m.anrede || 'Herr',
+        vorname: m.vorname, nachname: m.nachname,
+        geschlecht: m.geschlecht || '',
+        email: m.email || '', mobil: m.mobil || '',
+        strasse: m.strasse ? (m.strasse + (m.nr?' '+m.nr:'')) : '',
+        plzort: m.plz ? (m.plz + (m.ort?' '+m.ort:'')) : '',
+        kanton: m.kanton || '', nationalitaet: m.nationalitaet || 'Schweiz',
+        sprache: m.sprache || 'Deutsch', familienstand: m.familienstand || '',
+        status: m.status || 'aktiv',
+        rolleId: 1, groupId: 0,
+        eingetreten: m.eingetreten || '', taufe: m.taufe || '',
+        geburt: m.geburt || '', notizen: m.notizen || '',
+        color: m.color || COLORS[Math.floor(Math.random()*COLORS.length)],
+        spenden: []
+      }));
+      mIdSeq = members.length + 1;
+    }
+    if(kont.length > 0) {
+      kontakte = kont.map(k => ({
+        id: k.id, _dbId: k.id,
+        vorname: k.vorname, nachname: k.nachname,
+        email: k.email||'', telefon: k.telefon||'',
+        status: k.status||'interessent', quelle: k.quelle||'',
+        datum: k.created_at?.split('T')[0]||'',
+        notizen: Array.isArray(k.notizen) ? k.notizen : [],
+        mitgliedGeworden: k.mitglied_geworden||false,
+        color: COLORS[Math.floor(Math.random()*COLORS.length)]
+      }));
+    }
+    if(sg.length > 0) {
+      gruppen = sg.map(g => ({id: g.id, name: g.name, leiter: g.leiter||'', tag: g.tag||''}));
+      sgData = sg.map(g => ({
+        id: g.id, _dbId: g.id,
+        name: g.name, leiter: g.leiter||'', koleiter: g.koleiter||'',
+        tag: g.tag||'', zeit: g.zeit||'', ort: g.ort||'',
+        typ: g.typ||'Hauskreis', ziel: g.ziel||'',
+        desc: g.beschreibung||'',
+        proto: Array.isArray(g.protokolle) ? g.protokolle : []
+      }));
+    }
+    if(godi.length > 0) {
+      gottesdienste = godi.map(g => ({
+        id: g.id, _dbId: g.id,
+        datum: g.datum, zeit: g.zeit||'10:00',
+        titel: g.titel, bibel: g.bibel||'',
+        prediger: g.prediger||'', ort: g.ort||'Hauptsaal',
+        besucher: g.besucher||0, typ: g.typ||'Sonntagsgottesdienst',
+        status: g.status||'geplant', notizen: g.notizen||''
+      }));
+    }
+    if(lied.length > 0) {
+      lieder = lied.map(l => ({
+        id: l.id, _dbId: l.id,
+        titel: l.titel, artist: l.artist||'',
+        tonart: l.tonart||'C', bpm: l.bpm||0,
+        lang: l.sprache||'Deutsch', ccli: l.ccli||'',
+        gespielt: l.gespielt||0, notiz: l.notiz||''
+      }));
+    }
+    if(ev.length > 0) {
+      events = ev.map(e => ({
+        id: e.id, _dbId: e.id,
+        name: e.name, datum: e.datum,
+        zeit: e.zeit||'', end: e.end_zeit||'',
+        typ: e.typ||'Gemeindefest', ort: e.ort||'',
+        verantw: e.verantwortlicher||'',
+        max: e.max_teilnehmer||0,
+        anmeld: e.anmeldung_erforderlich ? 'ja' : 'nein',
+        anmeldungen: e.anmeldungen||0,
+        status: e.status||'geplant', desc: e.beschreibung||''
+      }));
+    }
+    if(set.length > 0) {
+      setlisten = set.map(s => ({
+        id: s.id, _dbId: s.id,
+        name: s.name, datum: s.datum,
+        lieder: Array.isArray(s.lieder) ? s.lieder : []
+      }));
+    }
+  } catch(e) {
+    console.warn('loadAllData error:', e);
+  }
+  if(loader) loader.style.display='none';
+}
 
 async function loadUserAndShow(user) {
   try {
@@ -1058,6 +1368,11 @@ function navTo(p,el){
   document.getElementById('btn-exp').style.display=isM?'inline-flex':'none';
   document.getElementById('btn-new').style.display=isM?'inline-flex':'none';
   if(isM){updStats();rndrTbl();}
+  if(p==='kontakte'){kFilt=[...kontakte];filterKontakte();}
+  if(p==='groups'){rndrSGGrid();}
+  if(p==='gottesdienste'){rndrGD();}
+  if(p==='worship'){rndrWorship();}
+  if(p==='events'){rndrEvents();}
 }
 
 function setView(v){
@@ -1094,7 +1409,7 @@ function rndrTbl(){
       if(c.key==='plzort')return`<td style="color:#6B7280">${m.plzort}</td>`;
       return'<td>—</td>';
     }).join('');
-    return`<tr onclick="openK(${m.id})">${cells}<td><div class="rdel" onclick="event.stopPropagation();delM(${m.id})"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td></tr>`;
+    return`<tr id="row-${m.id}" onclick="openK(${m.id})" style="cursor:pointer">${cells}<td></td></tr>`;
   }).join('');
   document.getElementById('m-cnt').textContent=`${mFilt.length} Mitglieder`;
   document.getElementById('m-pi').textContent=`${start+1}–${Math.min(start+PER,mFilt.length)} von ${mFilt.length}`;
@@ -1108,18 +1423,40 @@ function rndrCards(){document.getElementById('m-cg').innerHTML=mFilt.map(m=>{con
 function updStats(){const t=members.length,a=members.filter(m=>m.status==='aktiv').length,b=members.filter(m=>m.status==='besucher').length,n=members.filter(m=>m.status==='neu').length;['ms-t','db-m'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});['ms-a','ms-b','ms-n','nb-m'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=[a,b,n,t][i];});const dm=document.getElementById('db-md');if(dm)dm.textContent=`↑ ${n} diesen Monat`;}
 
 function openNM(){refreshSel();document.getElementById('nm-ein').value=new Date().toISOString().split('T')[0];document.getElementById('mo-nm').classList.add('open');}
-function saveM(){
+async function saveM(){
   const v=document.getElementById('nm-vn').value.trim(),n=document.getElementById('nm-nn').value.trim();
   if(!v||!n){alert('Vorname und Nachname sind Pflichtfelder.');return;}
-  const plzort=document.getElementById('nm-plzort').value.trim();
-  members.unshift({id:mIdSeq++,anrede:document.getElementById('nm-anr').value,vorname:v,nachname:n,geschlecht:'',email:document.getElementById('nm-em').value,mobil:document.getElementById('nm-mob').value,strasse:document.getElementById('nm-str').value,plzort,kanton:'ZH',familienstand:'',status:document.getElementById('nm-st').value,rolleId:parseInt(document.getElementById('nm-rol').value)||rollen[0].id,groupId:parseInt(document.getElementById('nm-grp').value)||0,eingetreten:document.getElementById('nm-ein').value,taufe:'',geburt:'',notizen:document.getElementById('nm-not').value,color:COLORS[Math.floor(Math.random()*COLORS.length)],spenden:[]});
-  closeMo('mo-nm');applyMF();updStats();toast(`${v} ${n} gespeichert`);
+  const plzortVal=document.getElementById('nm-plzort').value.trim();
+  const parts=plzortVal.split(' ');
+  const plz=parts[0]||'';const ort=parts.slice(1).join(' ')||'';
+  const color=COLORS[Math.floor(Math.random()*COLORS.length)];
+  const payload={
+    vorname:v,nachname:n,anrede:document.getElementById('nm-anr').value,
+    email:document.getElementById('nm-em').value,mobil:document.getElementById('nm-mob').value,
+    strasse:document.getElementById('nm-str').value,plz,ort,kanton:'ZH',
+    status:document.getElementById('nm-st').value,
+    eingetreten:document.getElementById('nm-ein').value||null,
+    notizen:document.getElementById('nm-not').value,color
+  };
+  const saved = await dbSave('mitglieder', payload);
+  const newId = saved?.id || mIdSeq++;
+  members.unshift({id:newId,_dbId:saved?.id,anrede:payload.anrede,vorname:v,nachname:n,geschlecht:'',email:payload.email,mobil:payload.mobil,strasse:payload.strasse,plzort:plzortVal,kanton:'ZH',familienstand:'',status:payload.status,rolleId:parseInt(document.getElementById('nm-rol').value)||rollen[0].id,groupId:0,eingetreten:payload.eingetreten,taufe:'',geburt:'',notizen:payload.notizen,color,spenden:[]});
+  closeMo('mo-nm');applyMF();updStats();toast(v+' '+n+' gespeichert');
 }
-function delM(id){if(!confirm('Mitglied löschen?'))return;members=members.filter(m=>m.id!==id);applyMF();updStats();toast('Gelöscht');}
+async function delM(id){
+  if(!confirm('Mitglied löschen?'))return;
+  const m=members.find(x=>x.id===id);
+  if(m?._dbId) await dbDelete('mitglieder',m._dbId);
+  members=members.filter(m=>m.id!==id);applyMF();updStats();toast('Gelöscht');
+}
 function exportCSV(){const rows=[['Anrede','Vorname','Nachname','E-Mail','Mobil','Status','Eingetreten']];members.forEach(m=>{rows.push([m.anrede,m.vorname,m.nachname,m.email,m.mobil,m.status,m.eingetreten]);});const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(rows.map(r=>r.map(v=>`"${v||''}"`).join(',')).join('\n'));a.download='mitglieder.csv';a.click();toast('CSV exportiert');}
 
 function openK(id){
   const m=members.find(x=>x.id===id);if(!m)return;activeId=id;
+  // Highlight selected row
+  document.querySelectorAll('tbody tr').forEach(r=>r.style.background='');
+  const row=document.getElementById('row-'+id);
+  if(row)row.style.background='#FDF3DC';
   document.getElementById('k-av').textContent=ini(m);document.getElementById('k-av').style.background=m.color;
   document.getElementById('k-name').textContent=`${m.anrede} ${m.vorname} ${m.nachname}`;
   document.getElementById('k-sub').textContent=`${m.email} · ${m.mobil}`;
@@ -1135,15 +1472,66 @@ function openK(id){
   sv('k-em',m.email);si('k-em-i',m.email);sv('k-mob',m.mobil);si('k-mob-i',m.mobil);
   sv('k-str',m.strasse);si('k-str-i',m.strasse);sv('k-plz',m.plzort);si('k-plz-i',m.plzort);
   document.getElementById('k-st-v').innerHTML=`<span class="sbadge ${sC(m.status)}">${sL(m.status)}</span>`;
-  sv('k-ein',fD(m.eingetreten));sv('k-taufe',fD(m.taufe));
-  document.getElementById('k-rolle-c').textContent=r?r.name:'—';sv('k-grp-v',g?g.name:'');
+  sv('k-ein',fD(m.eingetreten));si('k-ein-i',m.eingetreten);
+  sv('k-taufe',fD(m.taufe));si('k-taufe-i',m.taufe);
+  sv('k-taufe-v',fD(m.taufe));
+  sv('k-fstand',m.familienstand||'—');si('k-fstand-i',m.familienstand||'');
+  sv('k-nat',m.nationalitaet||'Schweiz');si('k-nat-i',m.nationalitaet||'');
+  sv('k-lang',m.sprache||'Deutsch');si('k-lang-i',m.sprache||'Deutsch');
+  document.getElementById('k-rolle-c').textContent=r?r.name:'—';
+  sv('k-grp-v',g?g.name:'—');
+  populateDienstSelect();
+  const ks=document.getElementById('k-st-i');if(ks)ks.value=m.status;
+  const kr=document.getElementById('k-rolle-i');if(kr&&m.rolleId)kr.value=m.rolleId;
+  const kg=document.getElementById('k-grp-i');if(kg)kg.value=m.groupId||0;
   const s26=m.spenden.filter(s=>s.datum.startsWith('2026')).reduce((s,x)=>s+x.betrag,0);
   document.getElementById('kf-t').textContent=`CHF ${s26.toLocaleString('de-CH')}`;document.getElementById('kf-c').textContent=m.spenden.length;document.getElementById('kt-sp').textContent=m.spenden.length;
   document.getElementById('kf-body').innerHTML=m.spenden.length?m.spenden.map(s=>`<tr><td>${fD(s.datum)}</td><td><strong>CHF ${s.betrag}</strong></td><td>${zwB(s.weg)}</td><td>${s.zweck}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:#9CA3AF;padding:12px">Keine Spenden</td></tr>';
   rndrDms();document.querySelectorAll('.cs').forEach(s=>s.classList.remove('editing'));document.querySelectorAll('.cse').forEach(b=>{if(b.textContent.includes('Fertig')){b.textContent='Bearbeiten';b.style.color='';}});
+  // Show delete only for admin/superadmin
+  const delBtn=document.getElementById('k-del-btn');
+  if(delBtn)delBtn.style.display=(_S&&['superadmin','admin'].includes(_S.rolle))?'block':'none';
   sTab('stamm',document.querySelector('.ktab'));document.getElementById('k-ov').classList.add('open');document.getElementById('k-panel').classList.add('open');
 }
-function closeKarte(){document.getElementById('k-ov').classList.remove('open');document.getElementById('k-panel').classList.remove('open');activeId=null;}
+
+
+function updStatus(val) {
+  if(!activeId) return;
+  const m = members.find(x=>x.id===activeId);
+  if(!m) return;
+  m.status = val;
+  // Update badge in header
+  document.getElementById('k-st-v').innerHTML = `<span class="sbadge ${sC(val)}">${sL(val)}</span>`;
+  document.querySelectorAll('#k-badges .kchip').forEach(el => {
+    if(['s-ak','s-be','s-in','s-ne','s-tk'].some(c=>el.classList.contains(c))) el.remove();
+  });
+  const badge = document.createElement('span');
+  badge.className = 'kchip ' + sC(val);
+  badge.textContent = sL(val);
+  document.getElementById('k-badges').prepend(badge);
+  rndrTbl();
+  toast('Status geändert: ' + sL(val));
+}
+
+function populateDienstSelect() {
+  const rs = document.getElementById('k-rolle-i');
+  if(rs) rs.innerHTML = rollen.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+  const gs = document.getElementById('k-grp-i');
+  if(gs) gs.innerHTML = '<option value="0">— keine —</option>' + gruppen.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
+}
+
+function mailTo(){
+  if(!activeId)return;
+  const m=members.find(x=>x.id===activeId);
+  if(m&&m.email)window.location.href='mailto:'+m.email;
+}
+
+function closeKarte(){
+  document.getElementById('k-ov').classList.remove('open');
+  document.getElementById('k-panel').classList.remove('open');
+  document.querySelectorAll('tbody tr').forEach(r=>r.style.background='');
+  activeId=null;
+}
 function deleteCurrent(){if(!activeId||!confirm('Mitglied löschen?'))return;members=members.filter(m=>m.id!==activeId);closeKarte();applyMF();updStats();toast('Gelöscht');}
 function sTab(name,el){document.querySelectorAll('.ktab').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.tpane').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');const tp=document.getElementById('tab-'+name);if(tp)tp.classList.add('on');if(name==='dms')rndrDms();}
 function tEdit(secId,btn){const sec=document.getElementById(secId);const isE=sec.classList.contains('editing');if(isE){sec.querySelectorAll('.fvi,.fvs').forEach(inp=>{const bid=inp.id.replace(/-i$/,'');const tel=document.getElementById(bid);if(tel&&inp.value){tel.textContent=inp.value;if(activeId){const m=members.find(x=>x.id===activeId);if(m){const MAP={'k-vn':'vorname','k-nn':'nachname','k-geb':'geburt','k-ges':'geschlecht','k-em':'email','k-mob':'mobil','k-str':'strasse','k-plz':'plzort'};const key=MAP[bid];if(key)m[key]=inp.value;if(['k-vn','k-nn'].includes(bid)){document.getElementById('k-name').textContent=`${m.anrede} ${m.vorname} ${m.nachname}`;rndrTbl();}}}}});sec.classList.remove('editing');btn.textContent='Bearbeiten';btn.style.color='';toast('Gespeichert');}else{sec.classList.add('editing');btn.textContent='✓ Fertig';btn.style.color='#16A34A';}}
@@ -1174,5 +1562,315 @@ function refreshSel(){
   const rf=document.getElementById('m-rf');if(rf)rf.innerHTML='<option value="">Alle Rollen</option>'+rollen.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
 }
 </script>
+
+<!-- KONTAKT MODAL -->
+<div class="mo" id="mo-nk">
+  <div class="modal">
+    <div class="mh"><div class="mt2">Neuer Kontakt</div><div class="mx" onclick="closeMo('mo-nk')">✕</div></div>
+    <div class="mb2"><div class="fg2">
+      <div class="fgg"><label class="fl">Vorname *</label><input class="fi" id="nk-vn" placeholder="Max"></div>
+      <div class="fgg"><label class="fl">Nachname *</label><input class="fi" id="nk-nn" placeholder="Mustermann"></div>
+      <div class="fgg"><label class="fl">E-Mail</label><input class="fi" id="nk-em" type="email" placeholder="max@beispiel.ch"></div>
+      <div class="fgg"><label class="fl">Telefon</label><input class="fi" id="nk-tel" placeholder="+41 79 123 45 67"></div>
+      <div class="fgg"><label class="fl">Status</label><select class="fs" id="nk-st"><option value="interessent">Interessent</option><option value="besucher">Besucher</option><option value="inaktiv">Inaktiv</option></select></div>
+      <div class="fgg"><label class="fl">Quelle</label><select class="fs" id="nk-src"><option value="">—</option><option>Veranstaltung</option><option>Empfehlung</option><option>Website</option><option>Social Media</option><option>Gottesdienst</option></select></div>
+      <div class="fgg full"><label class="fl">Notizen</label><textarea class="fta" id="nk-not" placeholder="Wie kam der Kontakt zustande?..."></textarea></div>
+    </div></div>
+    <div class="mfoot"><button class="tbtn tbtn-ghost" onclick="closeMo('mo-nk')">Abbrechen</button><button class="tbtn tbtn-navy" onclick="saveNK()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- KONTAKT KARTE -->
+<div class="kov" id="kk-ov" onclick="closeKK()"></div>
+<div class="kpanel" id="kk-panel">
+  <div class="ktop">
+    <div class="kcap">Kontaktkarte</div>
+    <div style="display:flex;gap:6px;margin-left:auto">
+      <button class="tbtn tbtn-navy" style="font-size:11px" onclick="konvertToMitglied()">→ Als Mitglied erfassen</button>
+      <div class="kclose" onclick="closeKK()"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div>
+    </div>
+  </div>
+  <div class="khdr">
+    <div class="kav" id="kk-av" style="background:#2563EB"></div>
+    <div class="kinfo">
+      <div class="kname" id="kk-name"></div>
+      <div class="ksub" id="kk-sub"></div>
+      <div class="kbadges" id="kk-badges"></div>
+    </div>
+  </div>
+  <div class="kacts">
+    <button class="tbtn tbtn-ghost" style="font-size:11px" id="kk-email-btn" onclick="mailToKK()">✉ E-Mail</button>
+    <button id="kk-del-btn" style="padding:6px 12px;border-radius:7px;font-size:11px;background:#FEE2E2;color:#DC2626;border:1px solid #fca5a5;cursor:pointer;font-family:inherit;margin-left:auto;display:none" onclick="deleteKK()">Löschen</button>
+  </div>
+  <div class="ktabs">
+    <div class="ktab on" onclick="sTabKK('kk-stamm',this)">Kontaktdaten</div>
+    <div class="ktab" onclick="sTabKK('kk-notizen',this)">Notizen & Verlauf</div>
+  </div>
+  <div class="kbody">
+    <div class="tpane on" id="kk-stamm">
+      <div class="cs" id="kk-sec-pers">
+        <div class="csh"><div class="cst"><div class="csdot" style="background:#2563EB"></div>Kontaktdaten</div><span class="cse" onclick="tEditKK('kk-sec-pers',this)">Bearbeiten</span></div>
+        <div class="csb">
+          <div class="frow"><span class="flbl">Vorname</span><span class="fval"><span class="fvt" id="kk-vn">—</span><input class="fvi" id="kk-vn-i"></span></div>
+          <div class="frow"><span class="flbl">Nachname</span><span class="fval"><span class="fvt" id="kk-nn">—</span><input class="fvi" id="kk-nn-i"></span></div>
+          <div class="frow"><span class="flbl">E-Mail</span><span class="fval"><span class="fvt" id="kk-em">—</span><input class="fvi" id="kk-em-i" type="email"></span></div>
+          <div class="frow"><span class="flbl">Telefon</span><span class="fval"><span class="fvt" id="kk-tel">—</span><input class="fvi" id="kk-tel-i"></span></div>
+          <div class="frow"><span class="flbl">Status</span><span class="fval">
+            <span class="fvt" id="kk-st">—</span>
+            <select class="fvs" id="kk-st-i"><option value="interessent">Interessent</option><option value="besucher">Besucher</option><option value="inaktiv">Inaktiv</option></select>
+          </span></div>
+          <div class="frow"><span class="flbl">Quelle</span><span class="fval"><span class="fvt" id="kk-src">—</span><input class="fvi" id="kk-src-i"></span></div>
+          <div class="frow"><span class="flbl">Erstkontakt</span><span class="fval" id="kk-date">—</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="tpane" id="kk-notizen">
+      <div class="cs">
+        <div class="csh"><div class="cst">Verlauf & Notizen</div><button class="tbtn tbtn-navy" style="font-size:10px;padding:3px 8px" onclick="addKKNote()">+ Notiz</button></div>
+        <div class="csb" id="kk-notes-body"><div style="color:#9CA3AF;font-size:13px">Keine Einträge.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SMALL GROUP MODAL NEW -->
+<div class="mo" id="mo-nsg">
+  <div class="modal">
+    <div class="mh"><div class="mt2">Neue Small Group</div><div class="mx" onclick="closeMo('mo-nsg')">✕</div></div>
+    <div class="mb2"><div class="fg2">
+      <div class="fgg full"><label class="fl">Name *</label><input class="fi" id="nsg-name" placeholder="z.B. Hauskreis Zürich Nord"></div>
+      <div class="fgg"><label class="fl">Leiter</label><input class="fi" id="nsg-leiter" placeholder="Name des Leiters"></div>
+      <div class="fgg"><label class="fl">Ko-Leiter</label><input class="fi" id="nsg-koleiter" placeholder="Name"></div>
+      <div class="fgg"><label class="fl">Wochentag</label><select class="fs" id="nsg-tag"><option>Montag</option><option>Dienstag</option><option>Mittwoch</option><option>Donnerstag</option><option>Freitag</option><option>Samstag</option><option>Sonntag</option></select></div>
+      <div class="fgg"><label class="fl">Uhrzeit</label><input class="fi" id="nsg-zeit" placeholder="19:30" type="time"></div>
+      <div class="fgg"><label class="fl">Ort</label><input class="fi" id="nsg-ort" placeholder="Musterstrasse 1, Zürich"></div>
+      <div class="fgg"><label class="fl">Typ</label><select class="fs" id="nsg-typ"><option>Hauskreis</option><option>Jugendgruppe</option><option>Frauengruppe</option><option>Männergruppe</option><option>Seniorengruppe</option><option>Bibelkreis</option><option>Gebetsgruppe</option></select></div>
+      <div class="fgg"><label class="fl">Zielgruppe</label><input class="fi" id="nsg-ziel" placeholder="Alle, Jugendliche, Familien..."></div>
+      <div class="fgg full"><label class="fl">Beschreibung</label><textarea class="fta" id="nsg-desc" placeholder="Kurzbeschreibung der Gruppe..."></textarea></div>
+    </div></div>
+    <div class="mfoot"><button class="tbtn tbtn-ghost" onclick="closeMo('mo-nsg')">Abbrechen</button><button class="tbtn tbtn-navy" onclick="saveNSG()">Erstellen</button></div>
+  </div>
+</div>
+
+<!-- SMALL GROUP KARTE -->
+<div class="kov" id="sg-ov" onclick="closeSGK()"></div>
+<div class="kpanel" id="sg-panel" style="width:800px;right:-800px">
+  <div class="ktop">
+    <div class="kcap">Small Group Karte</div>
+    <div class="kclose" onclick="closeSGK()"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div>
+  </div>
+  <div class="khdr">
+    <div style="width:60px;height:60px;border-radius:12px;background:#7C3AED;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:white"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+    </div>
+    <div class="kinfo">
+      <div class="kname" id="sg-name"></div>
+      <div class="ksub" id="sg-sub"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        <span style="background:#EDE9FE;color:#7C3AED;padding:2px 9px;border-radius:5px;font-size:11px;font-weight:500" id="sg-typ-badge">Hauskreis</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:5px">
+      <div class="kq"><div class="kqn" id="sg-cnt">0</div><div class="kql">Mitglieder</div></div>
+      <div class="kq"><div class="kqn" id="sg-freq">wöch.</div><div class="kql">Frequenz</div></div>
+    </div>
+  </div>
+  <div class="ktabs">
+    <div class="ktab on" onclick="sTabSG('sg-info',this)">Info</div>
+    <div class="ktab" onclick="sTabSG('sg-members',this)">Mitglieder</div>
+    <div class="ktab" onclick="sTabSG('sg-protokoll',this)">Protokoll</div>
+  </div>
+  <div class="kbody">
+    <div class="tpane on" id="sg-info">
+      <div class="cs" id="sg-sec-info">
+        <div class="csh"><div class="cst"><div class="csdot" style="background:#7C3AED"></div>Gruppendetails</div><span class="cse" onclick="tEditSG('sg-sec-info',this)">Bearbeiten</span></div>
+        <div class="csb">
+          <div class="frow"><span class="flbl">Leiter</span><span class="fval"><span class="fvt" id="sg-leiter">—</span><input class="fvi" id="sg-leiter-i"></span></div>
+          <div class="frow"><span class="flbl">Ko-Leiter</span><span class="fval"><span class="fvt" id="sg-koleiter">—</span><input class="fvi" id="sg-koleiter-i"></span></div>
+          <div class="frow"><span class="flbl">Wochentag</span><span class="fval"><span class="fvt" id="sg-tag">—</span><select class="fvs" id="sg-tag-i"><option>Montag</option><option>Dienstag</option><option>Mittwoch</option><option>Donnerstag</option><option>Freitag</option><option>Samstag</option><option>Sonntag</option></select></span></div>
+          <div class="frow"><span class="flbl">Uhrzeit</span><span class="fval"><span class="fvt" id="sg-zeit">—</span><input class="fvi" id="sg-zeit-i" type="time"></span></div>
+          <div class="frow"><span class="flbl">Ort</span><span class="fval"><span class="fvt" id="sg-ort">—</span><input class="fvi" id="sg-ort-i"></span></div>
+          <div class="frow"><span class="flbl">Zielgruppe</span><span class="fval"><span class="fvt" id="sg-ziel">—</span><input class="fvi" id="sg-ziel-i"></span></div>
+          <div class="frow"><span class="flbl">Beschreibung</span><span class="fval"><span class="fvt" id="sg-desc">—</span><input class="fvi" id="sg-desc-i"></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="tpane" id="sg-members">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:13px;font-weight:600;color:#1A3560">Mitglieder dieser Gruppe</div>
+        <button class="tbtn tbtn-navy" style="font-size:11px" onclick="addMemberToSG()">+ Mitglied hinzufügen</button>
+      </div>
+      <div id="sg-members-list"></div>
+    </div>
+    <div class="tpane" id="sg-protokoll">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:13px;font-weight:600;color:#1A3560">Treffen-Protokolle</div>
+        <button class="tbtn tbtn-navy" style="font-size:11px" onclick="addSGProto()">+ Protokoll</button>
+      </div>
+      <div id="sg-proto-list"><div style="color:#9CA3AF;font-size:13px;text-align:center;padding:20px">Noch keine Protokolle erfasst.</div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- GOTTESDIENST MODAL -->
+<div class="mo" id="mo-ngd">
+  <div class="modal modal-lg">
+    <div class="mh"><div class="mt2">Neuer Gottesdienst</div><div class="mx" onclick="closeMo('mo-ngd')">✕</div></div>
+    <div class="mb2"><div class="fg2">
+      <div class="fgg"><label class="fl">Datum *</label><input class="fi" id="gd-datum" type="date"></div>
+      <div class="fgg"><label class="fl">Uhrzeit</label><input class="fi" id="gd-zeit" type="time" value="10:00"></div>
+      <div class="fgg full"><label class="fl">Titel / Thema *</label><input class="fi" id="gd-titel" placeholder="z.B. Glaube bewegt Berge"></div>
+      <div class="fgg"><label class="fl">Bibeltext</label><input class="fi" id="gd-bibel" placeholder="z.B. Markus 11:22-24"></div>
+      <div class="fgg"><label class="fl">Prediger</label><input class="fi" id="gd-prediger" placeholder="Name des Predigers"></div>
+      <div class="fgg"><label class="fl">Ort / Saal</label><input class="fi" id="gd-ort" placeholder="Hauptsaal" value="Hauptsaal"></div>
+      <div class="fgg"><label class="fl">Besucher (Zählung)</label><input class="fi" id="gd-besucher" type="number" placeholder="0"></div>
+      <div class="fgg"><label class="fl">Typ</label><select class="fs" id="gd-typ"><option>Sonntagsgottesdienst</option><option>Abendsgottesdienst</option><option>Jugendgottesdienst</option><option>Kindegottesdienst</option><option>Sondergottesdienst</option><option>Taufgottesdienst</option><option>Weihnachten</option><option>Ostern</option><option>Pfingsten</option></select></div>
+      <div class="fgg"><label class="fl">Status</label><select class="fs" id="gd-status"><option value="geplant">Geplant</option><option value="bestaetigt">Bestätigt</option><option value="durchgefuehrt">Durchgeführt</option></select></div>
+      <div class="fgg full"><label class="fl">Notizen / Infos</label><textarea class="fta" id="gd-notizen" placeholder="Weitere Infos, Ankündigungen..."></textarea></div>
+    </div></div>
+    <div class="mfoot"><button class="tbtn tbtn-ghost" onclick="closeMo('mo-ngd')">Abbrechen</button><button class="tbtn tbtn-navy" onclick="saveGD()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- LIED MODAL -->
+<div class="mo" id="mo-nlied">
+  <div class="modal">
+    <div class="mh"><div class="mt2">Neues Lied</div><div class="mx" onclick="closeMo('mo-nlied')">✕</div></div>
+    <div class="mb2"><div class="fg2">
+      <div class="fgg full"><label class="fl">Titel *</label><input class="fi" id="lied-titel" placeholder="z.B. Großer Gott"></div>
+      <div class="fgg"><label class="fl">Künstler / Autor</label><input class="fi" id="lied-artist" placeholder="z.B. Hillsong"></div>
+      <div class="fgg"><label class="fl">Tonart</label><select class="fs" id="lied-tonart"><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option><option>Am</option><option>Bm</option><option>Cm</option><option>Dm</option><option>Em</option></select></div>
+      <div class="fgg"><label class="fl">Tempo (BPM)</label><input class="fi" id="lied-bpm" type="number" placeholder="120"></div>
+      <div class="fgg"><label class="fl">Sprache</label><select class="fs" id="lied-lang"><option>Deutsch</option><option>Englisch</option><option>Französisch</option><option>Spanisch</option></select></div>
+      <div class="fgg"><label class="fl">CCLI Nr.</label><input class="fi" id="lied-ccli" placeholder="12345678"></div>
+      <div class="fgg full"><label class="fl">Notizen / Hinweise</label><textarea class="fta" id="lied-notiz" placeholder="Besonderheiten, Arrangementhinweise..."></textarea></div>
+    </div></div>
+    <div class="mfoot"><button class="tbtn tbtn-ghost" onclick="closeMo('mo-nlied')">Abbrechen</button><button class="tbtn tbtn-navy" onclick="saveLied()">Speichern</button></div>
+  </div>
+</div>
+
+<!-- EVENT MODAL -->
+<div class="mo" id="mo-nev">
+  <div class="modal modal-lg">
+    <div class="mh"><div class="mt2">Neues Event / Veranstaltung</div><div class="mx" onclick="closeMo('mo-nev')">✕</div></div>
+    <div class="mb2"><div class="fg2">
+      <div class="fgg full"><label class="fl">Name *</label><input class="fi" id="ev-name" placeholder="z.B. Gemeindefest 2026"></div>
+      <div class="fgg"><label class="fl">Datum *</label><input class="fi" id="ev-datum" type="date"></div>
+      <div class="fgg"><label class="fl">Uhrzeit</label><input class="fi" id="ev-zeit" type="time"></div>
+      <div class="fgg"><label class="fl">Ende</label><input class="fi" id="ev-end" type="time"></div>
+      <div class="fgg"><label class="fl">Typ</label><select class="fs" id="ev-typ"><option>Gemeindefest</option><option>Konzert</option><option>Seminar</option><option>Retreat</option><option>Jugend-Event</option><option>Kinder-Event</option><option>Gottesdienst</option><option>Trauung</option><option>Beerdigung</option><option>Taufe</option><option>Ausflug</option><option>Konferenz</option></select></div>
+      <div class="fgg"><label class="fl">Ort</label><input class="fi" id="ev-ort" placeholder="Gemeindehaus / Adresse"></div>
+      <div class="fgg"><label class="fl">Verantwortlicher</label><input class="fi" id="ev-verantw" placeholder="Name"></div>
+      <div class="fgg"><label class="fl">Max. Teilnehmer</label><input class="fi" id="ev-max" type="number" placeholder="Unbegrenzt"></div>
+      <div class="fgg"><label class="fl">Anmeldung erforderlich</label><select class="fs" id="ev-anmeld"><option value="nein">Nein</option><option value="ja">Ja</option></select></div>
+      <div class="fgg"><label class="fl">Status</label><select class="fs" id="ev-status"><option value="geplant">In Planung</option><option value="bestaetigt">Bestätigt</option><option value="abgesagt">Abgesagt</option></select></div>
+      <div class="fgg full"><label class="fl">Beschreibung / Programm</label><textarea class="fta" id="ev-desc" placeholder="Beschreibung, Programm, wichtige Infos..."></textarea></div>
+    </div></div>
+    <div class="mfoot"><button class="tbtn tbtn-ghost" onclick="closeMo('mo-nev')">Abbrechen</button><button class="tbtn tbtn-navy" onclick="saveEv()">Erstellen</button></div>
+  </div>
+</div>
+
+
+<!-- GOTTESDIENST PANEL -->
+<div class="kov" id="gd-ov" onclick="closeGDP()"></div>
+<div class="kpanel" id="gd-panel">
+  <div class="ktop">
+    <div class="kcap">Gottesdienst</div>
+    <div style="display:flex;gap:6px;margin-left:auto">
+      <div id="gd-panel-del-wrap" style="display:none">
+        <button style="padding:5px 11px;border-radius:7px;font-size:11px;background:#FEE2E2;color:#DC2626;border:1px solid #fca5a5;cursor:pointer;font-family:inherit" onclick="deleteGD()">Löschen</button>
+      </div>
+      <div class="kclose" onclick="closeGDP()"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div>
+    </div>
+  </div>
+  <div class="khdr">
+    <div style="width:60px;height:60px;border-radius:12px;background:#1A3560;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:#C8941A"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2z"/></svg>
+    </div>
+    <div class="kinfo">
+      <div class="kname" id="gdp-titel"></div>
+      <div class="ksub" id="gdp-sub"></div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <span id="gdp-status-badge" style="padding:2px 9px;border-radius:5px;font-size:11px;font-weight:500"></span>
+        <span id="gdp-typ-badge" style="background:#F4F5F7;color:#6B7280;padding:2px 9px;border-radius:5px;font-size:11px;font-weight:500"></span>
+      </div>
+    </div>
+    <div class="kqgrid">
+      <div class="kq"><div class="kqn" id="gdp-besucher">—</div><div class="kql">Besucher</div></div>
+    </div>
+  </div>
+  <div class="kbody" style="padding:14px 18px">
+    <div class="cs" id="gdp-sec">
+      <div class="csh"><div class="cst"><div class="csdot" style="background:#1A3560"></div>Details</div><span class="cse" onclick="tEditGDP('gdp-sec',this)">Bearbeiten</span></div>
+      <div class="csb">
+        <div class="frow"><span class="flbl">Datum</span><span class="fval"><span class="fvt" id="gdp-datum">—</span><input class="fvi" id="gdp-datum-i" type="date"></span></div>
+        <div class="frow"><span class="flbl">Uhrzeit</span><span class="fval"><span class="fvt" id="gdp-zeit">—</span><input class="fvi" id="gdp-zeit-i" type="time"></span></div>
+        <div class="frow"><span class="flbl">Titel / Thema</span><span class="fval"><span class="fvt" id="gdp-titel2">—</span><input class="fvi" id="gdp-titel2-i"></span></div>
+        <div class="frow"><span class="flbl">Bibeltext</span><span class="fval"><span class="fvt" id="gdp-bibel">—</span><input class="fvi" id="gdp-bibel-i" placeholder="z.B. Markus 11:22"></span></div>
+        <div class="frow"><span class="flbl">Prediger</span><span class="fval"><span class="fvt" id="gdp-prediger">—</span><input class="fvi" id="gdp-prediger-i"></span></div>
+        <div class="frow"><span class="flbl">Ort / Saal</span><span class="fval"><span class="fvt" id="gdp-ort">—</span><input class="fvi" id="gdp-ort-i"></span></div>
+        <div class="frow"><span class="flbl">Besucher</span><span class="fval"><span class="fvt" id="gdp-besucher2">—</span><input class="fvi" id="gdp-besucher2-i" type="number" min="0"></span></div>
+        <div class="frow"><span class="flbl">Typ</span><span class="fval"><span class="fvt" id="gdp-typ">—</span>
+          <select class="fvs" id="gdp-typ-i"><option>Sonntagsgottesdienst</option><option>Jugendgottesdienst</option><option>Sondergottesdienst</option><option>Taufgottesdienst</option><option>Weihnachten</option><option>Ostern</option><option>Pfingsten</option></select>
+        </span></div>
+        <div class="frow"><span class="flbl">Status</span><span class="fval"><span class="fvt" id="gdp-st">—</span>
+          <select class="fvs" id="gdp-st-i"><option value="geplant">Geplant</option><option value="bestaetigt">Bestätigt</option><option value="durchgefuehrt">Durchgeführt</option></select>
+        </span></div>
+        <div class="frow"><span class="flbl">Notizen</span><span class="fval"><span class="fvt" id="gdp-notiz">—</span><input class="fvi" id="gdp-notiz-i"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EVENT PANEL -->
+<div class="kov" id="ev-ov" onclick="closeEVP()"></div>
+<div class="kpanel" id="ev-panel">
+  <div class="ktop">
+    <div class="kcap">Veranstaltung</div>
+    <div style="display:flex;gap:6px;margin-left:auto">
+      <div id="ev-panel-del-wrap" style="display:none">
+        <button style="padding:5px 11px;border-radius:7px;font-size:11px;background:#FEE2E2;color:#DC2626;border:1px solid #fca5a5;cursor:pointer;font-family:inherit" onclick="deleteEV()">Löschen</button>
+      </div>
+      <div class="kclose" onclick="closeEVP()"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></div>
+    </div>
+  </div>
+  <div class="khdr">
+    <div style="width:60px;height:60px;border-radius:12px;background:#2563EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:28px" id="ev-panel-emoji">📅</div>
+    <div class="kinfo">
+      <div class="kname" id="evp-name"></div>
+      <div class="ksub" id="evp-sub"></div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <span id="evp-status-badge" style="padding:2px 9px;border-radius:5px;font-size:11px;font-weight:500"></span>
+        <span id="evp-typ-badge" style="background:#F4F5F7;color:#6B7280;padding:2px 9px;border-radius:5px;font-size:11px"></span>
+      </div>
+    </div>
+    <div class="kqgrid">
+      <div class="kq"><div class="kqn" id="evp-anmeld">—</div><div class="kql">Anmeldungen</div></div>
+    </div>
+  </div>
+  <div class="kbody" style="padding:14px 18px">
+    <div class="cs" id="evp-sec">
+      <div class="csh"><div class="cst"><div class="csdot" style="background:#2563EB"></div>Details</div><span class="cse" onclick="tEditEVP('evp-sec',this)">Bearbeiten</span></div>
+      <div class="csb">
+        <div class="frow"><span class="flbl">Name</span><span class="fval"><span class="fvt" id="evp-name2">—</span><input class="fvi" id="evp-name2-i"></span></div>
+        <div class="frow"><span class="flbl">Datum</span><span class="fval"><span class="fvt" id="evp-datum">—</span><input class="fvi" id="evp-datum-i" type="date"></span></div>
+        <div class="frow"><span class="flbl">Von / Bis</span><span class="fval"><span class="fvt" id="evp-zeit">—</span><input class="fvi" id="evp-zeit-i" type="time"></span></div>
+        <div class="frow"><span class="flbl">Typ</span><span class="fval"><span class="fvt" id="evp-typ">—</span>
+          <select class="fvs" id="evp-typ-i"><option>Gemeindefest</option><option>Konzert</option><option>Seminar</option><option>Retreat</option><option>Jugend-Event</option><option>Kinder-Event</option><option>Taufe</option><option>Trauung</option><option>Ausflug</option><option>Konferenz</option></select>
+        </span></div>
+        <div class="frow"><span class="flbl">Ort</span><span class="fval"><span class="fvt" id="evp-ort">—</span><input class="fvi" id="evp-ort-i"></span></div>
+        <div class="frow"><span class="flbl">Verantwortlicher</span><span class="fval"><span class="fvt" id="evp-verantw">—</span><input class="fvi" id="evp-verantw-i"></span></div>
+        <div class="frow"><span class="flbl">Max. Teilnehmer</span><span class="fval"><span class="fvt" id="evp-max">—</span><input class="fvi" id="evp-max-i" type="number"></span></div>
+        <div class="frow"><span class="flbl">Anmeldungen</span><span class="fval"><span class="fvt" id="evp-anmeld2">—</span><input class="fvi" id="evp-anmeld2-i" type="number" min="0"></span></div>
+        <div class="frow"><span class="flbl">Status</span><span class="fval"><span class="fvt" id="evp-st">—</span>
+          <select class="fvs" id="evp-st-i"><option value="geplant">In Planung</option><option value="bestaetigt">Bestätigt</option><option value="durchgefuehrt">Durchgeführt</option><option value="abgesagt">Abgesagt</option></select>
+        </span></div>
+        <div class="frow"><span class="flbl">Beschreibung</span><span class="fval"><span class="fvt" id="evp-desc">—</span><input class="fvi" id="evp-desc-i"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
