@@ -2129,4 +2129,13 @@ function saveSetup(){
 document.addEventListener('DOMContentLoaded', () => {
   const userRow = document.querySelector('.user-row');
   if (userRow) {
-    userRow.onc
+    userRow.onc    userRow.onclick = doLogout;
+    const uname = userRow.querySelector('.u-name');
+    if (uname) uname.id = 'u-name-display';
+    const av = userRow.querySelector('.u-av');
+    if (av) av.id = 'app-av-init';
+  }
+});
+</script>
+</body>
+</html>
