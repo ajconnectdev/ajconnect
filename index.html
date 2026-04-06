@@ -489,6 +489,7 @@ td{padding:10px 13px;font-size:13px;vertical-align:middle}
     <span style="color:white;font-weight:600;font-size:15px;font-family:Georgia,serif">AJ Connect</span>
     <span style="background:rgba(200,148,26,0.25);color:#e8b84b;font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600">ADMIN</span>
     <span style="color:rgba(255,255,255,0.6);font-size:12px;margin-left:12px" id="admin-uname"></span>
+    <button class="alogout" style="background:rgba(200,148,26,0.2);color:var(--gold2);border-color:rgba(200,148,26,0.3)" onclick="showScreen('app');initApp()">← Zur App</button>
     <button class="alogout" onclick="doLogout()">Abmelden</button>
   </div>
   <div class="amain">
@@ -594,6 +595,9 @@ td{padding:10px 13px;font-size:13px;vertical-align:middle}
   <div class="topbar">
     <div class="topbar-title" id="topbar-title">Dashboard</div>
     <div class="topbar-right">
+      <button id="topbar-admin-btn" class="btn btn-gold" style="display:none;font-size:11px" onclick="showScreen('admin');initAdmin()">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg>Admin
+      </button>
       <div class="view-toggle" id="vt-wrap" style="display:none">
         <button class="vt active" id="vt-l" onclick="setView('list')">
           <svg viewBox="0 0 24 24"><path d="M3 14h3v-3H3v3zm0 4h3v-3H3v3zm0-8h3V7H3v3zm4 4h14v-3H7v3zm0 4h14v-3H7v3zM7 7v3h14V7H7z"/></svg>Liste
@@ -1225,8 +1229,15 @@ async function loadAndShow(user) {
     } else {
       _S = { user_id:user.id, email:user.email, name:p.name||user.email, rolle:p.rolle, mandant_id:null, mandant_name:'AJ Connect', lizenz:'professional' };
     }
-    if (p.rolle === 'superadmin') { showScreen('admin'); initAdmin(); }
-    else { showScreen('app'); initApp(); }
+    // Everyone lands on the ERP app after login
+    // Superadmin also sees the ERP app + has an "Admin" button
+    showScreen('app'); 
+    initApp();
+    // Show admin button in topbar only for superadmin
+    if (p.rolle === 'superadmin') {
+      const adminBtn = document.getElementById('topbar-admin-btn');
+      if (adminBtn) adminBtn.style.display = 'flex';
+    }
   } catch(e) { showErrL('Fehler: ' + e.message); }
 }
 
