@@ -1006,6 +1006,13 @@ function showPage(name) {
   });
   const el = document.getElementById('pg-'+name);
   if (el) el.style.display = (name === 'login') ? 'flex' : 'block';
+  if (name === 'admin') {
+    if (_S) {
+      const au = document.getElementById('a-uname');
+      if(au) au.textContent = _S.name || _S.email;
+    }
+    loadAdminData();
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -1427,20 +1434,7 @@ async function saveAU() {
   btn.disabled=false; btn.textContent='Anlegen';
 }
 
-// showPage also triggers admin load
-const _origShowPage = showPage;
-function showPage(name) {
-  document.getElementById('loader').style.display = 'none';
-  ['login','admin','app'].forEach(p => {
-    document.getElementById('pg-'+p).style.display = 'none';
-  });
-  const el = document.getElementById('pg-'+name);
-  if (el) el.style.display = (name === 'login') ? 'flex' : 'block';
-  if (name === 'admin') {
-    if (_S) document.getElementById('a-uname').textContent = _S.name || _S.email;
-    loadAdminData();
-  }
-}
+// showPage handles admin init in the main definition above
 
 // ═══════════════════════════════════════════
 // ERP DATA
