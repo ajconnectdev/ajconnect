@@ -392,11 +392,11 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
     <div class="acard">
       <div class="acardh">
         <div class="acardtitle">Benutzer</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <select id="user-mandant-filter" class="afs" style="padding:6px 10px;font-size:12px;width:200px" onchange="filterAdminUsers()">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <select id="user-mandant-filter" style="padding:7px 10px;font-size:12px;border:1.5px solid #E5E7EB;border-radius:7px;min-width:200px;outline:none" onchange="filterAdminUsers()">
             <option value="">Alle Gemeinden</option>
           </select>
-          <button class="abtn abtn-navy" onclick="openAUMo()">+ Benutzer anlegen</button>
+          <button class="abtn abtn-navy" onclick="openAUMoFiltered()">+ Benutzer anlegen</button>
         </div>
       </div>
       <div style="overflow-x:auto"><table><thead><tr><th>Name / E-Mail</th><th>Gemeinde</th><th>Rolle</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="a-user"><tr><td colspan="5" class="aempty">Lädt...</td></tr></tbody></table></div>
@@ -653,6 +653,16 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
         <div class="page" id="pg-einrichtung">
           <div style="display:flex;flex-direction:column;gap:16px;padding:4px">
             <div style="font-size:20px;font-weight:600;color:#1A3560">Einrichtung & Konfiguration</div>
+            <!-- IMPORT/EXPORT BANNER -->
+            <div style="background:linear-gradient(135deg,#1A3560,#2563EB);border-radius:12px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+              <div>
+                <div style="font-size:15px;font-weight:600;color:white;margin-bottom:4px">📦 Import / Export Center</div>
+                <div style="font-size:12px;color:rgba(255,255,255,0.8)">Excel-Import & Export für alle Module — Mitglieder, Kontakte, Gottesdienste, Events</div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button onclick="openImportExport()" style="padding:9px 18px;background:white;color:#1A3560;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">📥 Import / Export öffnen</button>
+              </div>
+            </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
               <!-- Gemeinde Stammdaten -->
               <div class="card">
@@ -1100,6 +1110,7 @@ async function loadAllData() {
     ]);
     // Map DB data to app format
     if(mgl.length > 0) {
+      // Real data from DB
       members = mgl.map(m => ({
         id: m.id, _dbId: m.id,
         anrede: m.anrede || 'Herr',
@@ -1118,6 +1129,13 @@ async function loadAllData() {
         spenden: []
       }));
       mIdSeq = members.length + 1;
+    } else if(!_S?.mandant_id) {
+      // Superadmin preview: no demo data
+      members = [];
+    } else {
+      // Empty DB for this mandant: show demo data so UI isn't blank
+      members = DEMO_MEMBERS.map(m=>({...m,_dbId:null}));
+      mIdSeq = DEMO_MEMBERS.length + 1;
     }
     if(kont.length > 0) {
       kontakte = kont.map(k => ({
@@ -1366,7 +1384,10 @@ function renderAU(mandantFilter) {
       <td style="font-size:12px;color:#6B7280">${mn}</td>
       <td><span class="abadge" style="${u.rolle==='superadmin'?'background:#FEE2E2;color:#DC2626':'background:#DBEAFE;color:#2563EB'}">${rl}</span></td>
       <td><span class="abadge ${u.aktiv?'ab-ok':'ab-wait'}">${u.aktiv?'Aktiv':'Ausstehend'}</span></td>
-      <td><button class="aaction-btn" style="background:${u.aktiv?'#FEE2E2':'#DCFCE7'};color:${u.aktiv?'#DC2626':'#16A34A'};border-color:${u.aktiv?'#fca5a5':'#86efac'}" onclick="toggleAU('${u.id}',${u.aktiv})">${u.aktiv?'Sperren':'Freischalten'}</button></td>
+      <td style="display:flex;gap:5px">
+        <button class="aaction-btn" style="background:${u.aktiv?'#FEE2E2':'#DCFCE7'};color:${u.aktiv?'#DC2626':'#16A34A'};border-color:${u.aktiv?'#fca5a5':'#86efac'}" onclick="toggleAU('${u.id}',${u.aktiv})">${u.aktiv?'Sperren':'Freischalten'}</button>
+        ${u.rolle!=='superadmin'?`<button class="aaction-btn" style="background:#FEE2E2;color:#DC2626;border-color:#fca5a5" onclick="deleteAU('${u.id}','${u.name||u.email}')">Löschen</button>`:''}
+      </td>
     </tr>`;
   }).join('');
 }
@@ -1390,6 +1411,18 @@ function openAMo() {
   document.getElementById('am-lizenz').value = 'starter';
   document.getElementById('am-aktiv').value = 'false';
   document.getElementById('amo-m').classList.add('open');
+}
+
+function openAUMoFiltered() {
+  // Pre-select currently filtered mandant
+  const filter = document.getElementById('user-mandant-filter')?.value || '';
+  openAUMo();
+  if (filter) {
+    setTimeout(() => {
+      const sel = document.getElementById('au-mandant');
+      if (sel) sel.value = filter;
+    }, 50);
+  }
 }
 
 function openAUMo() {
@@ -1463,8 +1496,10 @@ const ORT=[['8001','Zürich','ZH'],['8400','Winterthur','ZH'],['3000','Bern','BE
 const STR=['Bahnhofstrasse','Hauptstrasse','Kirchgasse','Dorfstrasse','Seestrasse'];
 const STATS=['aktiv','aktiv','aktiv','aktiv','besucher','besucher','inaktiv','neu','taufkandidat'];
 const SP_DEMO=[{datum:'2026-04-02',betrag:100,weg:'twint',zweck:'Gemeinde allgemein'},{datum:'2026-03-16',betrag:80,weg:'bar',zweck:'Mission'},{datum:'2026-02-18',betrag:150,weg:'ueberweisung',zweck:'Bauprojekt'}];
-let members=NM.map((n,i)=>{const o=ORT[i%ORT.length];return{id:i+1,anrede:n[2],vorname:n[0],nachname:n[1],geschlecht:n[2]==='Frau'?'Weiblich':'Männlich',email:`${n[0].toLowerCase()}.${n[1].toLowerCase()}@example.ch`,mobil:`+41 ${70+i%10} ${100+i*3} ${10+i%89} ${10+i%80}`,strasse:STR[i%STR.length]+' '+String(i+1),plzort:`${o[0]} ${o[1]}`,kanton:o[2],familienstand:['Ledig','Verheiratet','Verheiratet','Ledig'][i%4],status:STATS[i%STATS.length],rolleId:rollen[i%rollen.length].id,groupId:gruppen[i%gruppen.length].id,eingetreten:`${2016+i%9}-${String(1+i%12).padStart(2,'0')}-01`,taufe:i%3===0?`${2017+i%8}-07-03`:'',geburt:`${1960+i%45}-${String(1+i%12).padStart(2,'0')}-15`,notizen:'',color:COLORS[i%COLORS.length],spenden:i<5?SP_DEMO.slice(0,1+i%3):[]}});
-let mIdSeq=NM.length+1,mFilt=[...members],mFilter='alle',mPage=1,mView='list',activeId=null;
+// Demo data - only used when DB is empty
+const DEMO_MEMBERS=NM.map((n,i)=>{const o=ORT[i%ORT.length];return{id:i+1,anrede:n[2],vorname:n[0],nachname:n[1],geschlecht:n[2]==='Frau'?'Weiblich':'Männlich',email:`${n[0].toLowerCase()}.${n[1].toLowerCase()}@example.ch`,mobil:`+41 ${70+i%10} ${100+i*3} ${10+i%89} ${10+i%80}`,strasse:STR[i%STR.length]+' '+String(i+1),plzort:`${o[0]} ${o[1]}`,kanton:o[2],familienstand:['Ledig','Verheiratet','Verheiratet','Ledig'][i%4],status:STATS[i%STATS.length],rolleId:rollen[i%rollen.length].id,groupId:gruppen[i%gruppen.length].id,eingetreten:`${2016+i%9}-${String(1+i%12).padStart(2,'0')}-01`,taufe:i%3===0?`${2017+i%8}-07-03`:'',geburt:`${1960+i%45}-${String(1+i%12).padStart(2,'0')}-15`,notizen:'',color:COLORS[i%COLORS.length],spenden:i<5?SP_DEMO.slice(0,1+i%3):[]}});
+let members=[]; // Start empty - populated from DB or demo
+let mIdSeq=1,mFilt=[],mFilter='alle',mPage=1,mView='list',activeId=null;
 const PER=10;
 let dmsStore={},dmsSeq=1;
 
@@ -2050,12 +2085,41 @@ function doAddMemberSG(sgId){const sel=document.getElementById('sg-add-sel');if(
 function removeMemberSG(mid,sgId){if(!confirm('Aus Gruppe entfernen?'))return;const m=members.find(x=>x.id===mid);if(m)m.groupId=0;const sg=sgData.find(x=>x.id===sgId);if(sg){rndrSGMembers(sg);document.getElementById('sg-cnt').textContent=members.filter(x=>x.groupId===sgId).length;}rndrSGGrid();toast('Entfernt');}
 function addSGProto(){
   if(!activeSG)return;
+  const existing=document.getElementById('sg-proto-dlg');
+  if(existing)existing.remove();
   const div=document.createElement('div');
+  div.id='sg-proto-dlg';
   div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center';
-  div.innerHTML='<div style="background:white;border-radius:12px;padding:24px;width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.2)"><div style="font-size:15px;font-weight:600;color:#1A3560;margin-bottom:16px">Treffen-Protokoll</div><div style="margin-bottom:10px"><label style="font-size:12px;color:#6B7280;display:block;margin-bottom:4px">Datum</label><input type="date" id="proto-datum" value="'+new Date().toISOString().split('T')[0]+'" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px"></div><div style="margin-bottom:10px"><label style="font-size:12px;color:#6B7280;display:block;margin-bottom:4px">Anwesende</label><input type="text" id="proto-anw" placeholder="z.B. 8 Personen" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px"></div><div style="margin-bottom:16px"><label style="font-size:12px;color:#6B7280;display:block;margin-bottom:4px">Notizen *</label><textarea id="proto-txt" rows="4" placeholder="Thema, Gebetsanliegen..." style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;resize:vertical;font-family:inherit"></textarea></div><div style="display:flex;gap:8px;justify-content:flex-end"><button onclick="this.closest(\'[style]\').remove()" style="padding:8px 16px;border:1px solid #E5E7EB;border-radius:7px;background:white;cursor:pointer;font-family:inherit">Abbrechen</button><button onclick="doSGProto(\''+activeSG+'\');this.closest(\'[style]\').remove()" style="padding:8px 16px;background:#7C3AED;color:white;border:none;border-radius:7px;cursor:pointer;font-family:inherit;font-weight:500">Speichern</button></div></div>';
+  const today=new Date().toISOString().split('T')[0];
+  div.innerHTML=`<div style="background:white;border-radius:12px;padding:24px;width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
+    <div style="font-size:15px;font-weight:600;color:#1A3560;margin-bottom:16px">Treffen-Protokoll</div>
+    <div style="margin-bottom:10px">
+      <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:4px">Datum</label>
+      <input type="date" id="proto-datum" value="${today}" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box">
+    </div>
+    <div style="margin-bottom:10px">
+      <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:4px">Anwesende</label>
+      <input type="text" id="proto-anw" placeholder="z.B. 8 Personen" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;box-sizing:border-box">
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:#6B7280;display:block;margin-bottom:4px">Notizen *</label>
+      <textarea id="proto-txt" rows="4" placeholder="Thema, Gebetsanliegen..." style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;resize:vertical;font-family:inherit;box-sizing:border-box"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button onclick="document.getElementById('sg-proto-dlg').remove()" style="padding:8px 16px;border:1px solid #E5E7EB;border-radius:7px;background:white;cursor:pointer;font-family:inherit">Abbrechen</button>
+      <button onclick="doSGProto('${activeSG}')" style="padding:8px 16px;background:#7C3AED;color:white;border:none;border-radius:7px;cursor:pointer;font-family:inherit;font-weight:500">Speichern</button>
+    </div>
+  </div>`;
   document.body.appendChild(div);
 }
-function doSGProto(sgId){const sg=sgData.find(x=>x.id===sgId);if(!sg)return;const txt=document.getElementById('proto-txt')?.value.trim();if(!txt){toast('Notiz Pflicht');return;}const entry={datum:document.getElementById('proto-datum')?.value||new Date().toISOString().split('T')[0],text:txt,anwesend:document.getElementById('proto-anw')?.value||''};if(!sg.proto)sg.proto=[];sg.proto.unshift(entry);if(sg._dbId)dbUpdate('small_groups',sg._dbId,{protokolle:sg.proto});rndrSGProto(sg);toast('Protokoll gespeichert');}
+
+function doSGProto(sgId){const sg=sgData.find(x=>x.id===sgId);if(!sg)return;const txt=document.getElementById('proto-txt')?.value.trim();if(!txt){toast('Notiz Pflicht');return;}const entry={datum:document.getElementById('proto-datum')?.value||new Date().toISOString().split('T')[0],text:txt,anwesend:document.getElementById('proto-anw')?.value||''};if(!sg.proto)sg.proto=[];sg.proto.unshift(entry);if(sg._dbId)dbUpdate('small_groups',sg._dbId,{protokolle:sg.proto});
+  rndrSGProto(sg);
+  // Close the dialog
+  const dlg=document.getElementById('sg-proto-dlg');
+  if(dlg)dlg.remove();
+  toast('Protokoll gespeichert ✓');
+}
 
 // ═══════════════════════════════════════════
 // GOTTESDIENSTE
@@ -2293,6 +2357,176 @@ function saveGemeindeDaten(){
     const gn=document.getElementById('sb-gname');if(gn)gn.textContent=name;
   }
   toast('Gemeinde-Daten gespeichert ✓');
+}
+
+async function deleteAU(id, name) {
+  if (!confirm('Benutzer "' + name + '" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) return;
+  const {error} = await sb.from('profiles').delete().eq('id', id);
+  if (error) { toast('Fehler: ' + error.message); return; }
+  toast('Benutzer gelöscht ✓');
+  await loadAdminData();
+}
+
+// ═══════════════════════════════════════════
+// IMPORT / EXPORT CENTER
+// ═══════════════════════════════════════════
+function openImportExport(){
+  document.getElementById('mo-impexp').classList.add('open');
+}
+
+function exportData(type){
+  let rows=[], filename='';
+  const BOM='﻿'; // UTF-8 BOM for Excel
+
+  if(type==='mitglieder'){
+    filename='Mitglieder_AJConnect.csv';
+    rows=[['Anrede','Vorname','Nachname','E-Mail','Mobil','Strasse','PLZ/Ort','Status','Eingetreten','Geburtsdatum','Taufe','Rolle','Small Group','Notizen']];
+    members.forEach(m=>{
+      const r=gR(m.rolleId),g=gG(m.groupId);
+      rows.push([m.anrede,m.vorname,m.nachname,m.email,m.mobil,m.strasse,m.plzort,m.status,m.eingetreten,m.geburt,m.taufe,r?r.name:'',g?g.name:'',m.notizen]);
+    });
+  } else if(type==='kontakte'){
+    filename='Kontakte_AJConnect.csv';
+    rows=[['Vorname','Nachname','E-Mail','Telefon','Status','Quelle','Erstkontakt','Notizen']];
+    kontakte.forEach(k=>{
+      const notizText=k.notizen.map(n=>n.text).join(' | ');
+      rows.push([k.vorname,k.nachname,k.email,k.telefon,k.status,k.quelle,k.datum,notizText]);
+    });
+  } else if(type==='smallgroups'){
+    filename='SmallGroups_AJConnect.csv';
+    rows=[['Gruppe','Leiter','Wochentag','Uhrzeit','Ort','Typ','Mitglieder']];
+    sgData.forEach(sg=>{
+      const mgl=members.filter(m=>m.groupId===sg.id).map(m=>m.vorname+' '+m.nachname).join(', ');
+      rows.push([sg.name,sg.leiter,sg.tag,sg.zeit,sg.ort,sg.typ,mgl]);
+    });
+  } else if(type==='gottesdienste'){
+    filename='Gottesdienste_AJConnect.csv';
+    rows=[['Datum','Uhrzeit','Titel','Bibeltext','Prediger','Ort','Besucher','Typ','Status','Notizen']];
+    gottesdienste.forEach(g=>{
+      rows.push([g.datum,g.zeit,g.titel,g.bibel,g.prediger,g.ort,g.besucher,g.typ,g.status,g.notizen]);
+    });
+  } else if(type==='events'){
+    filename='Events_AJConnect.csv';
+    rows=[['Datum','Uhrzeit','Name','Typ','Ort','Verantwortlicher','Anmeldungen','Max','Status','Beschreibung']];
+    events.forEach(ev=>{
+      rows.push([ev.datum,ev.zeit,ev.name,ev.typ,ev.ort,ev.verantw,ev.anmeldungen,ev.max,ev.status,ev.desc]);
+    });
+  }
+
+  const NL='\n';
+  const csv=BOM+rows.map(r=>r.map(v=>{
+    const s=String(v||'').replace(/"/g,'""');
+    return (s.includes(',')||s.includes('"')||s.includes(NL)) ? '"'+s+'"' : s;
+  }).join(',')).join(NL);
+
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=filename;
+  a.click();
+  toast('✓ '+filename+' exportiert');
+}
+
+function exportAll(){
+  ['mitglieder','kontakte','smallgroups','gottesdienste','events'].forEach((t,i)=>{
+    setTimeout(()=>exportData(t), i*300);
+  });
+  toast('✓ Alle Dateien werden exportiert...');
+}
+
+function downloadTemplate(type){
+  let rows=[], filename='';
+  const BOM='﻿';
+  if(type==='mitglieder'){
+    filename='Vorlage_Mitglieder.csv';
+    rows=[
+      ['Anrede','Vorname','Nachname','E-Mail','Mobil','Strasse','PLZ/Ort','Status','Eingetreten','Geburtsdatum'],
+      ['Herr','Max','Mustermann','max@example.ch','+41 79 123 45 67','Musterstrasse 1','8001 Zürich','aktiv','2024-01-15','1985-03-20'],
+      ['Frau','Maria','Muster','maria@example.ch','+41 78 987 65 43','Seestrasse 2','8002 Zürich','besucher','','1990-07-12'],
+    ];
+  } else if(type==='kontakte'){
+    filename='Vorlage_Kontakte.csv';
+    rows=[
+      ['Vorname','Nachname','E-Mail','Telefon','Status','Quelle'],
+      ['Hans','Beispiel','hans@example.ch','+41 76 111 22 33','interessent','Gottesdienst'],
+      ['Anna','Demo','anna@example.ch','+41 77 444 55 66','besucher','Empfehlung'],
+    ];
+  }
+  const csv=BOM+rows.map(r=>r.map(v=>'"'+String(v||'')+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=filename;
+  a.click();
+  toast('✓ Vorlage heruntergeladen');
+}
+
+function importData(type, input){
+  const file=input.files[0];
+  if(!file){return;}
+  const prog=document.getElementById('import-progress');
+  if(prog){prog.style.display='block';prog.textContent='Datei wird gelesen...';}
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    const text=e.target.result.replace(/^﻿/,''); // Remove BOM
+    const lines=text.split('\n').filter(l=>l.trim());
+    if(lines.length<2){toast('Datei ist leer oder ungültig');return;}
+    const headers=parseCSVLine(lines[0]);
+    const dataLines=lines.slice(1);
+    let imported=0, errors=0;
+
+    if(type==='mitglieder'){
+      for(const line of dataLines){
+        const cols=parseCSVLine(line);
+        if(!cols[1]||!cols[2])continue; // Vorname + Nachname required
+        const plzort=(cols[6]||'').trim();
+        const parts=plzort.split(' ');
+        const payload={
+          anrede:cols[0]||'Herr',vorname:cols[1],nachname:cols[2],
+          email:cols[3]||'',mobil:cols[4]||'',strasse:cols[5]||'',
+          plz:parts[0]||'',ort:parts.slice(1).join(' ')||'',
+          status:cols[7]||'aktiv',
+          eingetreten:cols[8]||null,geburt:cols[9]||null,
+          color:COLORS[Math.floor(Math.random()*COLORS.length)]
+        };
+        try {
+          const saved=await dbSave('mitglieder',payload);
+          const newId=saved?.id||(mIdSeq++);
+          members.push({id:newId,_dbId:saved?.id,...payload,
+            plzort,kanton:'',familienstand:'',rolleId:1,groupId:0,
+            taufe:'',notizen:'',spenden:[]});
+          imported++;
+        } catch(err){errors++;}
+      }
+      applyMF();updStats();
+    } else if(type==='kontakte'){
+      for(const line of dataLines){
+        const cols=parseCSVLine(line);
+        if(!cols[0]||!cols[1])continue;
+        const payload={vorname:cols[0],nachname:cols[1],email:cols[2]||'',telefon:cols[3]||'',status:cols[4]||'interessent',quelle:cols[5]||''};
+        try {
+          const saved=await dbSave('kontakte',payload);
+          kontakte.push({id:saved?.id||('k'+(kIdSeq++)),_dbId:saved?.id,...payload,datum:new Date().toISOString().split('T')[0],notizen:[],mitgliedGeworden:false,color:COLORS[Math.floor(Math.random()*COLORS.length)]});
+          imported++;
+        } catch(err){errors++;}
+      }
+    }
+    const msg=imported+' Datensätze importiert'+(errors>0?' ('+errors+' Fehler)':'')+'✓';
+    if(prog){prog.textContent=msg;}
+    toast(msg);
+    input.value='';
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+function parseCSVLine(line){
+  const result=[];let cur='';let inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else{inQ=!inQ;}}
+    else if(c===','&&!inQ){result.push(cur.trim());cur='';}
+    else{cur+=c;}
+  }
+  result.push(cur.trim());
+  return result;
 }
 </script>
 
@@ -2602,6 +2836,80 @@ function saveGemeindeDaten(){
         <div class="frow"><span class="flbl">Beschreibung</span><span class="fval"><span class="fvt" id="evp-desc">—</span><input class="fvi" id="evp-desc-i"></span></div>
       </div>
     </div>
+  </div>
+</div>
+
+
+<!-- IMPORT/EXPORT CENTER MODAL -->
+<div class="mo" id="mo-impexp" style="z-index:800">
+  <div class="modal" style="max-width:700px;width:95vw">
+    <div class="mh"><div class="mt2">📦 Import / Export Center</div><div class="mx" onclick="closeMo('mo-impexp')">✕</div></div>
+    <div class="mb2">
+      <!-- EXPORT SECTION -->
+      <div style="margin-bottom:20px">
+        <div style="font-size:14px;font-weight:600;color:#1A3560;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #E5E7EB">📤 Daten exportieren (Excel / CSV)</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
+          <div style="border:1.5px solid #E5E7EB;border-radius:9px;padding:14px">
+            <div style="font-size:13px;font-weight:600;color:#1A3560;margin-bottom:4px">👥 Mitglieder</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-bottom:10px">Alle Mitglieder mit allen Feldern</div>
+            <button onclick="exportData('mitglieder')" style="width:100%;padding:7px;background:#1A3560;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit">Excel exportieren</button>
+          </div>
+          <div style="border:1.5px solid #E5E7EB;border-radius:9px;padding:14px">
+            <div style="font-size:13px;font-weight:600;color:#1A3560;margin-bottom:4px">📋 Kontakte</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-bottom:10px">Alle Kontakte und Interessenten</div>
+            <button onclick="exportData('kontakte')" style="width:100%;padding:7px;background:#1A3560;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit">Excel exportieren</button>
+          </div>
+          <div style="border:1.5px solid #E5E7EB;border-radius:9px;padding:14px">
+            <div style="font-size:13px;font-weight:600;color:#1A3560;margin-bottom:4px">🏘️ Small Groups</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-bottom:10px">Gruppen mit Mitgliederlisten</div>
+            <button onclick="exportData('smallgroups')" style="width:100%;padding:7px;background:#1A3560;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit">Excel exportieren</button>
+          </div>
+          <div style="border:1.5px solid #E5E7EB;border-radius:9px;padding:14px">
+            <div style="font-size:13px;font-weight:600;color:#1A3560;margin-bottom:4px">⛪ Gottesdienste</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-bottom:10px">Alle GDs mit Besucherzahlen</div>
+            <button onclick="exportData('gottesdienste')" style="width:100%;padding:7px;background:#1A3560;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit">Excel exportieren</button>
+          </div>
+          <div style="border:1.5px solid #E5E7EB;border-radius:9px;padding:14px">
+            <div style="font-size:13px;font-weight:600;color:#1A3560;margin-bottom:4px">📅 Events</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-bottom:10px">Alle Veranstaltungen</div>
+            <button onclick="exportData('events')" style="width:100%;padding:7px;background:#1A3560;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit">Excel exportieren</button>
+          </div>
+          <div style="border:1.5px solid #E5E7EB;border-radius:9px;padding:14px;background:#FDF3DC">
+            <div style="font-size:13px;font-weight:600;color:#C8941A;margin-bottom:4px">📦 Vollexport</div>
+            <div style="font-size:11px;color:#9CA3AF;margin-bottom:10px">Alle Module in einem ZIP</div>
+            <button onclick="exportAll()" style="width:100%;padding:7px;background:#C8941A;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600">Alles exportieren</button>
+          </div>
+        </div>
+      </div>
+      <!-- IMPORT SECTION -->
+      <div>
+        <div style="font-size:14px;font-weight:600;color:#1A3560;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #E5E7EB">📥 Daten importieren (Excel / CSV)</div>
+        <div style="background:#FEF3C7;border:1px solid #fde68a;border-radius:8px;padding:12px;margin-bottom:14px">
+          <div style="font-size:12px;color:#D97706;font-weight:500">⚠ Wichtig: Vorlage herunterladen, ausfüllen, dann importieren.</div>
+          <div style="font-size:11px;color:#92400e;margin-top:4px">Importierte Daten werden bestehende Einträge nicht überschreiben — sie werden hinzugefügt.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
+          <div style="border:1.5px solid #E5E7EB;border-radius:9px;padding:14px">
+            <div style="font-size:13px;font-weight:600;color:#1A3560;margin-bottom:8px">👥 Mitglieder importieren</div>
+            <button onclick="downloadTemplate('mitglieder')" style="width:100%;padding:6px;background:#F4F5F7;color:#1A3560;border:1px solid #E5E7EB;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;margin-bottom:6px">📄 Vorlage herunterladen</button>
+            <label style="width:100%;padding:7px;background:#16A34A;color:white;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;display:block;text-align:center">
+              📥 CSV hochladen
+              <input type="file" accept=".csv,.xlsx" style="display:none" onchange="importData('mitglieder',this)">
+            </label>
+          </div>
+          <div style="border:1.5px solid #E5E7EB;border-radius:9px;padding:14px">
+            <div style="font-size:13px;font-weight:600;color:#1A3560;margin-bottom:8px">📋 Kontakte importieren</div>
+            <button onclick="downloadTemplate('kontakte')" style="width:100%;padding:6px;background:#F4F5F7;color:#1A3560;border:1px solid #E5E7EB;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;margin-bottom:6px">📄 Vorlage herunterladen</button>
+            <label style="width:100%;padding:7px;background:#16A34A;color:white;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;display:block;text-align:center">
+              📥 CSV hochladen
+              <input type="file" accept=".csv,.xlsx" style="display:none" onchange="importData('kontakte',this)">
+            </label>
+          </div>
+        </div>
+        <div id="import-progress" style="display:none;margin-top:14px;background:#DCFCE7;border-radius:8px;padding:12px;font-size:13px;color:#16A34A"></div>
+      </div>
+    </div>
+    <div class="mfoot"><button class="tbtn tbtn-ghost" onclick="closeMo('mo-impexp')">Schliessen</button></div>
   </div>
 </div>
 
