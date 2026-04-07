@@ -1260,6 +1260,20 @@ async function doLogout() {
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && document.getElementById('pg-login').style.display !== 'none') doLogin();
+  if (e.key === 'Escape') {
+    // Close any open panel
+    if (document.getElementById('k-panel')?.classList.contains('open')) closeKarte();
+    else if (document.getElementById('kk-panel')?.classList.contains('open')) closeKK();
+    else if (document.getElementById('sg-panel')?.classList.contains('open')) closeSGK();
+    else if (document.getElementById('gd-panel')?.classList.contains('open')) closeGDP();
+    else if (document.getElementById('ev-panel')?.classList.contains('open')) closeEVP();
+    else {
+      // Close any open modal
+      document.querySelectorAll('.mo.open').forEach(m => m.classList.remove('open'));
+      // Close any picker
+      document.getElementById('sg-member-picker')?.remove();
+    }
+  }
 });
 
 // ═══════════════════════════════════════════
@@ -1771,22 +1785,23 @@ async function deleteKK(){if(!activeKK||!confirm('Kontakt löschen?'))return;con
 function addKKNote(){const txt=prompt('Notiz:');if(!txt)return;const k=kontakte.find(x=>x.id===activeKK);if(k){k.notizen.push({text:txt,datum:new Date().toISOString().split('T')[0]});if(k._dbId)dbUpdate('kontakte',k._dbId,{notizen:k.notizen});openKK(activeKK);}}
 function konvertKontakt(id){
   const k=kontakte.find(x=>x.id===id);if(!k)return;
-  // Navigate to Mitglieder tab
-  const mNav=document.querySelector('.sb-item[onclick*="mitglieder"]');
-  navTo('mitglieder', mNav);
   k.mitgliedGeworden=true;
   if(activeKK)closeKK();
-  // Small delay to let page render
+  // Find sidebar nav item for Mitglieder
+  const mNav=document.querySelector('.sb-item[onclick*="mitglieder"]');
+  navTo('mitglieder', mNav);
+  // Fill form after navigation
   setTimeout(()=>{
     openNM();
-    const s=(eid,val)=>{const e=document.getElementById(eid);if(e)e.value=val||'';};
-    s('nm-vn',k.vorname);
-    s('nm-nn',k.nachname);
-    s('nm-em',k.email);
-    s('nm-mob',k.telefon);
-    document.getElementById('nm-st').value='besucher';
-    toast('Kontaktdaten übernommen — bitte ergänzen und Speichern klicken');
-  },400);
+    const set=(eid,val)=>{const el=document.getElementById(eid);if(el)el.value=val||'';};
+    set('nm-anr', k.anrede||'');
+    set('nm-vn', k.vorname||'');
+    set('nm-nn', k.nachname||'');
+    set('nm-em', k.email||'');
+    set('nm-mob', k.telefon||'');
+    const st=document.getElementById('nm-st');if(st)st.value='besucher';
+    toast('✓ Kontaktdaten übernommen — bitte Felder ergänzen und Speichern klicken');
+  }, 300);
 }
 
 // ═══════════════════════════════════════════
@@ -1866,9 +1881,34 @@ function openSGK(id){
 }
 function rndrSGMembers(sg){
   const ml=document.getElementById('sg-members-list');if(!ml)return;
+  ml.innerHTML='';
   const mgs=members.filter(m=>m.groupId===sg.id);
-  ml.innerHTML=mgs.length?mgs.map(m=>'<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:#F4F5F7;border-radius:9px;margin-bottom:6px"><div class="m-av" style="background:'+m.color+';width:34px;height:34px;font-size:12px">'+ini(m)+'</div><div style="flex:1"><div style="font-weight:500;color:#1A3560;font-size:13px">'+m.vorname+' '+m.nachname+'</div><div style="font-size:11px;color:#9CA3AF">'+m.email+'</div></div><span class="sbadge '+sC(m.status)+'">'+sL(m.status)+'</span><button onclick="removeMemberSG(\''+m.id+'\',\''+sg.id+'\')" style="padding:3px 9px;font-size:11px;border:1px solid #fca5a5;border-radius:5px;background:#FEE2E2;color:#DC2626;cursor:pointer">Entfernen</button></div>').join(''):'<div style="color:#9CA3AF;font-size:13px;text-align:center;padding:20px">Keine Mitglieder in dieser Gruppe.</div>';
+  if(!mgs.length){
+    ml.innerHTML='<div style="color:#9CA3AF;font-size:13px;text-align:center;padding:20px">Keine Mitglieder in dieser Gruppe.</div>';
+    return;
+  }
+  mgs.forEach(m=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:10px;padding:9px 12px;background:#F4F5F7;border-radius:9px;margin-bottom:6px';
+    const av=document.createElement('div');
+    av.className='m-av';
+    av.style.cssText='background:'+m.color+';width:34px;height:34px;font-size:12px';
+    av.textContent=ini(m);
+    const info=document.createElement('div');
+    info.style.flex='1';
+    info.innerHTML='<div style="font-weight:500;color:#1A3560;font-size:13px">'+m.vorname+' '+m.nachname+'</div><div style="font-size:11px;color:#9CA3AF">'+m.email+'</div>';
+    const badge=document.createElement('span');
+    badge.className='sbadge '+sC(m.status);
+    badge.textContent=sL(m.status);
+    const btn=document.createElement('button');
+    btn.textContent='Entfernen';
+    btn.style.cssText='padding:3px 9px;font-size:11px;border:1px solid #fca5a5;border-radius:5px;background:#FEE2E2;color:#DC2626;cursor:pointer;font-family:inherit';
+    btn.addEventListener('click',function(){removeMemberSG(m.id,sg.id);});
+    row.appendChild(av);row.appendChild(info);row.appendChild(badge);row.appendChild(btn);
+    ml.appendChild(row);
+  });
 }
+
 function rndrSGProto(sg){
   const pl=document.getElementById('sg-proto-list');if(!pl)return;
   if(!sg.proto||!sg.proto.length){pl.innerHTML='<div style="color:#9CA3AF;font-size:13px;text-align:center;padding:20px">Noch keine Protokolle.</div>';return;}
@@ -1896,35 +1936,86 @@ function addMemberToSG(){
   const existing=document.getElementById('sg-member-picker');
   if(existing)existing.remove();
   window._sgSel=new Set();
+
+  // Build picker with DOM
+  const overlay=document.createElement('div');
+  overlay.id='sg-member-picker';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;display:flex;align-items:center;justify-content:center';
+  
+  const box=document.createElement('div');
+  box.style.cssText='background:white;border-radius:14px;width:520px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.3)';
+  
+  // Header
+  const hdr=document.createElement('div');
+  hdr.style.cssText='padding:16px 20px;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between';
+  hdr.innerHTML='<div style="font-size:15px;font-weight:600;color:#1A3560">Mitglieder hinzufügen</div>';
+  const closeBtn=document.createElement('div');
+  closeBtn.style.cssText='cursor:pointer;width:28px;height:28px;border:1px solid #E5E7EB;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#6B7280';
+  closeBtn.textContent='✕';
+  closeBtn.addEventListener('click',()=>overlay.remove());
+  hdr.appendChild(closeBtn);
+  
+  // Search
+  const srch=document.createElement('div');
+  srch.style.cssText='padding:10px 16px;border-bottom:1px solid #E5E7EB';
+  const inp=document.createElement('input');
+  inp.placeholder='Suchen...';
+  inp.style.cssText='width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none;box-sizing:border-box';
+  inp.addEventListener('input',function(){sgPickerFilter(this.value);});
+  srch.appendChild(inp);
+  
+  // List
+  const list=document.createElement('div');
+  list.id='sg-picker-rows';
+  list.style.cssText='overflow-y:auto;flex:1;padding:8px 12px';
+  
   const available=members.filter(m=>m.groupId!==activeSG);
-  const div=document.createElement('div');
-  div.id='sg-member-picker';
-  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;display:flex;align-items:center;justify-content:center';
-  const rows=available.map(m=>{
+  available.forEach(m=>{
     const inGroup=m.groupId&&m.groupId!==0&&m.groupId!=='0';
-    const grpName=inGroup?(sgData.find(s=>s.id===m.groupId)?.name||'anderer Gruppe'):'';
-    return'<div data-mid="'+m.id+'" onclick="toggleSGSel(this,''+m.id+'')" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;border:2px solid transparent;margin-bottom:3px">'
-      +'<div style="width:34px;height:34px;border-radius:50%;background:'+m.color+';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;flex-shrink:0">'+ini(m)+'</div>'
-      +'<div style="flex:1"><div style="font-size:13px;font-weight:500;color:#1A3560">'+m.vorname+' '+m.nachname+'</div>'
-      +'<div style="font-size:11px;color:#9CA3AF">'+sL(m.status)+(inGroup?' · aktuell in '+grpName:'')+'</div></div>'
-      +'<div id="sgchk-'+m.id+'" style="width:20px;height:20px;border-radius:50%;border:2px solid #D1D5DB;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>'
-      +'</div>';
-  }).join('');
-  div.innerHTML='<div style="background:white;border-radius:14px;width:520px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.3)">'
-    +'<div style="padding:16px 20px;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between">'
-    +'<div style="font-size:15px;font-weight:600;color:#1A3560">Mitglieder hinzufügen</div>'
-    +'<div onclick="document.getElementById('sg-member-picker').remove()" style="cursor:pointer;width:28px;height:28px;border:1px solid #E5E7EB;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#6B7280">✕</div></div>'
-    +'<div style="padding:10px 16px;border-bottom:1px solid #E5E7EB">'
-    +'<input placeholder="Suchen..." oninput="sgPickerFilter(this.value)" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none"></div>'
-    +'<div id="sg-picker-rows" style="overflow-y:auto;flex:1;padding:8px 12px">'+rows+'</div>'
-    +'<div style="padding:12px 20px;border-top:1px solid #E5E7EB;display:flex;justify-content:space-between;align-items:center">'
-    +'<span id="sg-sel-cnt" style="font-size:12px;color:#6B7280">0 ausgewählt</span>'
-    +'<div style="display:flex;gap:8px">'
-    +'<button onclick="document.getElementById('sg-member-picker').remove()" style="padding:8px 16px;border:1px solid #E5E7EB;border-radius:7px;background:white;cursor:pointer;font-family:inherit">Abbrechen</button>'
-    +'<button onclick="confirmSGAdd()" style="padding:8px 16px;background:#1A3560;color:white;border:none;border-radius:7px;cursor:pointer;font-family:inherit;font-weight:500">Hinzufügen</button>'
-    +'</div></div></div>';
-  document.body.appendChild(div);
+    const grpName=inGroup?(sgData.find(s=>s.id===m.groupId)||{}).name||'anderer Gruppe':'';
+    const row=document.createElement('div');
+    row.dataset.mid=m.id;
+    row.dataset.mname=m.vorname+' '+m.nachname;
+    row.style.cssText='display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;border:2px solid transparent;margin-bottom:3px';
+    const av=document.createElement('div');
+    av.style.cssText='width:34px;height:34px;border-radius:50%;background:'+m.color+';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;flex-shrink:0';
+    av.textContent=ini(m);
+    const info=document.createElement('div');
+    info.style.flex='1';
+    info.innerHTML='<div style="font-size:13px;font-weight:500;color:#1A3560">'+m.vorname+' '+m.nachname+'</div><div style="font-size:11px;color:#9CA3AF">'+sL(m.status)+(inGroup?' · in '+grpName:'')+'</div>';
+    const chk=document.createElement('div');
+    chk.id='sgchk-'+m.id;
+    chk.style.cssText='width:20px;height:20px;border-radius:50%;border:2px solid #D1D5DB;flex-shrink:0;display:flex;align-items:center;justify-content:center';
+    row.appendChild(av);row.appendChild(info);row.appendChild(chk);
+    row.addEventListener('click',function(){toggleSGSel(this,m.id);});
+    list.appendChild(row);
+  });
+  
+  // Footer
+  const ftr=document.createElement('div');
+  ftr.style.cssText='padding:12px 20px;border-top:1px solid #E5E7EB;display:flex;justify-content:space-between;align-items:center';
+  const cnt=document.createElement('span');
+  cnt.id='sg-sel-cnt';
+  cnt.style.cssText='font-size:12px;color:#6B7280';
+  cnt.textContent='0 ausgewählt';
+  const btns=document.createElement('div');
+  btns.style.cssText='display:flex;gap:8px';
+  const cancelBtn=document.createElement('button');
+  cancelBtn.textContent='Abbrechen';
+  cancelBtn.style.cssText='padding:8px 16px;border:1px solid #E5E7EB;border-radius:7px;background:white;cursor:pointer;font-family:inherit';
+  cancelBtn.addEventListener('click',()=>overlay.remove());
+  const addBtn=document.createElement('button');
+  addBtn.textContent='Hinzufügen';
+  addBtn.style.cssText='padding:8px 16px;background:#1A3560;color:white;border:none;border-radius:7px;cursor:pointer;font-family:inherit;font-weight:500';
+  addBtn.addEventListener('click',confirmSGAdd);
+  btns.appendChild(cancelBtn);btns.appendChild(addBtn);
+  ftr.appendChild(cnt);ftr.appendChild(btns);
+  
+  box.appendChild(hdr);box.appendChild(srch);box.appendChild(list);box.appendChild(ftr);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
 }
+
 function toggleSGSel(el,mid){
   if(!window._sgSel)window._sgSel=new Set();
   const chk=document.getElementById('sgchk-'+mid);
@@ -2188,6 +2279,21 @@ function navTo(p,el2){
   if(p==='events'){rndrEvents();}
 }
 
+
+function konvertToMitglied(){
+  if(!activeKK) return;
+  konvertKontakt(activeKK);
+}
+
+function saveGemeindeDaten(){
+  const name=document.getElementById('cfg-name')?.value;
+  if(_S&&_S.mandant_id&&name){
+    dbUpdate('mandanten',_S.mandant_id,{name,email:document.getElementById('cfg-email')?.value||''});
+    _S.mandant_name=name;
+    const gn=document.getElementById('sb-gname');if(gn)gn.textContent=name;
+  }
+  toast('Gemeinde-Daten gespeichert ✓');
+}
 </script>
 
 <!-- KONTAKT MODAL -->
