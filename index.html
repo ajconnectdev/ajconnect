@@ -443,6 +443,12 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
           </div>
         </div>
         <div id="admin-btn-wrap" style="display:none;padding:4px 6px">
+          <div id="working-as-wrap" style="margin-bottom:6px">
+            <div style="font-size:10px;color:rgba(255,255,255,0.45);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px">Arbeiten als:</div>
+            <select id="working-mandant-sel" onchange="setWorkingMandant(this.value)" style="width:100%;padding:5px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:white;font-size:11px;outline:none;cursor:pointer">
+              <option value="">— Gemeinde wählen —</option>
+            </select>
+          </div>
           <button style="width:100%;padding:7px;background:rgba(200,148,26,0.15);color:#e8b84b;border:1px solid rgba(200,148,26,0.3);border-radius:7px;cursor:pointer;font-size:12px;font-family:inherit;font-weight:500" onclick="showPage('admin');loadAdminData()">⚙ Admin-Panel</button>
         </div>
       </div>
@@ -1053,12 +1059,12 @@ function showPage(name) {
 // DB HELPERS
 // ═══════════════════════════════════════════
 async function dbLoad(table, order='created_at') {
-  // Superadmin without mandant sees no data (use admin panel instead)
-  if(!_S?.mandant_id) return [];
+  const mid = _S?.working_mandant_id || _S?.mandant_id;
+  if(!mid) return [];
   try {
     const {data, error} = await sb.from(table)
       .select('*')
-      .eq('mandant_id', _S.mandant_id)
+      .eq('mandant_id', mid)
       .order(order, {ascending: order==='datum' ? true : false});
     if(error) { console.warn('DB load:', table, error.message); return []; }
     return data || [];
@@ -1066,9 +1072,10 @@ async function dbLoad(table, order='created_at') {
 }
 
 async function dbSave(table, payload) {
-  if(!_S?.mandant_id) return null;
+  const mid = _S?.working_mandant_id || _S?.mandant_id;
+  if(!mid) { toast('Bitte zuerst eine Gemeinde auswählen (Admin-Panel → Zur App)'); return null; }
   try {
-    const {data, error} = await sb.from(table).insert({...payload, mandant_id: _S.mandant_id}).select().single();
+    const {data, error} = await sb.from(table).insert({...payload, mandant_id: mid}).select().single();
     if(error) { toast('Speicherfehler: '+error.message); return null; }
     return data;
   } catch(e) { toast('Fehler: '+e.message); return null; }
@@ -1221,10 +1228,12 @@ async function loadUserAndShow(user) {
     await loadAllData();
     initAppUI();
     showPage('app');
-    // Superadmin gets admin button
+    // Superadmin gets admin button + mandant selector
     if (p.rolle === 'superadmin') {
       const adminBtn = document.getElementById('admin-btn-wrap');
       if(adminBtn) adminBtn.style.display = 'block';
+      // Populate mandant selector
+      setTimeout(populateWorkingMandantSel, 500);
     }
   } catch(e) {
     showPage('login');
@@ -2527,6 +2536,44 @@ function parseCSVLine(line){
   }
   result.push(cur.trim());
   return result;
+}
+
+// ═══════════════════════════════════════════
+// SUPERADMIN: Working-As Mandant Selector
+// ═══════════════════════════════════════════
+async function setWorkingMandant(mandantId) {
+  if(!_S) return;
+  if(!mandantId) {
+    _S.working_mandant_id = null;
+    _S.working_mandant_name = null;
+    toast('Keine Gemeinde ausgewählt — Daten werden nicht gespeichert');
+    return;
+  }
+  _S.working_mandant_id = mandantId;
+  // Find mandant name
+  const sel = document.getElementById('working-mandant-sel');
+  const opt = sel?.options[sel.selectedIndex];
+  _S.working_mandant_name = opt?.textContent || mandantId;
+  // Reload data for this mandant
+  await loadAllData();
+  initAppUI();
+  toast('✓ Arbeite jetzt als: ' + _S.working_mandant_name);
+}
+
+async function populateWorkingMandantSel() {
+  if(!_S || _S.rolle !== 'superadmin') return;
+  // Load all mandanten
+  const {data: mands} = await sb.from('mandanten').select('id,name').eq('aktiv', true).order('name');
+  if(!mands) return;
+  const sel = document.getElementById('working-mandant-sel');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— Gemeinde wählen —</option>' + 
+    mands.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+  // Auto-select if only one
+  if(mands.length === 1) {
+    sel.value = mands[0].id;
+    setWorkingMandant(mands[0].id);
+  }
 }
 </script>
 
