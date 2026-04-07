@@ -1012,14 +1012,22 @@ function showPage(name) {
 // STARTUP - check session
 // ═══════════════════════════════════════════
 (async function startup() {
+  // Safety timeout - never hang forever
+  const safetyTimer = setTimeout(() => {
+    console.warn('Startup timeout - showing login');
+    showPage('login');
+  }, 8000);
+  
   try {
     const { data: { session } } = await sb.auth.getSession();
+    clearTimeout(safetyTimer);
     if (session) {
       await loadUserAndShow(session.user);
     } else {
       showPage('login');
     }
   } catch(e) {
+    clearTimeout(safetyTimer);
     showPage('login');
   }
 })();
@@ -1028,13 +1036,14 @@ function showPage(name) {
 // DB HELPERS
 // ═══════════════════════════════════════════
 async function dbLoad(table, order='created_at') {
-  if(!_S?.mandant_id && _S?.rolle !== 'superadmin') return [];
+  // Superadmin without mandant sees no data (use admin panel instead)
+  if(!_S?.mandant_id) return [];
   try {
-    const q = sb.from(table).select('*');
-    if(_S?.mandant_id) q.eq('mandant_id', _S.mandant_id);
-    q.order(order, {ascending: order==='datum' ? true : false});
-    const {data, error} = await q;
-    if(error) { console.warn('DB load error:', table, error.message); return []; }
+    const {data, error} = await sb.from(table)
+      .select('*')
+      .eq('mandant_id', _S.mandant_id)
+      .order(order, {ascending: order==='datum' ? true : false});
+    if(error) { console.warn('DB load:', table, error.message); return []; }
     return data || [];
   } catch(e) { console.warn('DB error:', e); return []; }
 }
@@ -1069,7 +1078,9 @@ async function dbDelete(table, id) {
 // ═══════════════════════════════════════════
 async function loadAllData() {
   const loader = document.getElementById('loader');
-  if(loader) { loader.style.display='flex'; document.getElementById('lo-txt').textContent='Daten werden geladen...'; }
+  // Update loader text but don't re-show it
+  const loTxt = document.getElementById('lo-txt');
+  if(loTxt) loTxt.textContent='Daten werden geladen...';
   try {
     const [mgl, kont, sg, godi, lied, ev, set] = await Promise.all([
       dbLoad('mitglieder','nachname'),
@@ -1181,12 +1192,14 @@ async function loadUserAndShow(user) {
     } else {
       _S = { id: user.id, email: user.email, name: p.name||user.email, rolle: p.rolle, mandant_id: null, mandant_name: 'AJ Connect', lizenz: 'professional' };
     }
-    // Everyone goes to app page first
+    // Load data then show app
+    await loadAllData();
     initAppUI();
     showPage('app');
     // Superadmin gets admin button
     if (p.rolle === 'superadmin') {
-      document.getElementById('admin-btn-wrap').style.display = 'block';
+      const adminBtn = document.getElementById('admin-btn-wrap');
+      if(adminBtn) adminBtn.style.display = 'block';
     }
   } catch(e) {
     showPage('login');
