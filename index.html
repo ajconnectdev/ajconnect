@@ -503,7 +503,7 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
       <div class="sb-sec">Übersicht</div>
       <div class="sb-item active" onclick="navTo('dashboard',this)"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>Dashboard</div>
       <div class="sb-sec">Gemeinde</div>
-      <div class="sb-item" onclick="navTo('mitglieder',this)"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Mitglieder<span class="sb-badge" id="nb-m">0</span></div>
+      <div class="sb-item" onclick="navTo('mitglieder',this)"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Mitglieder</div>
       <div class="sb-item" onclick="navTo('kontakte',this)"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Kontakte</div>
       <div class="sb-item" onclick="navTo('groups',this)"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg>Small Groups</div>
       <div class="sb-sec">Gottesdienst</div>
@@ -1080,7 +1080,7 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
       <div class="afg"><label>Name</label><input class="afi" id="au-name" placeholder="Thomas Müller"></div>
       <div class="afg" id="au-mandant-row"><label>Gemeinde *</label><select class="afs" id="au-mandant"><option value="">— wählen —</option></select></div>
       <div class="afg"><label>Rolle</label><select class="afs" id="au-rolle"><option value="admin">Admin</option><option value="leiter">Leiter</option><option value="mitarbeiter">Mitarbeiter</option></select></div>
-      <div class="afg"><label>Status</label><select class="afs" id="au-aktiv"><option value="false">Inaktiv – wartet auf Freischaltung</option><option value="true">Aktiv</option></select></div>
+      <div class="afg"><label>Status</label><select class="afs" id="au-aktiv"><option value="true">Aktiv – kann sich sofort einloggen</option><option value="false">Inaktiv – wartet auf Freischaltung</option></select></div>
     </div>
     <div class="amf"><button class="abtn abtn-ghost" onclick="closeMo('amo-u')">Abbrechen</button><button class="abtn abtn-navy" id="au-save-btn" onclick="saveAU()">Anlegen</button></div>
   </div>
@@ -1540,7 +1540,11 @@ async function saveAM() {
 async function saveAU() {
   const email = document.getElementById('au-email').value.trim();
   const name = document.getElementById('au-name').value.trim();
-  const mid = document.getElementById('au-mandant').value;
+  // Use active mandant if row is hidden (called from detail view)
+  const mandantRow = document.getElementById('au-mandant-row');
+  const mid = (mandantRow?.style.display === 'none' && _activeMandant)
+    ? _activeMandant.id
+    : document.getElementById('au-mandant').value;
   const rolle = document.getElementById('au-rolle').value;
   const aktiv = document.getElementById('au-aktiv').value === 'true';
   if (!email || !mid) { toast('E-Mail und Gemeinde sind Pflicht'); return; }
@@ -1611,7 +1615,7 @@ function aY(d){if(!d)return null;const b=new Date(d),n=new Date();let a=n.getFul
 const sL=s=>({aktiv:'Aktiv',besucher:'Besucher',inaktiv:'Inaktiv',neu:'Neu',taufkandidat:'Taufkandidat'}[s]||s);
 const sC=s=>({aktiv:'s-ak',besucher:'s-be',inaktiv:'s-in',neu:'s-ne',taufkandidat:'s-tk'}[s]||'s-in');
 const gR=id=>rollen.find(r=>r.id===id);
-const gG=id=>gruppen.find(g=>g.id===id);
+const gG=id=>gruppen.find(g=>g.id===id||String(g.id)===String(id));
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 function closeMo(id){document.getElementById(id).classList.remove('open');}
 function tIA(id){document.getElementById(id).classList.toggle('open');}
@@ -1635,7 +1639,7 @@ function applyMF(){
   const q=(document.getElementById('m-srch').value||'').toLowerCase();
   const gid=parseInt(document.getElementById('m-gf').value)||0;
   const rid=parseInt(document.getElementById('m-rf').value)||0;
-  mFilt=members.filter(m=>(mFilter==='alle'||m.status===mFilter)&&(!q||(m.vorname+' '+m.nachname+m.email).toLowerCase().includes(q))&&(!gid||m.groupId===gid)&&(!rid||m.rolleId===rid));
+  mFilt=members.filter(m=>(mFilter==='alle'||m.status===mFilter)&&(!q||(m.vorname+' '+m.nachname+m.email).toLowerCase().includes(q))&&(!gid||String(m.groupId)===String(gid))&&(!rid||m.rolleId===rid));
   mPage=1;rndrTbl();if(mView==='cards')rndrCards();
 }
 
@@ -1655,7 +1659,7 @@ function rndrTbl(){
       if(c.key==='plzort')return`<td style="color:#6B7280">${m.plzort}</td>`;
       return'<td>—</td>';
     }).join('');
-    return`<tr id="row-${m.id}" onclick="openK(${m.id})" style="cursor:pointer">${cells}<td></td></tr>`;
+    return`<tr id="row-${m.id}" onclick="openK('${m.id}')" style="cursor:pointer">${cells}<td></td></tr>`;
   }).join('');
   document.getElementById('m-cnt').textContent=`${mFilt.length} Mitglieder`;
   document.getElementById('m-pi').textContent=`${start+1}–${Math.min(start+PER,mFilt.length)} von ${mFilt.length}`;
@@ -1664,7 +1668,7 @@ function rndrTbl(){
 }
 function chR(s,id){if(s.value==='__n'){openRM();s.value='';return;}const m=members.find(x=>x.id===id);if(m)m.rolleId=parseInt(s.value);}
 function chG(s,id){if(s.value==='__n'){openGM();s.value='';return;}const m=members.find(x=>x.id===id);if(m)m.groupId=parseInt(s.value)||0;}
-function rndrCards(){document.getElementById('m-cg').innerHTML=mFilt.map(m=>{const g=gG(m.groupId);return`<div class="mc" onclick="openK(${m.id})"><div class="mc-av" style="background:${m.color}">${ini(m)}</div><div class="mc-n">${m.vorname} ${m.nachname}</div><div class="mc-b"><span class="sbadge ${sC(m.status)}">${sL(m.status)}</span></div><div class="mc-d"></div><div class="mc-r"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12h2V6h16v12h2V6c0-1.11-.89-2-2-2z"/></svg>${m.email}</div>${g?`<div class="mc-r"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg>${g.name}</div>`:''}</div>`;}).join('');}
+function rndrCards(){document.getElementById('m-cg').innerHTML=mFilt.map(m=>{const g=gG(m.groupId);return`<div class="mc" onclick="openK('${m.id}')"><div class="mc-av" style="background:${m.color}">${ini(m)}</div><div class="mc-n">${m.vorname} ${m.nachname}</div><div class="mc-b"><span class="sbadge ${sC(m.status)}">${sL(m.status)}</span></div><div class="mc-d"></div><div class="mc-r"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12h2V6h16v12h2V6c0-1.11-.89-2-2-2z"/></svg>${m.email}</div>${g?`<div class="mc-r"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg>${g.name}</div>`:''}</div>`;}).join('');}
 
 function updStats(){const t=members.length,a=members.filter(m=>m.status==='aktiv').length,b=members.filter(m=>m.status==='besucher').length,n=members.filter(m=>m.status==='neu').length;['ms-t','db-m'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});['ms-a','ms-b','ms-n','nb-m'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=[a,b,n,t][i];});const dm=document.getElementById('db-md');if(dm)dm.textContent=`↑ ${n} diesen Monat`;}
 
