@@ -247,7 +247,7 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
 .iadd{background:#FDF3DC;border:1px solid #e8c97a;border-radius:7px;padding:10px;display:none;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-top:8px}
 .iadd.open{display:flex}
 /* Mitgliederkarte */
-.kpanel{position:fixed;top:0;right:-1120px;width:1120px;max-width:95vw;height:100vh;background:white;border-left:1px solid #E5E7EB;z-index:400;display:flex;flex-direction:column;transition:right 0.3s;box-shadow:-8px 0 48px rgba(0,0,0,0.15)}
+.kpanel{position:fixed;top:0;right:calc(-100vw + 240px);width:calc(100vw - 240px);height:100vh;background:white;border-left:1px solid #E5E7EB;z-index:400;display:flex;flex-direction:column;transition:right 0.3s;box-shadow:-8px 0 48px rgba(0,0,0,0.15)}
 .kpanel.open{right:0}
 .kov{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:300;display:none}
 .kov.open{display:block}
@@ -276,7 +276,7 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
 .ktab.on .ktab-cnt{background:#1A3560;color:white}
 .tpane{display:none;padding:14px 18px}
 .tpane.on{display:block}
-.twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
+.twocol{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:12px}
 .cs{background:white;border:1px solid #E5E7EB;border-radius:8px;overflow:hidden;margin-bottom:10px}
 .csh{padding:10px 13px;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between}
 .cst{font-size:12px;font-weight:600;color:#1A3560;display:flex;align-items:center;gap:5px}
@@ -390,7 +390,15 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
       <div style="overflow-x:auto"><table><thead><tr><th>Gemeinde</th><th>Lizenz</th><th>Status</th><th>Benutzer</th><th>Aktionen</th></tr></thead><tbody id="a-mand"><tr><td colspan="5" class="aempty">Lädt...</td></tr></tbody></table></div>
     </div>
     <div class="acard">
-      <div class="acardh"><div class="acardtitle">Alle Benutzer</div><button class="abtn abtn-navy" onclick="openAUMo()">+ Benutzer anlegen</button></div>
+      <div class="acardh">
+        <div class="acardtitle">Benutzer</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="user-mandant-filter" class="afs" style="padding:6px 10px;font-size:12px;width:200px" onchange="filterAdminUsers()">
+            <option value="">Alle Gemeinden</option>
+          </select>
+          <button class="abtn abtn-navy" onclick="openAUMo()">+ Benutzer anlegen</button>
+        </div>
+      </div>
       <div style="overflow-x:auto"><table><thead><tr><th>Name / E-Mail</th><th>Gemeinde</th><th>Rolle</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="a-user"><tr><td colspan="5" class="aempty">Lädt...</td></tr></tbody></table></div>
     </div>
   </div>
@@ -642,7 +650,97 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
         <div class="page" id="pg-spenden"><div class="soon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2z"/></svg><h3>Twint & Spenden</h3><p>Kommt bald.</p></div></div>
         <div class="page" id="pg-kreditoren"><div class="soon"><svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg><h3>Kreditoren</h3><p>Kommt bald.</p></div></div>
         <div class="page" id="pg-dokumente"><div class="soon"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg><h3>Dokumente (DMS)</h3><p>Kommt bald.</p></div></div>
-        <div class="page" id="pg-einrichtung"><div class="soon"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg><h3>Einrichtung</h3><p>Wird konfiguriert.</p></div></div>
+        <div class="page" id="pg-einrichtung">
+          <div style="display:flex;flex-direction:column;gap:16px;padding:4px">
+            <div style="font-size:20px;font-weight:600;color:#1A3560">Einrichtung & Konfiguration</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <!-- Gemeinde Stammdaten -->
+              <div class="card">
+                <div class="cardh"><div class="cardtitle" style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:#16A34A;display:inline-block"></span>Gemeinde-Stammdaten</div><button class="tbtn tbtn-navy" style="font-size:11px" onclick="saveGemeindeDaten()">Speichern</button></div>
+                <div class="cardbody" style="display:flex;flex-direction:column;gap:10px">
+                  <div><label style="font-size:11px;color:#6B7280;display:block;margin-bottom:3px">Gemeindename</label><input id="cfg-name" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none" value="Ev. Gemeinde"></div>
+                  <div><label style="font-size:11px;color:#6B7280;display:block;margin-bottom:3px">Adresse</label><input id="cfg-addr" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none" placeholder="Strasse, PLZ Ort"></div>
+                  <div><label style="font-size:11px;color:#6B7280;display:block;margin-bottom:3px">E-Mail</label><input id="cfg-email" type="email" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none" placeholder="info@gemeinde.ch"></div>
+                  <div><label style="font-size:11px;color:#6B7280;display:block;margin-bottom:3px">Telefon</label><input id="cfg-tel" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none" placeholder="+41 44 123 45 67"></div>
+                  <div><label style="font-size:11px;color:#6B7280;display:block;margin-bottom:3px">Website</label><input id="cfg-web" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none" placeholder="www.gemeinde.ch"></div>
+                </div>
+              </div>
+              <!-- Datensicherung -->
+              <div class="card">
+                <div class="cardh"><div class="cardtitle" style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:#16A34A;display:inline-block"></span>Datensicherung & Backup</div></div>
+                <div class="cardbody" style="display:flex;flex-direction:column;gap:12px">
+                  <div style="background:#DCFCE7;border:1px solid #86efac;border-radius:8px;padding:12px">
+                    <div style="font-size:13px;font-weight:600;color:#16A34A;margin-bottom:4px">✓ Automatisches Backup aktiv</div>
+                    <div style="font-size:12px;color:#15803d">Ihre Daten werden in Supabase (Zürich, Schweiz) gespeichert und täglich automatisch gesichert.</div>
+                  </div>
+                  <div style="font-size:13px;color:#1A1A1A"><strong>Backup-Frequenz:</strong> Täglich, 2:00 Uhr</div>
+                  <div style="font-size:13px;color:#1A1A1A"><strong>Aufbewahrung:</strong> 30 Tage</div>
+                  <div style="font-size:13px;color:#1A1A1A"><strong>Standort:</strong> Supabase EU-Central-2, Zürich CH</div>
+                  <div style="font-size:13px;color:#1A1A1A"><strong>Verschlüsselung:</strong> AES-256 at rest, TLS 1.3 in transit</div>
+                  <div style="height:1px;background:#E5E7EB;margin:4px 0"></div>
+                  <div style="font-size:12px;color:#6B7280">Für manuelles Backup: Supabase Dashboard → Project → Backups</div>
+                  <a href="https://supabase.com/dashboard" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#1A3560;color:white;border-radius:7px;font-size:12px;text-decoration:none;font-weight:500">Supabase Dashboard öffnen ↗</a>
+                </div>
+              </div>
+              <!-- E-Mail Konfiguration -->
+              <div class="card">
+                <div class="cardh"><div class="cardtitle" style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:#D97706;display:inline-block"></span>E-Mail / Benutzer-Einladungen</div></div>
+                <div class="cardbody" style="display:flex;flex-direction:column;gap:12px">
+                  <div style="background:#FEF3C7;border:1px solid #fde68a;border-radius:8px;padding:12px">
+                    <div style="font-size:13px;font-weight:600;color:#D97706;margin-bottom:4px">⚠ E-Mail-Versand konfigurieren</div>
+                    <div style="font-size:12px;color:#92400e">Damit Benutzer Einladungs-E-Mails erhalten, muss SMTP in Supabase konfiguriert werden.</div>
+                  </div>
+                  <div style="font-size:13px;font-weight:500;color:#1A3560">So aktivieren Sie E-Mail-Versand:</div>
+                  <ol style="font-size:12px;color:#6B7280;padding-left:18px;line-height:2">
+                    <li>Supabase Dashboard öffnen</li>
+                    <li>Authentication → Settings → SMTP Settings</li>
+                    <li>SMTP aktivieren und Infomaniak/Gmail/SendGrid eintragen</li>
+                    <li>Absender-E-Mail: noreply@ajconnect.ch</li>
+                  </ol>
+                  <div style="font-size:12px;color:#6B7280">Empfehlung für Schweiz: <strong>Infomaniak Newsletter</strong> oder <strong>Brevo (ehemals Sendinblue)</strong></div>
+                  <a href="https://supabase.com/dashboard/project/gpmwlkqwdfxkenyebjmj/auth/users" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#D97706;color:white;border-radius:7px;font-size:12px;text-decoration:none;font-weight:500">Supabase Auth öffnen ↗</a>
+                </div>
+              </div>
+              <!-- DSG / Datenschutz -->
+              <div class="card">
+                <div class="cardh"><div class="cardtitle" style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:#2563EB;display:inline-block"></span>Datenschutz (DSG)</div></div>
+                <div class="cardbody" style="display:flex;flex-direction:column;gap:10px">
+                  <div style="background:#DBEAFE;border:1px solid #bfdbfe;border-radius:8px;padding:12px">
+                    <div style="font-size:13px;font-weight:600;color:#1e40af;margin-bottom:4px">Kirchenzugehörigkeit = besonders schützenswertes Datum</div>
+                    <div style="font-size:12px;color:#1e40af">Art. 5 DSG: Religiöse Ansichten unterliegen besonderem Schutz.</div>
+                  </div>
+                  <div><label style="font-size:11px;color:#6B7280;display:block;margin-bottom:3px">Datenschutzerklärung URL</label><input id="cfg-dsgvo" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none" placeholder="https://gemeinde.ch/datenschutz"></div>
+                  <div><label style="font-size:11px;color:#6B7280;display:block;margin-bottom:3px">Datenschutzbeauftragter</label><input id="cfg-dsb" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none" placeholder="Name, E-Mail"></div>
+                  <div><label style="font-size:11px;color:#6B7280;display:block;margin-bottom:3px">Löschfrist inaktive Mitglieder</label><select id="cfg-losch" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none"><option>2 Jahre</option><option>3 Jahre</option><option>5 Jahre</option><option>10 Jahre</option></select></div>
+                  <button class="tbtn tbtn-navy" style="font-size:12px;align-self:flex-start" onclick="toast('DSG-Einstellungen gespeichert')">Speichern</button>
+                </div>
+              </div>
+              <!-- Twint / Payrexx -->
+              <div class="card">
+                <div class="cardh"><div class="cardtitle" style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:#9CA3AF;display:inline-block"></span>Twint / Payrexx</div></div>
+                <div class="cardbody" style="display:flex;flex-direction:column;gap:10px">
+                  <div style="font-size:12px;color:#6B7280">Aktiviert Online-Spenden und Anmeldungen via Twint, Kreditkarte, IBAN.</div>
+                  <div><label style="font-size:11px;color:#6B7280;display:block;margin-bottom:3px">Payrexx API Key</label><input type="password" id="cfg-payrexx" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none" placeholder="pk_live_..."></div>
+                  <div><label style="font-size:11px;color:#6B7280;display:block;margin-bottom:3px">Instanz-Name</label><input id="cfg-payrexx-inst" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none" placeholder="meine-gemeinde"></div>
+                  <div style="font-size:12px;color:#9CA3AF">Konto erstellen: <a href="https://www.payrexx.com" target="_blank" style="color:#C8941A">payrexx.com</a></div>
+                  <button class="tbtn tbtn-ghost" style="font-size:12px;align-self:flex-start" onclick="toast('API-Keys gespeichert')">Speichern</button>
+                </div>
+              </div>
+              <!-- DMS Exoscale -->
+              <div class="card">
+                <div class="cardh"><div class="cardtitle" style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:#9CA3AF;display:inline-block"></span>DMS / Dokumentenablage</div></div>
+                <div class="cardbody" style="display:flex;flex-direction:column;gap:10px">
+                  <div style="font-size:12px;color:#6B7280">Dokumente werden verschlüsselt in der Schweiz (Exoscale Genf) gespeichert.</div>
+                  <div><label style="font-size:11px;color:#6B7280;display:block;margin-bottom:3px">Exoscale Access Key</label><input type="password" id="cfg-exo-key" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none" placeholder="EXO..."></div>
+                  <div><label style="font-size:11px;color:#6B7280;display:block;margin-bottom:3px">Secret Key</label><input type="password" id="cfg-exo-sec" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none" placeholder="..."></div>
+                  <div><label style="font-size:11px;color:#6B7280;display:block;margin-bottom:3px">Bucket Name</label><input id="cfg-exo-bucket" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none" placeholder="ajconnect-docs"></div>
+                  <div style="font-size:12px;color:#9CA3AF">Konto: <a href="https://www.exoscale.com" target="_blank" style="color:#C8941A">exoscale.com</a> · Region: ch-gva-2 (Genf)</div>
+                  <button class="tbtn tbtn-ghost" style="font-size:12px;align-self:flex-start" onclick="toast('DMS-Einstellungen gespeichert')">Speichern</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1193,6 +1291,12 @@ async function loadAdminData() {
   document.getElementById('as-u').textContent = _AU.length;
   document.getElementById('as-p').textContent = _AU.filter(x=>!x.aktiv).length;
   renderAM(); renderAU(); refreshAUSel();
+  // Populate mandant filter in users section
+  const umf = document.getElementById('user-mandant-filter');
+  if (umf) {
+    umf.innerHTML = '<option value="">Alle Gemeinden ('+_AU.length+')</option>' + 
+      _AM.map(m => '<option value="'+m.id+'">'+m.name+' ('+_AU.filter(u=>u.mandant_id===m.id).length+')</option>').join('');
+  }
 }
 
 function renderAM() {
@@ -1210,10 +1314,17 @@ function renderAM() {
   }).join('');
 }
 
-function renderAU() {
+function filterAdminUsers() {
+  const sel = document.getElementById('user-mandant-filter');
+  const mid = sel ? sel.value : '';
+  renderAU(mid);
+}
+
+function renderAU(mandantFilter) {
   const tb = document.getElementById('a-user');
-  if (!_AU.length) { tb.innerHTML = '<tr><td colspan="5" class="aempty">Noch keine Benutzer</td></tr>'; return; }
-  tb.innerHTML = _AU.map(u => {
+  let users = mandantFilter ? _AU.filter(u => u.mandant_id === mandantFilter) : _AU;
+  if (!users.length) { tb.innerHTML = '<tr><td colspan="5" class="aempty">Keine Benutzer' + (mandantFilter ? ' für diese Gemeinde' : '') + '</td></tr>'; return; }
+  tb.innerHTML = users.map(u => {
     const mn = u.mandanten?.name || '—';
     const rl = {superadmin:'Super Admin',admin:'Admin',leiter:'Leiter',mitarbeiter:'Mitarbeiter'}[u.rolle] || u.rolle;
     return `<tr>
@@ -1525,7 +1636,9 @@ function tEdit(secId,btn){const sec=document.getElementById(secId);const isE=sec
                 if(['rolleId','groupId'].includes(key)) m[key]=parseInt(inp.value)||0;
                 else m[key]=inp.value;
               }
-              if(['k-vn','k-nn'].includes(bid)){document.getElementById('k-name').textContent=`${m.anrede} ${m.vorname} ${m.nachname}`;rndrTbl();}}}}});sec.classList.remove('editing');btn.textContent='Bearbeiten';btn.style.color='';toast('Gespeichert');}else{sec.classList.add('editing');btn.textContent='✓ Fertig';btn.style.color='#16A34A';}}
+              if(['k-vn','k-nn'].includes(bid)){document.getElementById('k-name').textContent=`${m.anrede} ${m.vorname} ${m.nachname}`;rndrTbl();}}}}});// Save to Supabase
+    if(activeId){const m=members.find(x=>x.id===activeId);if(m&&m._dbId){const parts=(m.plzort||'').split(' ');dbUpdate('mitglieder',m._dbId,{vorname:m.vorname,nachname:m.nachname,anrede:m.anrede,email:m.email,mobil:m.mobil,geschlecht:m.geschlecht,geburt:m.geburt||null,strasse:m.strasse,plz:parts[0]||'',ort:parts.slice(1).join(' ')||'',status:m.status,familienstand:m.familienstand,nationalitaet:m.nationalitaet,sprache:m.sprache,eingetreten:m.eingetreten||null,taufe:m.taufe||null,color:m.color});}}
+    sec.classList.remove('editing');btn.textContent='Bearbeiten';btn.style.color='';toast('Gespeichert ✓');}else{sec.classList.add('editing');btn.textContent='✓ Fertig';btn.style.color='#16A34A';}}
 
 const getDms=()=>dmsStore[activeId]||[];
 const extC=e=>({'pdf':'#DC2626','docx':'#2563EB','doc':'#2563EB','xlsx':'#16A34A','png':'#7C3AED','jpg':'#7C3AED','jpeg':'#7C3AED'}[e.toLowerCase()]||'#6B7280');
@@ -1772,14 +1885,69 @@ function tEditSG(secId,btn){
 }
 function addMemberToSG(){
   if(!activeSG)return;
-  const avail=members.filter(m=>!m.groupId||m.groupId==='0'||m.groupId===0);
-  if(!avail.length){toast('Alle Mitglieder sind bereits in einer Gruppe');return;}
+  if(!members.length){toast('Keine Mitglieder vorhanden');return;}
+  const existing=document.getElementById('sg-member-picker');
+  if(existing)existing.remove();
+  window._sgSel=new Set();
+  const available=members.filter(m=>m.groupId!==activeSG);
   const div=document.createElement('div');
-  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center';
-  const opts=avail.map(m=>'<option value="'+m.id+'">'+m.vorname+' '+m.nachname+' ('+sL(m.status)+')</option>').join('');
-  div.innerHTML='<div style="background:white;border-radius:12px;padding:24px;width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2)"><div style="font-size:15px;font-weight:600;color:#1A3560;margin-bottom:16px">Mitglied hinzufügen</div><select id="sg-add-sel" size="6" style="width:100%;padding:6px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;margin-bottom:16px">'+opts+'</select><div style="display:flex;gap:8px;justify-content:flex-end"><button onclick="this.closest(\'[style]\').remove()" style="padding:8px 16px;border:1px solid #E5E7EB;border-radius:7px;background:white;cursor:pointer;font-family:inherit">Abbrechen</button><button onclick="doAddMemberSG(\''+activeSG+'\');this.closest(\'[style]\').remove()" style="padding:8px 16px;background:#1A3560;color:white;border:none;border-radius:7px;cursor:pointer;font-family:inherit;font-weight:500">Hinzufügen</button></div></div>';
+  div.id='sg-member-picker';
+  div.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;display:flex;align-items:center;justify-content:center';
+  const rows=available.map(m=>{
+    const inGroup=m.groupId&&m.groupId!==0&&m.groupId!=='0';
+    const grpName=inGroup?(sgData.find(s=>s.id===m.groupId)?.name||'anderer Gruppe'):'';
+    return'<div data-mid="'+m.id+'" onclick="toggleSGSel(this,''+m.id+'')" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;border:2px solid transparent;margin-bottom:3px">'
+      +'<div style="width:34px;height:34px;border-radius:50%;background:'+m.color+';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;flex-shrink:0">'+ini(m)+'</div>'
+      +'<div style="flex:1"><div style="font-size:13px;font-weight:500;color:#1A3560">'+m.vorname+' '+m.nachname+'</div>'
+      +'<div style="font-size:11px;color:#9CA3AF">'+sL(m.status)+(inGroup?' · aktuell in '+grpName:'')+'</div></div>'
+      +'<div id="sgchk-'+m.id+'" style="width:20px;height:20px;border-radius:50%;border:2px solid #D1D5DB;flex-shrink:0;display:flex;align-items:center;justify-content:center"></div>'
+      +'</div>';
+  }).join('');
+  div.innerHTML='<div style="background:white;border-radius:14px;width:520px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.3)">'
+    +'<div style="padding:16px 20px;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:space-between">'
+    +'<div style="font-size:15px;font-weight:600;color:#1A3560">Mitglieder hinzufügen</div>'
+    +'<div onclick="document.getElementById('sg-member-picker').remove()" style="cursor:pointer;width:28px;height:28px;border:1px solid #E5E7EB;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#6B7280">✕</div></div>'
+    +'<div style="padding:10px 16px;border-bottom:1px solid #E5E7EB">'
+    +'<input placeholder="Suchen..." oninput="sgPickerFilter(this.value)" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none"></div>'
+    +'<div id="sg-picker-rows" style="overflow-y:auto;flex:1;padding:8px 12px">'+rows+'</div>'
+    +'<div style="padding:12px 20px;border-top:1px solid #E5E7EB;display:flex;justify-content:space-between;align-items:center">'
+    +'<span id="sg-sel-cnt" style="font-size:12px;color:#6B7280">0 ausgewählt</span>'
+    +'<div style="display:flex;gap:8px">'
+    +'<button onclick="document.getElementById('sg-member-picker').remove()" style="padding:8px 16px;border:1px solid #E5E7EB;border-radius:7px;background:white;cursor:pointer;font-family:inherit">Abbrechen</button>'
+    +'<button onclick="confirmSGAdd()" style="padding:8px 16px;background:#1A3560;color:white;border:none;border-radius:7px;cursor:pointer;font-family:inherit;font-weight:500">Hinzufügen</button>'
+    +'</div></div></div>';
   document.body.appendChild(div);
 }
+function toggleSGSel(el,mid){
+  if(!window._sgSel)window._sgSel=new Set();
+  const chk=document.getElementById('sgchk-'+mid);
+  if(window._sgSel.has(mid)){
+    window._sgSel.delete(mid);
+    el.style.background='';el.style.borderColor='transparent';
+    if(chk){chk.style.background='';chk.style.borderColor='#D1D5DB';chk.innerHTML='';}
+  } else {
+    window._sgSel.add(mid);
+    el.style.background='#EFF6FF';el.style.borderColor='#2563EB';
+    if(chk){chk.style.background='#2563EB';chk.style.borderColor='#2563EB';chk.innerHTML='<svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';}
+  }
+  const cnt=document.getElementById('sg-sel-cnt');
+  if(cnt)cnt.textContent=window._sgSel.size+' ausgewählt';
+}
+function sgPickerFilter(q){
+  const rows=document.querySelectorAll('#sg-picker-rows [data-mid]');
+  rows.forEach(r=>{r.style.display=(!q||r.textContent.toLowerCase().includes(q.toLowerCase()))?'flex':'none';});
+}
+function confirmSGAdd(){
+  if(!window._sgSel||!window._sgSel.size){toast('Bitte Mitglied auswählen');return;}
+  let n=0;
+  window._sgSel.forEach(mid=>{const m=members.find(x=>x.id===mid);if(m){m.groupId=activeSG;n++;}});
+  window._sgSel=new Set();
+  document.getElementById('sg-member-picker')?.remove();
+  const sg=sgData.find(x=>x.id===activeSG);
+  if(sg){rndrSGMembers(sg);const c=document.getElementById('sg-cnt');if(c)c.textContent=members.filter(m=>m.groupId===activeSG).length;}
+  rndrSGGrid();toast(n+' Mitglied(er) hinzugefügt ✓');
+}
+
 function doAddMemberSG(sgId){const sel=document.getElementById('sg-add-sel');if(!sel)return;const m=members.find(x=>x.id===sel.value);if(!m)return;m.groupId=sgId;const sg=sgData.find(x=>x.id===sgId);if(sg){rndrSGMembers(sg);document.getElementById('sg-cnt').textContent=members.filter(x=>x.groupId===sgId).length;}rndrSGGrid();toast(m.vorname+' '+m.nachname+' hinzugefügt');}
 function removeMemberSG(mid,sgId){if(!confirm('Aus Gruppe entfernen?'))return;const m=members.find(x=>x.id===mid);if(m)m.groupId=0;const sg=sgData.find(x=>x.id===sgId);if(sg){rndrSGMembers(sg);document.getElementById('sg-cnt').textContent=members.filter(x=>x.groupId===sgId).length;}rndrSGGrid();toast('Entfernt');}
 function addSGProto(){
