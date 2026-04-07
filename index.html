@@ -378,28 +378,110 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
     </div>
   </div>
   <div class="amain">
-    <div><div class="aptitle">Admin-Dashboard</div><div class="apsub">Mandanten, Benutzer und Lizenzen verwalten</div></div>
-    <div class="astats">
-      <div class="astat"><div class="astat-ico" style="background:#EFF6FF">🏛️</div><div><div class="astat-n" id="as-m">—</div><div class="astat-l">Mandanten</div></div></div>
-      <div class="astat"><div class="astat-ico" style="background:#DCFCE7">✅</div><div><div class="astat-n" id="as-a">—</div><div class="astat-l">Aktive Lizenzen</div></div></div>
-      <div class="astat"><div class="astat-ico" style="background:#FEF3C7">👥</div><div><div class="astat-n" id="as-u">—</div><div class="astat-l">Benutzer</div></div></div>
-      <div class="astat"><div class="astat-ico" style="background:#FEE2E2">⏳</div><div><div class="astat-n" id="as-p">—</div><div class="astat-l">Ausstehend</div></div></div>
-    </div>
-    <div class="acard">
-      <div class="acardh"><div class="acardtitle">Kirchgemeinden</div><button class="abtn abtn-gold" onclick="openAMo()">+ Neue Gemeinde</button></div>
-      <div style="overflow-x:auto"><table><thead><tr><th>Gemeinde</th><th>Lizenz</th><th>Status</th><th>Benutzer</th><th>Aktionen</th></tr></thead><tbody id="a-mand"><tr><td colspan="5" class="aempty">Lädt...</td></tr></tbody></table></div>
-    </div>
-    <div class="acard">
-      <div class="acardh">
-        <div class="acardtitle">Benutzer</div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <select id="user-mandant-filter" style="padding:7px 10px;font-size:12px;border:1.5px solid #E5E7EB;border-radius:7px;min-width:200px;outline:none" onchange="filterAdminUsers()">
-            <option value="">Alle Gemeinden</option>
-          </select>
-          <button class="abtn abtn-navy" onclick="openAUMoFiltered()">+ Benutzer anlegen</button>
+    <!-- OVERVIEW MODE -->
+    <div id="a-overview">
+      <div><div class="aptitle">Admin-Dashboard</div><div class="apsub">Mandanten, Benutzer und Lizenzen verwalten</div></div>
+      <div class="astats">
+        <div class="astat"><div class="astat-ico" style="background:#EFF6FF"><svg viewBox="0 0 24 24" style="fill:#2563EB"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13z"/></svg></div><div class="astat-n" id="as-m">0</div><div class="astat-l">Mandanten</div></div>
+        <div class="astat"><div class="astat-ico" style="background:#DCFCE7"><svg viewBox="0 0 24 24" style="fill:#16A34A"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div><div class="astat-n" id="as-a">0</div><div class="astat-l">Aktive Lizenzen</div></div>
+        <div class="astat"><div class="astat-ico" style="background:#EDE9FE"><svg viewBox="0 0 24 24" style="fill:#7C3AED"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3z"/></svg></div><div class="astat-n" id="as-u">0</div><div class="astat-l">Benutzer</div></div>
+        <div class="astat"><div class="astat-ico" style="background:#FEF3C7"><svg viewBox="0 0 24 24" style="fill:#D97706"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2z"/></svg></div><div class="astat-n" id="as-p">0</div><div class="astat-l">Ausstehend</div></div>
+      </div>
+      <!-- Kirchgemeinden -->
+      <div class="acard">
+        <div class="acardh">
+          <div class="acardtitle">Kirchgemeinden</div>
+          <button class="abtn abtn-gold" onclick="openAMo()">+ Neue Gemeinde</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Gemeinde</th><th>Lizenz</th><th>Status</th><th>Benutzer</th><th>Aktionen</th></tr></thead>
+            <tbody id="a-mand"><tr><td colspan="5" class="aempty">Lädt...</td></tr></tbody>
+          </table>
         </div>
       </div>
-      <div style="overflow-x:auto"><table><thead><tr><th>Name / E-Mail</th><th>Gemeinde</th><th>Rolle</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="a-user"><tr><td colspan="5" class="aempty">Lädt...</td></tr></tbody></table></div>
+    </div>
+
+    <!-- MANDANT DETAIL MODE -->
+    <div id="a-detail" style="display:none">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <button onclick="showAdminOverview()" style="padding:7px 14px;border:1.5px solid #E5E7EB;border-radius:8px;background:white;cursor:pointer;font-family:inherit;font-size:13px;display:flex;align-items:center;gap:6px">← Übersicht</button>
+        <div>
+          <div style="font-size:18px;font-weight:700;color:#1A3560" id="a-detail-name">Gemeinde</div>
+          <div style="font-size:12px;color:#9CA3AF" id="a-detail-sub">Lizenz · Status</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <span id="a-detail-lizenz-badge" class="abadge ab-pro"></span>
+          <span id="a-detail-status-badge" class="abadge ab-ok">Aktiv</span>
+        </div>
+      </div>
+
+      <!-- Mandant Stats -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+        <div style="background:white;border:1px solid #E5E7EB;border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:22px;font-weight:700;color:#1A3560" id="a-dm-users">0</div>
+          <div style="font-size:11px;color:#9CA3AF">Benutzer</div>
+        </div>
+        <div style="background:white;border:1px solid #E5E7EB;border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:22px;font-weight:700;color:#16A34A" id="a-dm-aktiv">0</div>
+          <div style="font-size:11px;color:#9CA3AF">Aktiv</div>
+        </div>
+        <div style="background:white;border:1px solid #E5E7EB;border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:22px;font-weight:700;color:#D97706" id="a-dm-pend">0</div>
+          <div style="font-size:11px;color:#9CA3AF">Ausstehend</div>
+        </div>
+        <div style="background:white;border:1px solid #E5E7EB;border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:22px;font-weight:700;color:#7C3AED" id="a-dm-lizenz">Starter</div>
+          <div style="font-size:11px;color:#9CA3AF">Lizenz</div>
+        </div>
+      </div>
+
+      <!-- Users for this mandant -->
+      <div class="acard">
+        <div class="acardh">
+          <div class="acardtitle">Benutzer dieser Gemeinde</div>
+          <button class="abtn abtn-navy" onclick="openAUMoForDetail()">+ Benutzer anlegen</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Name / E-Mail</th><th>Rolle</th><th>Status</th><th>Aktionen</th></tr></thead>
+            <tbody id="a-detail-users"><tr><td colspan="4" class="aempty">Lädt...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Mandant Settings -->
+      <div class="acard" style="margin-top:14px">
+        <div class="acardh"><div class="acardtitle">Gemeinde-Einstellungen</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:4px">
+          <div>
+            <label style="font-size:11px;color:#6B7280;display:block;margin-bottom:4px">Name</label>
+            <input id="a-dm-name-inp" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none">
+          </div>
+          <div>
+            <label style="font-size:11px;color:#6B7280;display:block;margin-bottom:4px">Lizenz</label>
+            <select id="a-dm-lizenz-sel" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none">
+              <option value="starter">Starter (CHF 149/Mt.)</option>
+              <option value="professional">Professional (CHF 299/Mt.)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px;color:#6B7280;display:block;margin-bottom:4px">E-Mail</label>
+            <input id="a-dm-email-inp" type="email" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none">
+          </div>
+          <div>
+            <label style="font-size:11px;color:#6B7280;display:block;margin-bottom:4px">Status</label>
+            <select id="a-dm-aktiv-sel" style="width:100%;padding:8px;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;outline:none">
+              <option value="true">Aktiv</option>
+              <option value="false">Gesperrt</option>
+            </select>
+          </div>
+        </div>
+        <div style="padding:12px 4px 4px;display:flex;gap:8px">
+          <button onclick="saveMandantDetail()" class="abtn abtn-navy">Speichern</button>
+          <button onclick="if(confirm('Gemeinde wirklich löschen? Alle Daten gehen verloren!'))deleteMandant()" style="padding:7px 14px;background:#FEE2E2;color:#DC2626;border:1px solid #fca5a5;border-radius:7px;cursor:pointer;font-family:inherit;font-size:13px">Gemeinde löschen</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1360,20 +1442,7 @@ async function loadAdminData() {
   }
 }
 
-function renderAM() {
-  const tb = document.getElementById('a-mand');
-  if (!_AM.length) { tb.innerHTML = '<tr><td colspan="5" class="aempty">Noch keine Gemeinden</td></tr>'; return; }
-  tb.innerHTML = _AM.map(m => {
-    const cnt = _AU.filter(u=>u.mandant_id===m.id).length;
-    return `<tr>
-      <td><div style="font-weight:500;color:#1A3560">${m.name}</div><div style="font-size:11px;color:#9CA3AF">${m.email||''}</div></td>
-      <td><span class="abadge ${m.lizenz==='professional'?'ab-pro':'ab-str'}">${m.lizenz==='professional'?'Professional':'Starter'}</span></td>
-      <td><span class="abadge ${m.aktiv?'ab-ok':'ab-no'}">${m.aktiv?'Aktiv':'Inaktiv'}</span></td>
-      <td>${cnt}</td>
-      <td><button class="aaction-btn" style="background:${m.aktiv?'#FEE2E2':'#DCFCE7'};color:${m.aktiv?'#DC2626':'#16A34A'};border-color:${m.aktiv?'#fca5a5':'#86efac'}" onclick="toggleAM('${m.id}',${m.aktiv})">${m.aktiv?'Sperren':'Aktivieren'}</button></td>
-    </tr>`;
-  }).join('');
-}
+// renderAM: see updated version below
 
 function filterAdminUsers() {
   const sel = document.getElementById('user-mandant-filter');
@@ -1584,7 +1653,18 @@ function rndrCards(){document.getElementById('m-cg').innerHTML=mFilt.map(m=>{con
 
 function updStats(){const t=members.length,a=members.filter(m=>m.status==='aktiv').length,b=members.filter(m=>m.status==='besucher').length,n=members.filter(m=>m.status==='neu').length;['ms-t','db-m'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});['ms-a','ms-b','ms-n','nb-m'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=[a,b,n,t][i];});const dm=document.getElementById('db-md');if(dm)dm.textContent=`↑ ${n} diesen Monat`;}
 
-function openNM(){refreshSel();document.getElementById('nm-ein').value=new Date().toISOString().split('T')[0];document.getElementById('mo-nm').classList.add('open');}
+function openNM(){
+  refreshSel();
+  // Clear ALL form fields first
+  ['nm-vn','nm-nn','nm-em','nm-mob','nm-str','nm-not'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  const anr=document.getElementById('nm-anr');if(anr)anr.value='Herr';
+  const st=document.getElementById('nm-st');if(st)st.value='aktiv';
+  const plz=document.getElementById('nm-plzort');if(plz)plz.value='8001 Zürich';
+  document.getElementById('nm-ein').value=new Date().toISOString().split('T')[0];
+  document.getElementById('mo-nm').classList.add('open');
+}
 async function saveM(){
   const v=document.getElementById('nm-vn').value.trim(),n=document.getElementById('nm-nn').value.trim();
   if(!v||!n){alert('Vorname und Nachname sind Pflichtfelder.');return;}
@@ -2369,11 +2449,20 @@ function saveGemeindeDaten(){
 }
 
 async function deleteAU(id, name) {
-  if (!confirm('Benutzer "' + name + '" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) return;
+  if (!confirm('Benutzer "' + name + '" wirklich löschen?\nDiese Aktion kann nicht rückgängig gemacht werden.')) return;
+  // Show loading state
+  toast('Wird gelöscht...');
   const {error} = await sb.from('profiles').delete().eq('id', id);
   if (error) { toast('Fehler: ' + error.message); return; }
+  // Remove from local array immediately for instant UI feedback
+  _AU = _AU.filter(u => u.id !== id);
+  // Re-render with current filter
+  const currentFilter = document.getElementById('user-mandant-filter')?.value || '';
+  renderAU(currentFilter);
+  // Update stats
+  document.getElementById('as-u').textContent = _AU.length;
+  document.getElementById('as-p').textContent = _AU.filter(x=>!x.aktiv).length;
   toast('Benutzer gelöscht ✓');
-  await loadAdminData();
 }
 
 // ═══════════════════════════════════════════
@@ -2574,6 +2663,154 @@ async function populateWorkingMandantSel() {
     sel.value = mands[0].id;
     setWorkingMandant(mands[0].id);
   }
+}
+
+// ═══════════════════════════════════════════
+// ADMIN: Mandant Detail View
+// ═══════════════════════════════════════════
+let _activeMandant = null;
+
+function showAdminOverview() {
+  document.getElementById('a-overview').style.display = 'block';
+  document.getElementById('a-detail').style.display = 'none';
+  _activeMandant = null;
+}
+
+function openMandantDetail(mandantId) {
+  const m = _AM.find(x => x.id === mandantId);
+  if(!m) return;
+  _activeMandant = m;
+
+  // Switch view
+  document.getElementById('a-overview').style.display = 'none';
+  document.getElementById('a-detail').style.display = 'block';
+
+  // Fill header
+  document.getElementById('a-detail-name').textContent = m.name;
+  document.getElementById('a-detail-sub').textContent = (m.lizenz === 'professional' ? 'Professional' : 'Starter') + ' · ' + (m.aktiv ? 'Aktiv' : 'Gesperrt');
+
+  const lb = document.getElementById('a-detail-lizenz-badge');
+  lb.textContent = m.lizenz === 'professional' ? 'Professional' : 'Starter';
+  lb.className = 'abadge ' + (m.lizenz === 'professional' ? 'ab-pro' : 'ab-str');
+
+  const sb2 = document.getElementById('a-detail-status-badge');
+  sb2.textContent = m.aktiv ? 'Aktiv' : 'Gesperrt';
+  sb2.className = 'abadge ' + (m.aktiv ? 'ab-ok' : 'ab-no');
+
+  // Users for this mandant
+  const users = _AU.filter(u => u.mandant_id === mandantId);
+  document.getElementById('a-dm-users').textContent = users.length;
+  document.getElementById('a-dm-aktiv').textContent = users.filter(u => u.aktiv).length;
+  document.getElementById('a-dm-pend').textContent = users.filter(u => !u.aktiv).length;
+  document.getElementById('a-dm-lizenz').textContent = m.lizenz === 'professional' ? 'Pro' : 'Starter';
+
+  // Fill settings form
+  document.getElementById('a-dm-name-inp').value = m.name;
+  document.getElementById('a-dm-email-inp').value = m.email || '';
+  document.getElementById('a-dm-lizenz-sel').value = m.lizenz;
+  document.getElementById('a-dm-aktiv-sel').value = String(m.aktiv);
+
+  // Render users table
+  renderDetailUsers(users);
+}
+
+function renderDetailUsers(users) {
+  const tb = document.getElementById('a-detail-users');
+  if(!users.length) {
+    tb.innerHTML = '<tr><td colspan="4" class="aempty">Noch keine Benutzer — jetzt hinzufügen</td></tr>';
+    return;
+  }
+  const roleLabels = {superadmin:'Super Admin', admin:'Admin', leiter:'Leiter', mitarbeiter:'Mitarbeiter'};
+  tb.innerHTML = users.map(u => `<tr>
+    <td>
+      <div style="font-weight:500;color:#1A3560">${u.name||'—'}</div>
+      <div style="font-size:11px;color:#9CA3AF">${u.email||''}</div>
+    </td>
+    <td><span class="abadge" style="background:#DBEAFE;color:#2563EB">${roleLabels[u.rolle]||u.rolle}</span></td>
+    <td><span class="abadge ${u.aktiv?'ab-ok':'ab-wait'}">${u.aktiv?'Aktiv':'Ausstehend'}</span></td>
+    <td style="display:flex;gap:5px">
+      <button class="aaction-btn" style="background:${u.aktiv?'#FEE2E2':'#DCFCE7'};color:${u.aktiv?'#DC2626':'#16A34A'};border-color:${u.aktiv?'#fca5a5':'#86efac'}" onclick="toggleAU('${u.id}',${u.aktiv})">${u.aktiv?'Sperren':'Freischalten'}</button>
+      ${u.rolle!=='superadmin'?`<button class="aaction-btn" style="background:#FEE2E2;color:#DC2626;border-color:#fca5a5" onclick="deleteAUFromDetail('${u.id}','${u.name||u.email}')">Löschen</button>`:''}
+    </td>
+  </tr>`).join('');
+}
+
+async function deleteAUFromDetail(id, name) {
+  if(!confirm('Benutzer "' + name + '" löschen?')) return;
+  const {error} = await sb.from('profiles').delete().eq('id', id);
+  if(error) { toast('Fehler: '+error.message); return; }
+  _AU = _AU.filter(u => u.id !== id);
+  if(_activeMandant) {
+    const users = _AU.filter(u => u.mandant_id === _activeMandant.id);
+    renderDetailUsers(users);
+    document.getElementById('a-dm-users').textContent = users.length;
+    document.getElementById('a-dm-aktiv').textContent = users.filter(u=>u.aktiv).length;
+    document.getElementById('a-dm-pend').textContent = users.filter(u=>!u.aktiv).length;
+  }
+  toast('Benutzer gelöscht ✓');
+}
+
+function openAUMoForDetail() {
+  if(!_activeMandant) return;
+  openAUMo();
+  // Pre-select this mandant
+  setTimeout(() => {
+    const sel = document.getElementById('au-mandant');
+    if(sel) sel.value = _activeMandant.id;
+  }, 50);
+}
+
+async function saveMandantDetail() {
+  if(!_activeMandant) return;
+  const name = document.getElementById('a-dm-name-inp').value.trim();
+  if(!name) { toast('Name Pflicht'); return; }
+  const payload = {
+    name,
+    email: document.getElementById('a-dm-email-inp').value,
+    lizenz: document.getElementById('a-dm-lizenz-sel').value,
+    aktiv: document.getElementById('a-dm-aktiv-sel').value === 'true'
+  };
+  const {error} = await sb.from('mandanten').update(payload).eq('id', _activeMandant.id);
+  if(error) { toast('Fehler: '+error.message); return; }
+  // Update local data
+  Object.assign(_activeMandant, payload);
+  document.getElementById('a-detail-name').textContent = name;
+  toast('Gespeichert ✓');
+  // Reload overview data in background
+  loadAdminData();
+}
+
+async function deleteMandant() {
+  if(!_activeMandant) return;
+  const {error} = await sb.from('mandanten').delete().eq('id', _activeMandant.id);
+  if(error) { toast('Fehler: '+error.message); return; }
+  toast('Gemeinde gelöscht ✓');
+  showAdminOverview();
+  await loadAdminData();
+}
+
+// Override renderAM to add click handler
+function renderAM() {
+  const tb = document.getElementById('a-mand');
+  if (!_AM.length) { tb.innerHTML = '<tr><td colspan="5" class="aempty">Noch keine Gemeinden</td></tr>'; return; }
+  tb.innerHTML = _AM.map(m => {
+    const cnt = _AU.filter(u=>u.mandant_id===m.id).length;
+    return `<tr style="cursor:pointer" onclick="openMandantDetail('${m.id}')">
+      <td>
+        <div style="font-weight:600;color:#1A3560;display:flex;align-items:center;gap:6px">
+          ${m.name}
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#9CA3AF"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+        </div>
+        <div style="font-size:11px;color:#9CA3AF">${m.email||''}</div>
+      </td>
+      <td><span class="abadge ${m.lizenz==='professional'?'ab-pro':'ab-str'}">${m.lizenz==='professional'?'Professional':'Starter'}</span></td>
+      <td><span class="abadge ${m.aktiv?'ab-ok':'ab-no'}">${m.aktiv?'Aktiv':'Inaktiv'}</span></td>
+      <td>${cnt}</td>
+      <td onclick="event.stopPropagation()">
+        <button class="aaction-btn" style="background:${m.aktiv?'#FEE2E2':'#DCFCE7'};color:${m.aktiv?'#DC2626':'#16A34A'};border-color:${m.aktiv?'#fca5a5':'#86efac'}" onclick="toggleAM('${m.id}',${m.aktiv})">${m.aktiv?'Sperren':'Aktivieren'}</button>
+      </td>
+    </tr>`;
+  }).join('');
 }
 </script>
 
