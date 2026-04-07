@@ -1569,9 +1569,10 @@ async function saveAM() {
 }
 
 async function saveAU() {
-  const email = document.getElementById('au-email').value.trim();
+  const btn = document.getElementById('au-save-btn');
+  if(btn.disabled) return; // Prevent double-submit
+  const email = document.getElementById('au-email').value.trim().toLowerCase();
   const name = document.getElementById('au-name').value.trim();
-  // Use active mandant if row is hidden (called from detail view)
   const mandantRow = document.getElementById('au-mandant-row');
   const mid = (mandantRow?.style.display === 'none' && _activeMandant)
     ? _activeMandant.id
@@ -1579,29 +1580,43 @@ async function saveAU() {
   const rolle = document.getElementById('au-rolle').value;
   const aktiv = document.getElementById('au-aktiv').value === 'true';
   if (!email || !mid) { toast('E-Mail und Gemeinde sind Pflicht'); return; }
-  const btn = document.getElementById('au-save-btn');
+  // Check if user already exists in local cache
+  const existing = _AU.find(u => u.email?.toLowerCase() === email);
+  if(existing) { toast('⚠ Benutzer mit dieser E-Mail existiert bereits'); return; }
+  // Check in DB directly to be sure
+  const {data: dbCheck} = await sb.from('profiles').select('id').eq('email', email).maybeSingle();
+  if(dbCheck) { toast('⚠ Benutzer mit dieser E-Mail existiert bereits'); return; }
   btn.disabled = true; btn.textContent = 'Wird erstellt...';
   try {
-    const tmpPw = 'AJC-' + Math.random().toString(36).slice(-8).toUpperCase() + '!1';
-    const res = await fetch(SB_URL + '/auth/v1/admin/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY },
-      body: JSON.stringify({ email, password: tmpPw, email_confirm: true, user_metadata: { name } })
+    // Step 1: Create profile record (aktiv=false until they set password)
+    const tempId = crypto.randomUUID();
+    const {error: pErr} = await sb.from('profiles').insert({
+      id: tempId, email, name, mandant_id: mid, rolle, aktiv: false
     });
-    const authData = await res.json();
-    const userId = authData.id || authData.user?.id || crypto.randomUUID();
-    const {error: pErr} = await sb.from('profiles').insert({ id: userId, email, name, mandant_id: mid, rolle, aktiv });
-    if (pErr) { toast('Fehler: ' + pErr.message); btn.disabled=false; btn.textContent='Anlegen'; return; }
-    await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
-    toast('Benutzer erstellt ✓');
+    if (pErr) { 
+      toast('Fehler: ' + pErr.message); 
+      btn.disabled=false; btn.textContent='Anlegen'; 
+      return; 
+    }
+    // Step 2: Send password reset email so user can set their password
+    // This works even if no Auth user exists yet - they'll be prompted to sign up
+    const {error: emailErr} = await sb.auth.resetPasswordForEmail(email, { 
+      redirectTo: window.location.origin + '?setup=1'
+    });
+    // Step 3: Add to local cache immediately to prevent duplicates
+    const newUser = {id: tempId, email, name, mandant_id: mid, rolle, aktiv: false};
+    _AU.push(newUser);
+    const statusMsg = emailErr 
+      ? '✓ Benutzer erstellt (E-Mail-Versand fehlgeschlagen — SMTP prüfen)' 
+      : '✓ Benutzer erstellt! ' + email + ' erhält eine Einladungs-E-Mail.';
+    toast(statusMsg);
     document.getElementById('amo-u').classList.remove('open');
     await loadAdminData();
-    // If we're in mandant detail view, refresh it
     if(_activeMandant) {
       const users = _AU.filter(u => u.mandant_id === _activeMandant.id);
       renderDetailUsers(users);
-      document.getElementById('a-dm-users').textContent = users.length;
-      document.getElementById('a-dm-aktiv').textContent = users.filter(u=>u.aktiv).length;
+      const dm_u=document.getElementById('a-dm-users');if(dm_u)dm_u.textContent=users.length;
+      const dm_a=document.getElementById('a-dm-aktiv');if(dm_a)dm_a.textContent=users.filter(u=>u.aktiv).length;
     }
   } catch(e) {
     toast('Fehler: ' + e.message);
