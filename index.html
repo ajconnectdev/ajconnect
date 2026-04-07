@@ -1214,7 +1214,7 @@ async function loadAllData() {
         kanton: m.kanton || '', nationalitaet: m.nationalitaet || 'Schweiz',
         sprache: m.sprache || 'Deutsch', familienstand: m.familienstand || '',
         status: m.status || 'aktiv',
-        rolleId: 1, groupId: 0,
+        rolleId: 1, groupId: m.gruppe_id || 0,
         eingetreten: m.eingetreten || '', taufe: m.taufe || '',
         geburt: m.geburt || '', notizen: m.notizen || '',
         color: m.color || COLORS[Math.floor(Math.random()*COLORS.length)],
@@ -1240,6 +1240,9 @@ async function loadAllData() {
         mitgliedGeworden: k.mitglied_geworden||false,
         color: COLORS[Math.floor(Math.random()*COLORS.length)]
       }));
+    } else if(_S?.mandant_id) {
+      // Empty DB - show demo kontakte
+      kontakte = DEMO_KONTAKTE.map(k=>({...k,_dbId:null}));
     }
     if(sg.length > 0) {
       gruppen = sg.map(g => ({id: g.id, name: g.name, leiter: g.leiter||'', tag: g.tag||''}));
@@ -1251,6 +1254,10 @@ async function loadAllData() {
         desc: g.beschreibung||'',
         proto: Array.isArray(g.protokolle) ? g.protokolle : []
       }));
+    } else if(_S?.mandant_id) {
+      // Empty DB - show demo SGs
+      sgData = DEMO_SGDATA.map(s=>({...s,_dbId:null}));
+      gruppen = DEMO_SGDATA.map(s=>({id:s.id,name:s.name,leiter:s.leiter,tag:s.tag}));
     }
     if(godi.length > 0) {
       gottesdienste = godi.map(g => ({
@@ -1436,12 +1443,23 @@ async function loadAdminData() {
   document.getElementById('as-a').textContent = _AM.filter(x=>x.aktiv).length;
   document.getElementById('as-u').textContent = _AU.length;
   document.getElementById('as-p').textContent = _AU.filter(x=>!x.aktiv).length;
-  renderAM(); renderAU(); refreshAUSel();
-  // Populate mandant filter in users section
-  const umf = document.getElementById('user-mandant-filter');
-  if (umf) {
-    umf.innerHTML = '<option value="">Alle Gemeinden ('+_AU.length+')</option>' + 
-      _AM.map(m => '<option value="'+m.id+'">'+m.name+' ('+_AU.filter(u=>u.mandant_id===m.id).length+')</option>').join('');
+  renderAM();
+  refreshAUSel();
+  // Update stats
+  const asU = document.getElementById('as-u');
+  const asP = document.getElementById('as-p');
+  if(asU) asU.textContent = _AU.length;
+  if(asP) asP.textContent = _AU.filter(x=>!x.aktiv).length;
+  // If in detail view, refresh it
+  if(_activeMandant) {
+    const users = _AU.filter(u => u.mandant_id === _activeMandant.id);
+    renderDetailUsers(users);
+    const dm_u = document.getElementById('a-dm-users');
+    const dm_a = document.getElementById('a-dm-aktiv');
+    const dm_p = document.getElementById('a-dm-pend');
+    if(dm_u) dm_u.textContent = users.length;
+    if(dm_a) dm_a.textContent = users.filter(u=>u.aktiv).length;
+    if(dm_p) dm_p.textContent = users.filter(u=>!u.aktiv).length;
   }
 }
 
@@ -1450,11 +1468,24 @@ async function loadAdminData() {
 function filterAdminUsers() {
   const sel = document.getElementById('user-mandant-filter');
   const mid = sel ? sel.value : '';
-  renderAU(mid);
+  if(_activeMandant) renderAU(mid || _activeMandant.id);
 }
 
 function renderAU(mandantFilter) {
+  // renderAU is now replaced by renderDetailUsers in the new admin design
+  // Only update if we're in detail view
+  if(_activeMandant) {
+    const users = mandantFilter 
+      ? _AU.filter(u => u.mandant_id === mandantFilter)
+      : _AU.filter(u => u.mandant_id === _activeMandant.id);
+    renderDetailUsers(users);
+    const el = document.getElementById('a-dm-users');
+    if(el) el.textContent = users.length;
+  }
+  return;
+  // Legacy code below (kept for reference)
   const tb = document.getElementById('a-user');
+  if(!tb) return;
   let users = mandantFilter ? _AU.filter(u => u.mandant_id === mandantFilter) : _AU;
   if (!users.length) { tb.innerHTML = '<tr><td colspan="5" class="aempty">Keine Benutzer' + (mandantFilter ? ' für diese Gemeinde' : '') + '</td></tr>'; return; }
   tb.innerHTML = users.map(u => {
@@ -1840,11 +1871,13 @@ function refreshSel(){
 // ═══════════════════════════════════════════
 // KONTAKTE
 // ═══════════════════════════════════════════
-let kontakte=[
+// Demo kontakte - only shown when DB is empty
+const DEMO_KONTAKTE=[
   {id:'k1',vorname:'Tobias',nachname:'Brunner',email:'tobias.brunner@example.ch',telefon:'+41 76 234 56 78',status:'interessent',quelle:'Gottesdienst',datum:'2026-03-15',notizen:[{text:'War am Ostergottesdienst.',datum:'2026-03-15'}],mitgliedGeworden:false,color:'#2563EB'},
   {id:'k2',vorname:'Claudia',nachname:'Sommer',email:'claudia.sommer@example.ch',telefon:'+41 79 876 54 32',status:'besucher',quelle:'Empfehlung',datum:'2026-02-20',notizen:[],mitgliedGeworden:false,color:'#16A34A'},
   {id:'k3',vorname:'René',nachname:'Müller',email:'rene.mueller@example.ch',telefon:'+41 77 111 22 33',status:'interessent',quelle:'Website',datum:'2026-01-10',notizen:[],mitgliedGeworden:false,color:'#C8941A'},
 ];
+let kontakte=[]; // Start empty - loaded from DB
 let kIdSeq=4,kFilt=[...kontakte],kFilter='alle',activeKK=null;
 const kStatusLbl={interessent:'Interessent',besucher:'Besucher',inaktiv:'Inaktiv'};
 const kStatusCss={interessent:'background:#FEF3C7;color:#D97706',besucher:'background:#DBEAFE;color:#2563EB',inaktiv:'background:#F4F5F7;color:#9CA3AF'};
@@ -1958,13 +1991,14 @@ function konvertKontakt(id){
 // ═══════════════════════════════════════════
 // SMALL GROUPS
 // ═══════════════════════════════════════════
-let sgData=[
+const DEMO_SGDATA=[
   {id:'sg1',name:'Hauskreis Zürich Nord',leiter:'Anna Müller',koleiter:'Beat Müller',tag:'Dienstag',zeit:'19:30',ort:'Bergstrasse 12, 8050 Zürich',typ:'Hauskreis',ziel:'Alle',desc:'Offener Hauskreis.',proto:[]},
   {id:'sg2',name:'Junge Erwachsene',leiter:'Peter Keller',koleiter:'',tag:'Freitag',zeit:'20:00',ort:'Gemeindehaus',typ:'Jugendgruppe',ziel:'18-30',desc:'',proto:[]},
   {id:'sg3',name:'Familienkreis',leiter:'Maria Weber',koleiter:'',tag:'Mittwoch',zeit:'19:00',ort:'Kirchgemeindehaus',typ:'Bibelkreis',ziel:'Familien',desc:'',proto:[]},
   {id:'sg4',name:'Seniorengruppe',leiter:'Hans Gerber',koleiter:'',tag:'Donnerstag',zeit:'14:30',ort:'Kirchgemeindehaus',typ:'Seniorengruppe',ziel:'65+',desc:'',proto:[]},
   {id:'sg5',name:'Jugendgruppe',leiter:'Laura Brunner',koleiter:'',tag:'Samstag',zeit:'18:00',ort:'Jugendraum',typ:'Jugendgruppe',ziel:'14-18',desc:'',proto:[]},
 ];
+let sgData=[]; // Start empty - loaded from DB
 let sgIdSeq=6,activeSG=null;
 function rndrSGGrid(){
   const grid=document.getElementById('sg-grid');if(!grid)return;
@@ -2189,7 +2223,20 @@ function sgPickerFilter(q){
 function confirmSGAdd(){
   if(!window._sgSel||!window._sgSel.size){toast('Bitte Mitglied auswählen');return;}
   let n=0;
-  window._sgSel.forEach(mid=>{const m=members.find(x=>x.id===mid);if(m){m.groupId=activeSG;n++;}});
+  const updates = [];
+  window._sgSel.forEach(mid=>{
+    const m=members.find(x=>x.id===mid);
+    if(m){
+      m.groupId=activeSG;
+      n++;
+      // Save to DB if member has a DB id
+      if(m._dbId){
+        updates.push(dbUpdate('mitglieder',m._dbId,{gruppe_id:activeSG}));
+      }
+    }
+  });
+  // Execute all DB updates
+  if(updates.length) Promise.all(updates).catch(e=>console.warn('SG update error:',e));
   window._sgSel=new Set();
   document.getElementById('sg-member-picker')?.remove();
   const sg=sgData.find(x=>x.id===activeSG);
@@ -2198,7 +2245,17 @@ function confirmSGAdd(){
 }
 
 function doAddMemberSG(sgId){const sel=document.getElementById('sg-add-sel');if(!sel)return;const m=members.find(x=>x.id===sel.value);if(!m)return;m.groupId=sgId;const sg=sgData.find(x=>x.id===sgId);if(sg){rndrSGMembers(sg);document.getElementById('sg-cnt').textContent=members.filter(x=>x.groupId===sgId).length;}rndrSGGrid();toast(m.vorname+' '+m.nachname+' hinzugefügt');}
-function removeMemberSG(mid,sgId){if(!confirm('Aus Gruppe entfernen?'))return;const m=members.find(x=>x.id===mid);if(m)m.groupId=0;const sg=sgData.find(x=>x.id===sgId);if(sg){rndrSGMembers(sg);document.getElementById('sg-cnt').textContent=members.filter(x=>x.groupId===sgId).length;}rndrSGGrid();toast('Entfernt');}
+function removeMemberSG(mid,sgId){
+  if(!confirm('Aus Gruppe entfernen?'))return;
+  const m=members.find(x=>x.id===mid);
+  if(m){
+    m.groupId=0;
+    if(m._dbId) dbUpdate('mitglieder',m._dbId,{gruppe_id:null});
+  }
+  const sg=sgData.find(x=>x.id===sgId);
+  if(sg){rndrSGMembers(sg);const c=document.getElementById('sg-cnt');if(c)c.textContent=members.filter(x=>x.groupId===sgId).length;}
+  rndrSGGrid();toast('Entfernt');
+}
 function addSGProto(){
   if(!activeSG)return;
   const existing=document.getElementById('sg-proto-dlg');
