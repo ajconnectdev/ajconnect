@@ -539,6 +539,9 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
     <div class="app-main">
       <div class="topbar">
         <div class="topbar-title" id="tb-title">Dashboard</div>
+        <div id="no-mandant-warning" style="display:none;background:#FEF3C7;border:1px solid #fde68a;border-radius:7px;padding:5px 12px;font-size:12px;color:#D97706;font-weight:500;align-items:center;gap:6px">
+          ⚠ Kein Mandant — links unten "Arbeiten als" wählen, sonst werden Daten nicht gespeichert
+        </div>
         <div class="topbar-right">
           <div id="vt-wrap" style="display:none;border:1px solid #E5E7EB;border-radius:7px;overflow:hidden">
             <button class="tbtn tbtn-navy" id="vt-l" onclick="setView('list')" style="border-radius:0">Liste</button>
@@ -1075,7 +1078,7 @@ td{padding:10px 14px;font-size:13px;vertical-align:middle}
       <div class="ainfo">Benutzer erhält automatisch eine E-Mail um sein Passwort zu setzen.</div>
       <div class="afg"><label>E-Mail *</label><input class="afi" id="au-email" type="email" placeholder="pastor@gemeinde.ch"></div>
       <div class="afg"><label>Name</label><input class="afi" id="au-name" placeholder="Thomas Müller"></div>
-      <div class="afg"><label>Gemeinde *</label><select class="afs" id="au-mandant"><option value="">— wählen —</option></select></div>
+      <div class="afg" id="au-mandant-row"><label>Gemeinde *</label><select class="afs" id="au-mandant"><option value="">— wählen —</option></select></div>
       <div class="afg"><label>Rolle</label><select class="afs" id="au-rolle"><option value="admin">Admin</option><option value="leiter">Leiter</option><option value="mitarbeiter">Mitarbeiter</option></select></div>
       <div class="afg"><label>Status</label><select class="afs" id="au-aktiv"><option value="false">Inaktiv – wartet auf Freischaltung</option><option value="true">Aktiv</option></select></div>
     </div>
@@ -1505,6 +1508,11 @@ function openAUMoFiltered() {
 
 function openAUMo() {
   ['au-email','au-name'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  // Reset Gemeinde dropdown visibility
+  const row = document.getElementById('au-mandant-row');
+  if(row) row.style.display = '';
+  const sel = document.getElementById('au-mandant');
+  if(sel) sel.value = '';
   document.getElementById('amo-u').classList.add('open');
 }
 
@@ -1550,9 +1558,16 @@ async function saveAU() {
     const {error: pErr} = await sb.from('profiles').insert({ id: userId, email, name, mandant_id: mid, rolle, aktiv });
     if (pErr) { toast('Fehler: ' + pErr.message); btn.disabled=false; btn.textContent='Anlegen'; return; }
     await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
-    toast('Benutzer erstellt! ' + email + ' erhält eine E-Mail.');
+    toast('Benutzer erstellt ✓');
     document.getElementById('amo-u').classList.remove('open');
     await loadAdminData();
+    // If we're in mandant detail view, refresh it
+    if(_activeMandant) {
+      const users = _AU.filter(u => u.mandant_id === _activeMandant.id);
+      renderDetailUsers(users);
+      document.getElementById('a-dm-users').textContent = users.length;
+      document.getElementById('a-dm-aktiv').textContent = users.filter(u=>u.aktiv).length;
+    }
   } catch(e) {
     toast('Fehler: ' + e.message);
   }
@@ -1668,6 +1683,12 @@ function openNM(){
 async function saveM(){
   const v=document.getElementById('nm-vn').value.trim(),n=document.getElementById('nm-nn').value.trim();
   if(!v||!n){alert('Vorname und Nachname sind Pflichtfelder.');return;}
+  // Check: do we have a mandant to save to?
+  const mid = _S?.working_mandant_id || _S?.mandant_id;
+  if(!mid){
+    alert('Kein Mandant ausgewählt!\n\nBitte:\n1. Gehe zur Sidebar links unten\n2. Wähle unter "Arbeiten als" eine Gemeinde aus\n3. Dann erneut speichern');
+    return;
+  }
   const plzortVal=document.getElementById('nm-plzort').value.trim();
   const parts=plzortVal.split(' ');
   const plz=parts[0]||'';const ort=parts.slice(1).join(' ')||'';
@@ -1858,6 +1879,8 @@ function openNK(){
 async function saveNK(){
   const vn=document.getElementById('nk-vn').value.trim(),nn=document.getElementById('nk-nn').value.trim();
   if(!vn||!nn){toast('Vor- und Nachname Pflicht');return;}
+  const mid = _S?.working_mandant_id || _S?.mandant_id;
+  if(!mid){toast('Bitte zuerst Gemeinde auswählen (Arbeiten als)');return;}
   const notizTxt=document.getElementById('nk-not').value.trim();
   const notizen=notizTxt?[{text:notizTxt,datum:new Date().toISOString().split('T')[0]}]:[];
   const payload={vorname:vn,nachname:nn,email:document.getElementById('nk-em').value,telefon:document.getElementById('nk-tel').value,status:document.getElementById('nk-st').value,quelle:document.getElementById('nk-src').value,notizen};
@@ -2239,6 +2262,8 @@ function openNGD(){const e=id=>document.getElementById(id);['gd-titel','gd-bibel
 async function saveGD(){
   const titel=document.getElementById('gd-titel').value.trim(),datum=document.getElementById('gd-datum').value;
   if(!titel||!datum){toast('Titel und Datum Pflicht');return;}
+  const mid = _S?.working_mandant_id || _S?.mandant_id;
+  if(!mid){toast('Bitte zuerst Gemeinde auswählen (Arbeiten als)');return;}
   const p={datum,zeit:document.getElementById('gd-zeit').value,titel,bibel:document.getElementById('gd-bibel').value,prediger:document.getElementById('gd-prediger').value,ort:document.getElementById('gd-ort').value,besucher:parseInt(document.getElementById('gd-besucher').value)||0,typ:document.getElementById('gd-typ').value,status:document.getElementById('gd-status').value,notizen:document.getElementById('gd-notizen').value};
   const saved=await dbSave('gottesdienste',p);
   gottesdienste.unshift({id:saved?.id||('gd'+(gdIdSeq++)),_dbId:saved?.id,...p});
@@ -2632,12 +2657,15 @@ function parseCSVLine(line){
 // ═══════════════════════════════════════════
 async function setWorkingMandant(mandantId) {
   if(!_S) return;
+  const warn = document.getElementById('no-mandant-warning');
   if(!mandantId) {
     _S.working_mandant_id = null;
     _S.working_mandant_name = null;
-    toast('Keine Gemeinde ausgewählt — Daten werden nicht gespeichert');
+    if(warn) warn.style.display = 'flex';
+    toast('⚠ Keine Gemeinde ausgewählt — Daten werden nicht gespeichert');
     return;
   }
+  if(warn) warn.style.display = 'none';
   _S.working_mandant_id = mandantId;
   // Find mandant name
   const sel = document.getElementById('working-mandant-sel');
@@ -2661,7 +2689,11 @@ async function populateWorkingMandantSel() {
   // Auto-select if only one
   if(mands.length === 1) {
     sel.value = mands[0].id;
-    setWorkingMandant(mands[0].id);
+    await setWorkingMandant(mands[0].id);
+  } else {
+    // Show warning - no mandant selected yet
+    const warn = document.getElementById('no-mandant-warning');
+    if(warn) warn.style.display = 'flex';
   }
 }
 
@@ -2753,10 +2785,12 @@ async function deleteAUFromDetail(id, name) {
 function openAUMoForDetail() {
   if(!_activeMandant) return;
   openAUMo();
-  // Pre-select this mandant
   setTimeout(() => {
+    // Pre-select and HIDE the Gemeinde dropdown - it's already known
     const sel = document.getElementById('au-mandant');
     if(sel) sel.value = _activeMandant.id;
+    const row = document.getElementById('au-mandant-row');
+    if(row) row.style.display = 'none';
   }, 50);
 }
 
