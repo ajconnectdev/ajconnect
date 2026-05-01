@@ -54,13 +54,13 @@ nav{
 /* ── HERO ── */
 .hero{
   min-height:100vh;background:var(--navy);
-  display:flex;flex-direction:column;justify-content:center;
-  padding:100px 6% 80px;position:relative;overflow:hidden;
+  display:grid;grid-template-columns:1fr 1fr;align-items:center;
+  padding:100px 6% 60px;position:relative;overflow:hidden;gap:40px;
 }
-.hero-bg{position:absolute;inset:0;
+.hero-bg{position:absolute;inset:0;z-index:0;
   background:radial-gradient(ellipse 60% 50% at 70% 40%, rgba(200,148,26,0.07) 0%, transparent 60%),
     radial-gradient(ellipse 40% 60% at 20% 70%, rgba(26,53,96,0.8) 0%, transparent 70%);}
-.hero-grid{position:absolute;inset:0;
+.hero-grid{position:absolute;inset:0;z-index:0;
   background-image:linear-gradient(rgba(200,148,26,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(200,148,26,0.04) 1px,transparent 1px);
   background-size:60px 60px;}
 .hero-content{position:relative;z-index:2;max-width:580px;min-width:0;}
@@ -77,7 +77,7 @@ h1 em{color:var(--gold);font-style:normal;}
 .btn-secondary:hover{border-color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.05);}
 
 /* Hero mockup */
-.hero-visual{position:absolute;right:1%;top:50%;transform:translateY(-50%);width:50%;max-width:640px;z-index:3;}
+.hero-visual{position:relative;width:100%;max-width:none;z-index:3;}
 .mockup-frame{background:var(--navy2);border-radius:16px;border:1px solid rgba(200,148,26,0.2);overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.5);}
 .mockup-bar{background:rgba(255,255,255,0.04);padding:10px 16px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,0.06);}
 .mockup-dot{width:8px;height:8px;border-radius:50%;}
@@ -232,6 +232,8 @@ footer{background:#060F1E;padding:48px 6% 28px;color:rgba(255,255,255,0.4);}
 
 /* ── RESPONSIVE ── */
 @media(max-width:960px){
+  .hero{grid-template-columns:1fr!important;}
+  .hero{grid-template-columns:1fr!important;}
   .hero-visual{display:none;}
   .problem-grid,.pricing-grid,.steps,.features-grid,.swiss-inner,.bank-inner,.pricing-3col{grid-template-columns:1fr;}
   [style*="repeat(3"]{grid-template-columns:1fr!important;}
@@ -418,45 +420,45 @@ footer{background:#060F1E;padding:48px 6% 28px;color:rgba(255,255,255,0.4);}
         <div style="background:#F4F5F7;padding:20px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
             <div style="font-size:16px;font-weight:700;color:#1A3560;">Mitglieder</div>
-            <div style="background:#1A3560;color:white;font-size:10px;font-weight:600;padding:7px 14px;border-radius:6px;">+ Neues Mitglied</div>
+            <div style="background:#1A3560;color:white;font-size:10px;font-weight:600;padding:7px 14px;border-radius:6px;"><span data-de="+ Neues Mitglied" data-en="+ New Member">+ Neues Mitglied</span></div>
           </div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;">
             <div style="background:white;border-radius:8px;padding:12px;text-align:center;border:1px solid #E5E7EB;"><div style="font-size:20px;font-weight:700;color:#C8941A;">148</div><div style="font-size:9px;color:#9CA3AF;">Total</div></div>
-            <div style="background:white;border-radius:8px;padding:12px;text-align:center;border:1px solid #E5E7EB;"><div style="font-size:20px;font-weight:700;color:#16A34A;">124</div><div style="font-size:9px;color:#9CA3AF;">Aktiv</div></div>
-            <div style="background:white;border-radius:8px;padding:12px;text-align:center;border:1px solid #E5E7EB;"><div style="font-size:20px;font-weight:700;color:#2563EB;">18</div><div style="font-size:9px;color:#9CA3AF;">Besucher</div></div>
-            <div style="background:white;border-radius:8px;padding:12px;text-align:center;border:1px solid #E5E7EB;"><div style="font-size:20px;font-weight:700;color:#7C3AED;">6</div><div style="font-size:9px;color:#9CA3AF;">Neu</div></div>
+            <div style="background:white;border-radius:8px;padding:12px;text-align:center;border:1px solid #E5E7EB;"><div style="font-size:20px;font-weight:700;color:#16A34A;">124</div><div style="font-size:9px;color:#9CA3AF;"><span data-de="Aktiv" data-en="Active">Aktiv</span></div></div>
+            <div style="background:white;border-radius:8px;padding:12px;text-align:center;border:1px solid #E5E7EB;"><div style="font-size:20px;font-weight:700;color:#2563EB;">18</div><div style="font-size:9px;color:#9CA3AF;"><span data-de="Besucher" data-en="Visitor">Besucher</span></div></div>
+            <div style="background:white;border-radius:8px;padding:12px;text-align:center;border:1px solid #E5E7EB;"><div style="font-size:20px;font-weight:700;color:#7C3AED;">6</div><div style="font-size:9px;color:#9CA3AF;"><span data-de="Neu" data-en="New">Neu</span></div></div>
           </div>
           <div style="background:white;border-radius:8px;border:1px solid #E5E7EB;overflow:hidden;">
             <div style="display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr;padding:8px 14px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;">
-              <div style="font-size:9px;font-weight:600;color:#6B7280;letter-spacing:0.5px;">NAME / E-MAIL</div>
-              <div style="font-size:9px;font-weight:600;color:#6B7280;letter-spacing:0.5px;">ROLLE</div>
-              <div style="font-size:9px;font-weight:600;color:#6B7280;letter-spacing:0.5px;">STATUS</div>
-              <div style="font-size:9px;font-weight:600;color:#6B7280;letter-spacing:0.5px;">SMALL GROUP</div>
+              <div style="font-size:9px;font-weight:600;color:#6B7280;letter-spacing:0.5px;"><span data-de="NAME / E-MAIL" data-en="NAME / EMAIL">NAME / E-MAIL</span></div>
+              <div style="font-size:9px;font-weight:600;color:#6B7280;letter-spacing:0.5px;"><span data-de="ROLLE" data-en="ROLE">ROLLE</span></div>
+              <div style="font-size:9px;font-weight:600;color:#6B7280;letter-spacing:0.5px;"><span data-de="STATUS" data-en="STATUS">STATUS</span></div>
+              <div style="font-size:9px;font-weight:600;color:#6B7280;letter-spacing:0.5px;"><span data-de="SMALL GROUP" data-en="SMALL GROUP">SMALL GROUP</span></div>
             </div>
 
             <div style="padding:10px 14px;display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr;align-items:center;border-bottom:1px solid #F3F4F6;">
               <div style="display:flex;align-items:center;gap:8px;"><div style="width:28px;height:28px;border-radius:50%;background:#2563EB;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0;">SM</div><div><div style="font-size:11px;font-weight:600;color:#1A3560;">Sarah Meier</div><div style="font-size:9px;color:#9CA3AF;">sarah@example.ch</div></div></div>
-              <div style="font-size:10px;color:#6B7280;">Worship Leader</div>
+              <div style="font-size:10px;color:#6B7280;"><span data-de="Worship Leader" data-en="Worship Leader">Worship Leader</span></div>
               <div><span style="background:#DCFCE7;color:#16A34A;font-size:8px;font-weight:600;padding:2px 7px;border-radius:4px;">Aktiv</span></div>
-              <div style="font-size:10px;color:#6B7280;">Hauskreis ZH Nord</div>
+              <div style="font-size:10px;color:#6B7280;"><span data-de="Hauskreis ZH Nord" data-en="Home Group ZH North">Hauskreis ZH Nord</span></div>
             </div>
             <div style="padding:10px 14px;display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr;align-items:center;border-bottom:1px solid #F3F4F6;">
               <div style="display:flex;align-items:center;gap:8px;"><div style="width:28px;height:28px;border-radius:50%;background:#16A34A;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0;">PK</div><div><div style="font-size:11px;font-weight:600;color:#1A3560;">Peter Keller</div><div style="font-size:9px;color:#9CA3AF;">peter@example.ch</div></div></div>
-              <div style="font-size:10px;color:#6B7280;">Gruppenleiter</div>
+              <div style="font-size:10px;color:#6B7280;"><span data-de="Gruppenleiter" data-en="Group Leader">Gruppenleiter</span></div>
               <div><span style="background:#DCFCE7;color:#16A34A;font-size:8px;font-weight:600;padding:2px 7px;border-radius:4px;">Aktiv</span></div>
-              <div style="font-size:10px;color:#6B7280;">Junge Erwachsene</div>
+              <div style="font-size:10px;color:#6B7280;"><span data-de="Junge Erwachsene" data-en="Young Adults">Junge Erwachsene</span></div>
             </div>
             <div style="padding:10px 14px;display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr;align-items:center;border-bottom:1px solid #F3F4F6;">
               <div style="display:flex;align-items:center;gap:8px;"><div style="width:28px;height:28px;border-radius:50%;background:#C8941A;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0;">LB</div><div><div style="font-size:11px;font-weight:600;color:#1A3560;">Laura Brunner</div><div style="font-size:9px;color:#9CA3AF;">laura@example.ch</div></div></div>
-              <div style="font-size:10px;color:#6B7280;">Diakon</div>
+              <div style="font-size:10px;color:#6B7280;"><span data-de="Diakon" data-en="Deacon">Diakon</span></div>
               <div><span style="background:#FEF3C7;color:#D97706;font-size:8px;font-weight:600;padding:2px 7px;border-radius:4px;">Besucher</span></div>
               <div style="font-size:10px;color:#6B7280;">—</div>
             </div>
             <div style="padding:10px 14px;display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr;align-items:center;">
               <div style="display:flex;align-items:center;gap:8px;"><div style="width:28px;height:28px;border-radius:50%;background:#7C3AED;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;flex-shrink:0;">MZ</div><div><div style="font-size:11px;font-weight:600;color:#1A3560;">Marco Zimmermann</div><div style="font-size:9px;color:#9CA3AF;">marco@example.ch</div></div></div>
-              <div style="font-size:10px;color:#6B7280;">Pastor</div>
+              <div style="font-size:10px;color:#6B7280;"><span data-de="Pastor" data-en="Pastor">Pastor</span></div>
               <div><span style="background:#DCFCE7;color:#16A34A;font-size:8px;font-weight:600;padding:2px 7px;border-radius:4px;">Aktiv</span></div>
-              <div style="font-size:10px;color:#6B7280;">Familienkreis</div>
+              <div style="font-size:10px;color:#6B7280;"><span data-de="Familienkreis" data-en="Family Group">Familienkreis</span></div>
             </div>
           </div>
         </div>
@@ -467,7 +469,7 @@ footer{background:#060F1E;padding:48px 6% 28px;color:rgba(255,255,255,0.4);}
       <div class="sc-titlebar"><div class="sc-dots"><span></span><span></span><span></span></div><div class="sc-url">app.ajconnect.ch · Small Groups</div></div>
       <div class="sc-body">
         <div style="background:#F4F5F7;padding:20px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div style="font-size:16px;font-weight:700;color:#1A3560;">Small Groups</div><div style="background:#1A3560;color:white;font-size:10px;font-weight:600;padding:7px 14px;border-radius:6px;">+ Neue Gruppe</div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div style="font-size:16px;font-weight:700;color:#1A3560;">Small Groups</div><div style="background:#1A3560;color:white;font-size:10px;font-weight:600;padding:7px 14px;border-radius:6px;"><span data-de="+ Neue Gruppe" data-en="+ New Group">+ Neue Gruppe</span></div></div>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
             <div style="background:white;border-radius:10px;padding:16px;border:1px solid #E5E7EB;">
               <div style="width:36px;height:36px;border-radius:50%;background:#7C3AED;display:flex;align-items:center;justify-content:center;font-size:14px;margin-bottom:10px;">🏘</div>
@@ -496,13 +498,13 @@ footer{background:#060F1E;padding:48px 6% 28px;color:rgba(255,255,255,0.4);}
       <div class="sc-titlebar"><div class="sc-dots"><span></span><span></span><span></span></div><div class="sc-url">app.ajconnect.ch · Gottesdienste</div></div>
       <div class="sc-body">
         <div style="background:#F4F5F7;padding:20px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div style="font-size:16px;font-weight:700;color:#1A3560;">Gottesdienste</div><div style="background:#1A3560;color:white;font-size:10px;font-weight:600;padding:7px 14px;border-radius:6px;">+ Neuer GD</div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div style="font-size:16px;font-weight:700;color:#1A3560;">Gottesdienste</div><div style="background:#1A3560;color:white;font-size:10px;font-weight:600;padding:7px 14px;border-radius:6px;"><span data-de="+ Neuer GD" data-en="+ New Service">+ Neuer GD</span></div></div>
           <div style="background:white;border-radius:8px;border:1px solid #E5E7EB;overflow:hidden;">
             <div style="display:grid;grid-template-columns:1fr 2fr 1.5fr 0.8fr 1fr;padding:8px 14px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;">
-              <div style="font-size:9px;font-weight:600;color:#6B7280;">DATUM</div>
-              <div style="font-size:9px;font-weight:600;color:#6B7280;">TITEL / THEMA</div>
-              <div style="font-size:9px;font-weight:600;color:#6B7280;">PREDIGER</div>
-              <div style="font-size:9px;font-weight:600;color:#6B7280;">BESUCHER</div>
+              <div style="font-size:9px;font-weight:600;color:#6B7280;"><span data-de="DATUM" data-en="DATE">DATUM</span></div>
+              <div style="font-size:9px;font-weight:600;color:#6B7280;"><span data-de="TITEL / THEMA" data-en="TITLE / TOPIC">TITEL / THEMA</span></div>
+              <div style="font-size:9px;font-weight:600;color:#6B7280;"><span data-de="PREDIGER" data-en="SPEAKER">PREDIGER</span></div>
+              <div style="font-size:9px;font-weight:600;color:#6B7280;"><span data-de="BESUCHER" data-en="ATTENDANCE">BESUCHER</span></div>
               <div style="font-size:9px;font-weight:600;color:#6B7280;">STATUS</div>
             </div>
             <div style="padding:10px 14px;display:grid;grid-template-columns:1fr 2fr 1.5fr 0.8fr 1fr;align-items:center;border-bottom:1px solid #F3F4F6;">
@@ -510,14 +512,14 @@ footer{background:#060F1E;padding:48px 6% 28px;color:rgba(255,255,255,0.4);}
               <div><div style="font-size:11px;font-weight:600;color:#1A3560;">Ostern — Er ist auferstanden!</div><div style="font-size:9px;color:#9CA3AF;">Lukas 24:1–12</div></div>
               <div style="font-size:10px;color:#6B7280;">Pastor Thomas Müller</div>
               <div style="font-size:11px;font-weight:600;color:#1A3560;">187</div>
-              <div><span style="background:#DCFCE7;color:#16A34A;font-size:8px;font-weight:600;padding:2px 8px;border-radius:4px;">Durchgeführt</span></div>
+              <div><span style="background:#DCFCE7;color:#16A34A;font-size:8px;font-weight:600;padding:2px 8px;border-radius:4px;"><span data-de="Durchgeführt" data-en="Completed">Durchgeführt</span></span></div>
             </div>
             <div style="padding:10px 14px;display:grid;grid-template-columns:1fr 2fr 1.5fr 0.8fr 1fr;align-items:center;border-bottom:1px solid #F3F4F6;">
               <div style="font-size:10px;color:#6B7280;">27.04.2026</div>
               <div><div style="font-size:11px;font-weight:600;color:#1A3560;">Glaube der Berge versetzt</div><div style="font-size:9px;color:#9CA3AF;">Markus 11:22–24</div></div>
               <div style="font-size:10px;color:#6B7280;">Peter Keller</div>
               <div style="font-size:11px;color:#9CA3AF;">—</div>
-              <div><span style="background:#DBEAFE;color:#2563EB;font-size:8px;font-weight:600;padding:2px 8px;border-radius:4px;">Geplant</span></div>
+              <div><span style="background:#DBEAFE;color:#2563EB;font-size:8px;font-weight:600;padding:2px 8px;border-radius:4px;"><span data-de="Geplant" data-en="Planned">Geplant</span></span></div>
             </div>
             <div style="padding:10px 14px;display:grid;grid-template-columns:1fr 2fr 1.5fr 0.8fr 1fr;align-items:center;">
               <div style="font-size:10px;color:#6B7280;">04.05.2026</div>
@@ -535,25 +537,25 @@ footer{background:#060F1E;padding:48px 6% 28px;color:rgba(255,255,255,0.4);}
       <div class="sc-titlebar"><div class="sc-dots"><span></span><span></span><span></span></div><div class="sc-url">app.ajconnect.ch · Events</div></div>
       <div class="sc-body">
         <div style="background:#F4F5F7;padding:20px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div style="font-size:16px;font-weight:700;color:#1A3560;">Veranstaltungen</div><div style="background:#1A3560;color:white;font-size:10px;font-weight:600;padding:7px 14px;border-radius:6px;">+ Neues Event</div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div style="font-size:16px;font-weight:700;color:#1A3560;">Veranstaltungen</div><div style="background:#1A3560;color:white;font-size:10px;font-weight:600;padding:7px 14px;border-radius:6px;"><span data-de="+ Neues Event" data-en="+ New Event">+ Neues Event</span></div></div>
           <div style="background:white;border-radius:8px;border:1px solid #E5E7EB;overflow:hidden;">
             <div style="padding:12px 14px;display:grid;grid-template-columns:1fr 2fr 1fr 1fr 1fr;align-items:center;border-bottom:1px solid #F3F4F6;">
               <div style="font-size:10px;color:#6B7280;">05.07.2026</div>
-              <div><div style="font-size:11px;font-weight:600;color:#1A3560;">🎉 Gemeindefest Sommer</div><div style="font-size:9px;color:#9CA3AF;">Gemeindepark</div></div>
+              <div><div style="font-size:11px;font-weight:600;color:#1A3560;">🎉 <span data-de="Gemeindefest" data-en="Church Fest">Gemeindefest</span> Sommer</div><div style="font-size:9px;color:#9CA3AF;">Gemeindepark</div></div>
               <div style="font-size:10px;color:#6B7280;">Gemeindefest</div>
               <div style="font-size:10px;color:#1A3560;font-weight:600;">47/200</div>
-              <div><span style="background:#FEF3C7;color:#D97706;font-size:8px;font-weight:600;padding:2px 7px;border-radius:4px;">In Planung</span></div>
+              <div><span style="background:#FEF3C7;color:#D97706;font-size:8px;font-weight:600;padding:2px 7px;border-radius:4px;"><span data-de="In Planung" data-en="Planning">In Planung</span></span></div>
             </div>
             <div style="padding:12px 14px;display:grid;grid-template-columns:1fr 2fr 1fr 1fr 1fr;align-items:center;border-bottom:1px solid #F3F4F6;">
               <div style="font-size:10px;color:#6B7280;">12.06.2026</div>
-              <div><div style="font-size:11px;font-weight:600;color:#1A3560;">🏕 Jugend-Retreat</div><div style="font-size:9px;color:#9CA3AF;">Waldhütte Albis</div></div>
+              <div><div style="font-size:11px;font-weight:600;color:#1A3560;">🏕 <span data-de="Jugend-Retreat" data-en="Youth Retreat">Jugend-Retreat</span></div><div style="font-size:9px;color:#9CA3AF;">Waldhütte Albis</div></div>
               <div style="font-size:10px;color:#6B7280;">Retreat</div>
               <div style="font-size:10px;color:#1A3560;font-weight:600;">28/40</div>
-              <div><span style="background:#DCFCE7;color:#16A34A;font-size:8px;font-weight:600;padding:2px 7px;border-radius:4px;">Bestätigt</span></div>
+              <div><span style="background:#DCFCE7;color:#16A34A;font-size:8px;font-weight:600;padding:2px 7px;border-radius:4px;"><span data-de="Bestätigt" data-en="Confirmed">Bestätigt</span></span></div>
             </div>
             <div style="padding:12px 14px;display:grid;grid-template-columns:1fr 2fr 1fr 1fr 1fr;align-items:center;">
               <div style="font-size:10px;color:#6B7280;">17.05.2026</div>
-              <div><div style="font-size:11px;font-weight:600;color:#1A3560;">💧 Taufgottesdienst</div><div style="font-size:9px;color:#9CA3AF;">Hauptsaal</div></div>
+              <div><div style="font-size:11px;font-weight:600;color:#1A3560;">💧 <span data-de="Taufgottesdienst" data-en="Baptism Service">Taufgottesdienst</span></div><div style="font-size:9px;color:#9CA3AF;">Hauptsaal</div></div>
               <div style="font-size:10px;color:#6B7280;">Taufe</div>
               <div style="font-size:10px;color:#9CA3AF;">—</div>
               <div><span style="background:#FEF3C7;color:#D97706;font-size:8px;font-weight:600;padding:2px 7px;border-radius:4px;">In Planung</span></div>
@@ -783,10 +785,11 @@ function showScreen(i){
 .faq-item{background:var(--white);border-radius:10px;margin-bottom:8px;border:1px solid #E5E7EB;overflow:hidden;}
 .faq-q{padding:18px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:15px;font-weight:500;color:var(--navy);transition:background .2s;gap:16px;border:none;outline:none;}
 .faq-q:hover{background:#FAFAFA;}
-.faq-q span{width:22px;height:22px;border-radius:50%;background:rgba(200,148,26,0.1);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--gold);flex-shrink:0;transition:transform .3s;font-weight:400;}
+.faq-qtxt{flex:1;background:none;border:none;color:var(--navy);font-size:15px;font-weight:500;text-align:left;}
+.faq-icon{font-size:22px;color:var(--gold);flex-shrink:0;line-height:1;transition:transform .3s;font-weight:300;margin-left:12px;width:24px;text-align:center;}
 .faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s;padding:0 20px;font-size:14px;color:var(--gray);line-height:1.7;}
 .faq-a.open{max-height:200px;padding:0 20px 18px;}
-.faq-q span.open{transform:rotate(45deg);}
+
 </style>
 
 <script>
@@ -821,8 +824,8 @@ function buildFAQ(lang){
   list.innerHTML = FAQS[lang].map((f,i) => `
     <div class="faq-item">
       <div class="faq-q" onclick="toggleFAQ(${i})">
-        <span style="flex:1;">${f.q}</span>
-        <span id="fq-ic-${i}" style="font-size:20px;color:#C8941A;flex-shrink:0;line-height:1;transition:transform .3s;font-weight:300;margin-left:12px;">+</span>
+        <span class="faq-qtxt">${f.q}</span>
+        <span class="faq-icon" id="fq-ic-${i}">+</span>
       </div>
       <div class="faq-a" id="fq-a-${i}">${f.a}</div>
     </div>
@@ -834,7 +837,7 @@ function toggleFAQ(i){
   const ic = document.getElementById('fq-ic-'+i);
   const isOpen = a.classList.contains('open');
   document.querySelectorAll('.faq-a').forEach(el=>el.classList.remove('open'));
-  document.querySelectorAll('[id^="fq-ic-"]').forEach(el=>{
+  document.querySelectorAll('.faq-icon').forEach(el=>{
     el.style.transform='rotate(0deg)';
   });
   if(!isOpen){
@@ -883,7 +886,7 @@ document.addEventListener('DOMContentLoaded',()=>buildFAQ('de'));
       <div style="width:160px;height:160px;border-radius:50%;background:var(--navy);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;border:4px solid var(--gold);overflow:hidden">
         <div style="font-size:64px">👨‍💼</div>
       </div>
-      <div style="font-size:16px;font-weight:700;color:var(--navy)">N. Jason Ratnam</div>
+      <div style="font-size:16px;font-weight:700;color:var(--navy)">Jason</div>
       <div style="font-size:13px;color:var(--gray);margin-top:4px" data-de="Gründer · ERP-Projektmanager · Christ" data-en="Founder · ERP Project Manager · Christian">Gründer · ERP-Projektmanager · Christ</div>
       <div style="display:flex;justify-content:center;gap:10px;margin-top:14px">
         <a href="https://linkedin.com/in/jasonratnam" target="_blank" rel="noopener" style="width:36px;height:36px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;text-decoration:none">
@@ -900,20 +903,7 @@ document.addEventListener('DOMContentLoaded',()=>buildFAQ('de'));
       <h2 class="section-title" style="font-size:clamp(24px,3vw,36px)" data-de="ERP-Expertise trifft Gemeindeherz" data-en="ERP expertise meets a heart for the church">ERP-Expertise trifft Gemeindeherz</h2>
       <p style="font-size:15px;color:var(--gray);line-height:1.8;margin-bottom:16px" data-de="Als ERP-Projektmanager bei einem der führenden Microsoft-Partner der Schweiz weiss ich, wie Technologie Organisationen transformiert. Ich bin gläubiger Christ — und genau das hat mich dazu bewogen, dieses Fachwissen in den Dienst der Gemeinde zu stellen." data-en="As an ERP project manager at one of Switzerland's leading Microsoft partners, I know how technology transforms organisations. I'm a committed Christian — and that's precisely what inspired me to put this expertise at the service of the church.">Als ERP-Projektmanager bei einem der führenden Microsoft-Partner der Schweiz weiss ich, wie Technologie Organisationen transformiert. Ich bin gläubiger Christ — und genau das hat mich dazu bewogen, dieses Fachwissen in den Dienst der Gemeinde zu stellen.</p>
       <p style="font-size:15px;color:var(--gray);line-height:1.8;margin-bottom:24px" data-de="Gemeinden leisten täglich wertvolle Arbeit — doch manuelle Prozesse kosten Zeit, die für Menschen fehlt. AJ Connect bringt modernes ERP-Denken in die Kirche: optimierte Abläufe, mehr Überblick, weniger Administrationsaufwand. Damit bleibt mehr Zeit für das, was wirklich zählt." data-en="Churches do valuable work every day — but manual processes waste time that should be spent on people. AJ Connect brings modern ERP thinking to the church: optimised workflows, better oversight, less administrative burden. More time for what truly matters.">Gemeinden leisten täglich wertvolle Arbeit — doch manuelle Prozesse kosten Zeit, die für Menschen fehlt. AJ Connect bringt modernes ERP-Denken in die Kirche: optimierte Abläufe, mehr Überblick, weniger Administrationsaufwand. Damit bleibt mehr Zeit für das, was wirklich zählt.</p>
-      <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:8px;background:white;border:1px solid #E5E7EB;border-radius:8px;padding:10px 16px">
-          <span style="font-size:20px">🇨🇭</span>
-          <span style="font-size:13px;font-weight:500;color:var(--navy)" data-de="Gebaut in der Schweiz" data-en="Built in Switzerland">Gebaut in der Schweiz</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;background:white;border:1px solid #E5E7EB;border-radius:8px;padding:10px 16px">
-          <span style="font-size:20px">⛪</span>
-          <span style="font-size:13px;font-weight:500;color:var(--navy)" data-de="Für Gemeinden gemacht" data-en="Made for churches">Für Gemeinden gemacht</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;background:white;border:1px solid #E5E7EB;border-radius:8px;padding:10px 16px">
-          <span style="font-size:20px">💬</span>
-          <span style="font-size:13px;font-weight:500;color:var(--navy)" data-de="Direkter Kontakt" data-en="Direct contact">Direkter Kontakt</span>
-        </div>
-      </div>
+
     </div>
   </div>
 </section>
@@ -946,6 +936,11 @@ function setLang(lang) {
   document.querySelectorAll('[data-de]').forEach(el => {
     const text = el.getAttribute('data-' + lang);
     if (text) el.innerHTML = text;
+  });
+  // Also update plain data-de/data-en text spans in mockup
+  document.querySelectorAll('[data-de][data-en]').forEach(el => {
+    const val = el.getAttribute('data-' + lang);
+    if(val && !el.getAttribute('data-preserve')) el.textContent = val;
   });
   document.getElementById('btn-de').classList.toggle('active', lang === 'de');
   document.getElementById('btn-en').classList.toggle('active', lang === 'en');
