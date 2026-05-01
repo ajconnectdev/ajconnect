@@ -77,7 +77,7 @@ h1 em{color:var(--gold);font-style:normal;}
 .btn-secondary:hover{border-color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.05);}
 
 /* Hero mockup */
-.hero-visual{position:absolute;right:4%;top:50%;transform:translateY(-50%);width:40%;max-width:500px;}
+.hero-visual{position:absolute;right:3%;top:50%;transform:translateY(-50%);width:46%;max-width:580px;}
 .mockup-frame{background:var(--navy2);border-radius:16px;border:1px solid rgba(200,148,26,0.2);overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.5);}
 .mockup-bar{background:rgba(255,255,255,0.04);padding:10px 16px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,0.06);}
 .mockup-dot{width:8px;height:8px;border-radius:50%;}
@@ -263,6 +263,7 @@ footer{background:#060F1E;padding:48px 6% 28px;color:rgba(255,255,255,0.4);}
     <a href="#schweiz" data-de="Datenschutz" data-en="Data Security">Datenschutz</a>
     <a href="#bank" data-de="Integrationen" data-en="Integrations">Integrationen</a>
     <a href="#preise" data-de="Preise" data-en="Pricing">Preise</a>
+    <a href="#about" data-de="Über mich" data-en="About">Über mich</a>
     <a href="#kontakt" data-de="Kontakt" data-en="Contact">Kontakt</a>
   </div>
   <a href="https://app.ajconnect.ch" class="nav-cta" data-de="Zur App →" data-en="Open App →">Zur App →</a>
@@ -604,9 +605,9 @@ function showScreen(i){
       <p data-de="Vollständige Mitgliederakten mit Status, Rollen, Lebensereignissen, Notizen und Spenden-Historie." data-en="Complete member records with status, roles, life events, notes and donation history.">Vollständige Mitgliederakten mit Status, Rollen, Lebensereignissen, Notizen und Spenden-Historie.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">🏘</div>
-      <h3 data-de="Small Groups" data-en="Small Groups">Small Groups</h3>
-      <p data-de="Gruppen anlegen, Mitglieder zuweisen, Treffen-Protokolle erfassen und Leiter verwalten." data-en="Create groups, assign members, record meeting minutes and manage leaders.">Gruppen anlegen, Mitglieder zuweisen, Treffen-Protokolle erfassen und Leiter verwalten.</p>
+      <div class="feature-icon">🙋</div>
+      <h3 data-de="Freiwillige & Dienstplan" data-en="Volunteers & Scheduling">Freiwillige & Dienstplan</h3>
+      <p data-de="Dienst-Bereiche definieren (Kids, Technik, Bar, Bestuhlung), Freiwillige einteilen, bestätigen und exportieren." data-en="Define service areas (Kids, Tech, Coffee Bar, Seating), assign volunteers, confirm and export rosters.">Dienst-Bereiche definieren (Kids, Technik, Bar, Bestuhlung), Freiwillige einteilen, bestätigen und exportieren.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">⛪</div>
@@ -614,19 +615,34 @@ function showScreen(i){
       <p data-de="Gottesdienste planen, Besucherzahlen erfassen, Liederbibliothek und Setlisten verwalten." data-en="Plan services, track attendance, manage a song library and setlists.">Gottesdienste planen, Besucherzahlen erfassen, Liederbibliothek und Setlisten verwalten.</p>
     </div>
     <div class="feature-card">
+      <div class="feature-icon">📅</div>
+      <h3 data-de="Events & Anmeldungen" data-en="Events & Registrations">Events & Anmeldungen</h3>
+      <p data-de="Events planen, Anmeldungen verwalten, Kapazitätslimit, automatische Warteliste und Anwesenheitserfassung." data-en="Plan events, manage registrations, capacity limits, automatic waitlist and attendance tracking.">Events planen, Anmeldungen verwalten, Kapazitätslimit, automatische Warteliste und Anwesenheitserfassung.</p>
+    </div>
+    <div class="feature-card">
       <div class="feature-icon">💰</div>
       <h3 data-de="Finanzen & Spenden" data-en="Finances & Donations">Finanzen & Spenden</h3>
-      <p data-de="Spenden erfassen, Twint-Integration, Kreditoren verwalten und Finanzberichte generieren." data-en="Record donations, Twint integration, manage creditors and generate financial reports.">Spenden erfassen, Twint-Integration, Kreditoren verwalten und Finanzberichte generieren.</p>
+      <p data-de="Spenden & Twint erfassen, Kreditoren & Rechnungen verwalten, Zahlungsstatus verfolgen." data-en="Record donations & Twint payments, manage creditors & invoices, track payment status.">Spenden & Twint erfassen, Kreditoren & Rechnungen verwalten, Zahlungsstatus verfolgen.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">📅</div>
-      <h3 data-de="Veranstaltungen" data-en="Events">Veranstaltungen</h3>
-      <p data-de="Events planen, Anmeldungen verwalten, Kalenderübersicht und Statusverfolgung." data-en="Plan events, manage registrations, calendar overview and status tracking.">Events planen, Anmeldungen verwalten, Kalenderübersicht und Statusverfolgung.</p>
+      <div class="feature-icon">📦</div>
+      <h3 data-de="Artikel & Inventar" data-en="Articles & Inventory">Artikel & Inventar</h3>
+      <p data-de="Artikel mit Foto, Einheit, Preis und Bestand verwalten — wie in Business Central, aber einfacher." data-en="Manage articles with photo, unit, price and stock — like Business Central, but simpler.">Artikel mit Foto, Einheit, Preis und Bestand verwalten — wie in Business Central, aber einfacher.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">📋</div>
-      <h3 data-de="Kontakte & CRM" data-en="Contacts & CRM">Kontakte & CRM</h3>
-      <p data-de="Besucher und Interessenten erfassen, Notizen führen und zu Mitgliedern konvertieren." data-en="Capture visitors and prospects, keep notes and convert them to members.">Besucher und Interessenten erfassen, Notizen führen und zu Mitgliedern konvertieren.</p>
+      <div class="feature-icon">🏘</div>
+      <h3 data-de="Small Groups" data-en="Small Groups">Small Groups</h3>
+      <p data-de="Gruppen anlegen, Mitglieder zuweisen, Treffen-Protokolle erfassen und Leiter verwalten." data-en="Create groups, assign members, record meeting minutes and manage leaders.">Gruppen anlegen, Mitglieder zuweisen, Treffen-Protokolle erfassen und Leiter verwalten.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📁</div>
+      <h3 data-de="Dokumente & CRM" data-en="Documents & CRM">Dokumente & CRM</h3>
+      <p data-de="Dokumente ablegen, Besucher erfassen, Notizen führen und zu Mitgliedern konvertieren." data-en="Store documents, capture visitors, keep notes and convert them to members.">Dokumente ablegen, Besucher erfassen, Notizen führen und zu Mitgliedern konvertieren.</p>
+    </div>
+    <div class="feature-card" style="background:linear-gradient(135deg,var(--navy),var(--navy2));border-color:rgba(200,148,26,0.3)">
+      <div class="feature-icon" style="background:rgba(200,148,26,0.15)">🤖</div>
+      <h3 style="color:white" data-de="KI-Assistent (kommt bald)" data-en="AI Assistant (coming soon)">KI-Assistent (kommt bald)</h3>
+      <p style="color:rgba(255,255,255,0.6)" data-de="Fragen über Gemeindedaten stellen — KI antwortet direkt in der App. Als erstes Church-ERP weltweit." data-en="Ask questions about your church data — AI answers directly in the app. The first church ERP worldwide with this feature.">Fragen über Gemeindedaten stellen — KI antwortet direkt in der App. Als erstes Church-ERP weltweit.</p>
     </div>
   </div>
 </section>
@@ -682,17 +698,17 @@ function showScreen(i){
     <div class="step">
       <div class="step-num">1</div>
       <h3 data-de="Gespräch vereinbaren" data-en="Schedule a call">Gespräch vereinbaren</h3>
-      <p data-de="Kurzes Kennenlernen — wir zeigen dir die App live und beantworten alle Fragen persönlich." data-en="A short introduction — we show you the app live and answer all your questions personally.">Kurzes Kennenlernen — wir zeigen dir die App live und beantworten alle Fragen persönlich.</p>
+      <p data-de="Kurze Demo — wir zeigen dir die App live und beantworten alle Fragen." data-en="Short demo — we show you the app live and answer all your questions.">Kurze Demo — wir zeigen dir die App live und beantworten alle Fragen.</p>
     </div>
     <div class="step">
       <div class="step-num">2</div>
-      <h3 data-de="Gemeinde einrichten" data-en="Set up your church">Gemeinde einrichten</h3>
-      <p data-de="Wir richten deinen Bereich ein. Bestehende Daten aus Excel können einfach importiert werden." data-en="We set up your workspace. Existing data from Excel can be easily imported.">Wir richten deinen Bereich ein. Bestehende Daten aus Excel können einfach importiert werden.</p>
+      <h3 data-de="Einrichtung (3–4 Tage)" data-en="Setup (3–4 days)">Einrichtung (3–4 Tage)</h3>
+      <p data-de="Wir richten alles ein. Bestehende Mitglieder- und Kontaktdaten werden aus Excel importiert." data-en="We set everything up. Existing member and contact data is imported from Excel.">Wir richten alles ein. Bestehende Mitglieder- und Kontaktdaten werden aus Excel importiert.</p>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <h3 data-de="Team einladen & loslegen" data-en="Invite your team & start">Team einladen & loslegen</h3>
-      <p data-de="Benutzer anlegen, Rollen vergeben — und sofort produktiv. Schulung inklusive." data-en="Add users, assign roles — and get productive immediately. Training included.">Benutzer anlegen, Rollen vergeben — und sofort produktiv. Schulung inklusive.</p>
+      <p data-de="Benutzer anlegen, Rollen vergeben — und sofort loslegen." data-en="Add users, assign roles — and get started right away.">Benutzer anlegen, Rollen vergeben — und sofort loslegen.</p>
     </div>
   </div>
 </section>
@@ -707,28 +723,31 @@ function showScreen(i){
   <div class="pricing-grid">
     <div class="pricing-card">
       <div class="plan-name">Starter</div>
-      <p class="plan-desc" data-de="Ideal für kleinere Gemeinden, die digital durchstarten möchten." data-en="Ideal for smaller churches ready to go digital.">Ideal für kleinere Gemeinden, die digital durchstarten möchten.</p>
+      <p class="plan-desc" data-de="Für kleinere Gemeinden — alle Kernmodule inklusive." data-en="For smaller churches — all core modules included.">Für kleinere Gemeinden — alle Kernmodule inklusive.</p>
       <div class="plan-price" data-de="Auf Anfrage <span>/ Monat</span>" data-en="On request <span>/ month</span>">Auf Anfrage <span>/ Monat</span></div>
       <div class="plan-features">
-        <div class="pf" data-de="Mitglieder & Kontakte" data-en="Members & Contacts">Mitglieder & Kontakte</div>
-        <div class="pf" data-de="Small Groups" data-en="Small Groups">Small Groups</div>
-        <div class="pf" data-de="Gottesdienste & Worship" data-en="Services & Worship">Gottesdienste & Worship</div>
-        <div class="pf" data-de="Events & Kalender" data-en="Events & Calendar">Events & Kalender</div>
-        <div class="pf" data-de="CSV Import & Export" data-en="CSV Import & Export">CSV Import & Export</div>
+        <div class="pf" data-de="Mitglieder, Kontakte & CRM" data-en="Members, Contacts & CRM">Mitglieder, Kontakte & CRM</div>
+        <div class="pf" data-de="Small Groups & Gottesdienste" data-en="Small Groups & Services">Small Groups & Gottesdienste</div>
+        <div class="pf" data-de="Events & Anmeldungen" data-en="Events & Registrations">Events & Anmeldungen</div>
+        <div class="pf" data-de="Spenden & Twint" data-en="Donations & Twint">Spenden & Twint</div>
+        <div class="pf" data-de="Dokumente & CSV Import/Export" data-en="Documents & CSV Import/Export">Dokumente & CSV Import/Export</div>
+        <div class="pf" data-de="Einrichtung in 3–4 Tagen" data-en="Setup in 3–4 days">Einrichtung in 3–4 Tagen</div>
       </div>
       <a href="#kontakt" class="plan-cta" data-de="Anfragen" data-en="Enquire">Anfragen</a>
     </div>
     <div class="pricing-card featured">
       <div class="featured-badge" data-de="★ EMPFOHLEN" data-en="★ RECOMMENDED">★ EMPFOHLEN</div>
       <div class="plan-name">Professional</div>
-      <p class="plan-desc" data-de="Für wachsende Gemeinden mit mehr Nutzern und erweitertem Bedarf." data-en="For growing churches with more users and expanded needs.">Für wachsende Gemeinden mit mehr Nutzern und erweitertem Bedarf.</p>
+      <p class="plan-desc" data-de="Für wachsende Gemeinden — alle Module ohne Einschränkungen." data-en="For growing churches — all modules without limits.">Für wachsende Gemeinden — alle Module ohne Einschränkungen.</p>
       <div class="plan-price" data-de="Auf Anfrage <span>/ Monat</span>" data-en="On request <span>/ month</span>">Auf Anfrage <span>/ Monat</span></div>
       <div class="plan-features">
         <div class="pf" data-de="Alles aus Starter" data-en="Everything in Starter">Alles aus Starter</div>
-        <div class="pf" data-de="Bankanbindung (ab Q3 2026)" data-en="Bank integration (from Q3 2026)">Bankanbindung (ab Q3 2026)</div>
-        <div class="pf" data-de="Mehr Benutzerkonten & Rollen" data-en="More user accounts & roles">Mehr Benutzerkonten & Rollen</div>
+        <div class="pf" data-de="Freiwillige & Dienstplan" data-en="Volunteers & Scheduling">Freiwillige & Dienstplan</div>
+        <div class="pf" data-de="Artikel & Inventar" data-en="Articles & Inventory">Artikel & Inventar</div>
+        <div class="pf" data-de="Kreditoren & Rechnungen" data-en="Creditors & Invoices">Kreditoren & Rechnungen</div>
+        <div class="pf" data-de="Bankanbindung (ab Q3 2026)" data-en="Bank integration (Q3 2026)">Bankanbindung (ab Q3 2026)</div>
+        <div class="pf" data-de="KI-Assistent (2026)" data-en="AI Assistant (2026)">KI-Assistent (2026)</div>
         <div class="pf" data-de="Prioritäts-Support" data-en="Priority support">Prioritäts-Support</div>
-        <div class="pf" data-de="Erweiterte Berichte & Statistiken" data-en="Advanced reports & statistics">Erweiterte Berichte & Statistiken</div>
       </div>
       <a href="#kontakt" class="plan-cta" data-de="Anfragen" data-en="Enquire">Anfragen</a>
     </div>
@@ -748,8 +767,8 @@ function showScreen(i){
 </section>
 
 <style>
-.faq-item{background:var(--white);border-radius:10px;margin-bottom:10px;border:1px solid #E5E7EB;overflow:hidden;}
-.faq-q{padding:18px 20px 18px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:15px;font-weight:600;color:var(--navy);transition:background .2s;gap:16px;}
+.faq-item{background:var(--white);border-radius:10px;margin-bottom:8px;border:1px solid #E5E7EB;overflow:hidden;}
+.faq-q{padding:18px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:15px;font-weight:500;color:var(--navy);transition:background .2s;gap:16px;border:none;outline:none;}
 .faq-q:hover{background:#FAFAFA;}
 .faq-q span{width:22px;height:22px;border-radius:50%;background:rgba(200,148,26,0.1);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--gold);flex-shrink:0;transition:transform .3s;font-weight:400;}
 .faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s;padding:0 20px;font-size:14px;color:var(--gray);line-height:1.7;}
@@ -760,24 +779,26 @@ function showScreen(i){
 <script>
 const FAQS = {
   de: [
-    {q:"Wie lange dauert die Einrichtung?", a:"In der Regel ist alles innerhalb von 1–2 Tagen eingerichtet. Wir begleiten dich persönlich — vom Import bestehender Daten bis zur ersten Anmeldung deines Teams."},
-    {q:"Kann ich meine bestehenden Excel-Daten importieren?", a:"Ja. AJ Connect unterstützt den Import von Mitgliedern und Kontakten per CSV oder Excel. Wir helfen dir dabei, die Daten sauber zu übernehmen."},
-    {q:"Wie sicher sind unsere Daten?", a:"Alle Daten werden ausschliesslich in unserem Datenzentrum in Genf gespeichert. Wir verwenden Row-Level Security (RLS) — jede Gemeinde ist vollständig von anderen isoliert. Vollständig DSG-konform."},
-    {q:"Wie viele Benutzer kann ich anlegen?", a:"Im Starter-Paket sind mehrere Benutzer inklusive. Im Professional-Paket gibt es mehr Konten und erweiterte Rollen. Genaue Zahlen besprechen wir individuell mit dir."},
+    {q:"Wie lange dauert die Einrichtung?", a:"Die Einrichtung dauert in der Regel 3–4 Tage. Wir begleiten dich persönlich — vom Import bestehender Daten bis zum ersten Login deines Teams."},
+    {q:"Kann ich meine bestehenden Excel-Daten importieren?", a:"Ja. AJ Connect unterstützt den Import von Mitgliedern und Kontakten per CSV oder Excel. Wir helfen dir, die Daten sauber zu übernehmen."},
+    {q:"Wie sicher sind unsere Daten?", a:"Alle Daten werden ausschliesslich in unserem Datenzentrum in Genf gespeichert. Wir verwenden Row-Level Security — jede Gemeinde ist vollständig isoliert. Vollständig DSG-konform."},
+    {q:"Was ist alles in AJ Connect enthalten?", a:"Mitgliederverwaltung, Kontakte, Small Groups, Gottesdienste, Worship & Setlisten, Veranstaltungen mit Anmeldungen, Freiwillige & Dienstplan, Spenden & Twint, Artikel, Kreditoren & Rechnungen, Dokumente — alles in einer App."},
+    {q:"Gibt es einen Freiwilligen-Dienstplan?", a:"Ja. Du kannst Dienst-Bereiche definieren (z.B. Kids Treff, Begrüssung, Technik, Kaffee-Bar, Bestuhlung) und Freiwillige gezielt einteilen, bestätigen und exportieren."},
+    {q:"Wie funktionieren Event-Anmeldungen?", a:"Bei jedem Event können Anmeldungen erfasst werden — mit Kapazitätslimit, automatischer Warteliste und Anwesenheitserfassung."},
     {q:"Gibt es eine App für das Smartphone?", a:"AJ Connect läuft vollständig im Browser — auch mobil auf dem Smartphone. Eine native iOS/Android-App ist für 2027 geplant."},
-    {q:"Was kostet AJ Connect?", a:"Die Preise sind individuell und werden direkt mit dir besprochen — je nach Gemeindegrösse und gewähltem Paket. Schreib uns einfach und wir finden die passende Lösung."},
-    {q:"Kann ich AJ Connect zuerst testen?", a:"Ja. Wir bieten eine persönliche Demo an — kostenlos und unverbindlich. Danach entscheidest du ob und wie du starten möchtest."},
-    {q:"Wird AJ Connect weiterentwickelt?", a:"Ja — kontinuierlich. Neue Features werden regelmässig ausgerollt, darunter Bankanbindung (Q3 2026) und eine mobile App (2027). Eure Wünsche fliessen direkt in die Entwicklung ein."},
+    {q:"Was kostet AJ Connect?", a:"Die Preise sind individuell und werden direkt mit dir besprochen — je nach Gemeindegrösse und Paket. Schreib uns einfach an info@ajconnect.ch."},
+    {q:"Wird AJ Connect weiterentwickelt?", a:"Ja — laufend. Neue Features werden regelmässig ausgerollt: Bankanbindung (Q3 2026), KI-Assistent, mobile App (2027). Eure Wünsche fliessen direkt ein."},
   ],
   en: [
-    {q:"How long does setup take?", a:"Usually everything is up and running within 1–2 days. We guide you personally — from importing existing data to the first login for your team."},
+    {q:"How long does setup take?", a:"Setup typically takes 3–4 days. We guide you personally — from importing existing data to the first login for your team."},
     {q:"Can I import my existing Excel data?", a:"Yes. AJ Connect supports importing members and contacts via CSV or Excel. We help you migrate your data cleanly."},
-    {q:"How secure is our data?", a:"All data is stored exclusively in our data center in Geneva. We use Row-Level Security (RLS) — each church is fully isolated. Fully DSG compliant."},
-    {q:"How many users can I create?", a:"The Starter plan includes multiple users. The Professional plan offers more accounts and extended roles. Exact numbers are discussed individually with you."},
+    {q:"How secure is our data?", a:"All data is stored exclusively in our data center in Geneva. We use Row-Level Security — each church is fully isolated. Fully DSG compliant."},
+    {q:"What is included in AJ Connect?", a:"Member management, contacts, small groups, services, worship & setlists, events with registrations, volunteer scheduling, donations & Twint, articles, creditors & invoices, documents — everything in one app."},
+    {q:"Is there a volunteer scheduling feature?", a:"Yes. You can define service areas (e.g. Kids Ministry, Welcome Team, Tech, Coffee Bar, Seating) and assign, confirm and export volunteers easily."},
+    {q:"How do event registrations work?", a:"Each event supports registrations with capacity limits, automatic waitlists and attendance tracking."},
     {q:"Is there a smartphone app?", a:"AJ Connect runs fully in the browser — including on mobile. A native iOS/Android app is planned for 2027."},
-    {q:"What does AJ Connect cost?", a:"Pricing is individual and discussed directly with you — depending on church size and chosen plan. Just write to us and we'll find the right solution."},
-    {q:"Can I try AJ Connect first?", a:"Yes. We offer a personal demo — free and no commitment. Afterwards you decide if and how you want to get started."},
-    {q:"Is AJ Connect actively developed?", a:"Yes — continuously. New features are rolled out regularly, including bank integration (Q3 2026) and a mobile app (2027). Your requests feed directly into development."},
+    {q:"What does AJ Connect cost?", a:"Pricing is individual and discussed directly with you — depending on church size and plan. Just contact us at info@ajconnect.ch."},
+    {q:"Is AJ Connect actively developed?", a:"Yes — continuously. New features roll out regularly: bank integration (Q3 2026), AI assistant, mobile app (2027). Your requests feed directly into development."},
   ]
 };
 
@@ -841,6 +862,49 @@ document.addEventListener('DOMContentLoaded',()=>buildFAQ('de'));
   <div class="social-label" data-de="Folg uns auf Social Media" data-en="Follow us on social media">Folg uns auf Social Media</div>
 </section>
 
+<!-- ABOUT / ÜBER MICH -->
+<section style="padding:80px 6%;background:var(--light);" id="about">
+  <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:200px 1fr;gap:56px;align-items:center">
+    <!-- Avatar / Photo -->
+    <div style="text-align:center">
+      <div style="width:160px;height:160px;border-radius:50%;background:var(--navy);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;border:4px solid var(--gold);overflow:hidden">
+        <div style="font-size:64px">👨‍💼</div>
+      </div>
+      <div style="font-size:16px;font-weight:700;color:var(--navy)">N. Jason Ratnam</div>
+      <div style="font-size:13px;color:var(--gray);margin-top:4px" data-de="Gründer & Entwickler" data-en="Founder & Developer">Gründer & Entwickler</div>
+      <div style="display:flex;justify-content:center;gap:10px;margin-top:14px">
+        <a href="https://linkedin.com/in/jasonratnam" target="_blank" rel="noopener" style="width:36px;height:36px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;text-decoration:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+        <a href="mailto:info@ajconnect.ch" style="width:36px;height:36px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;text-decoration:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        </a>
+      </div>
+    </div>
+    <!-- Text -->
+    <div>
+      <div class="section-label" data-de="Über mich" data-en="About me">Über mich</div>
+      <h2 class="section-title" style="font-size:clamp(24px,3vw,36px)" data-de="Gebaut aus der Praxis heraus" data-en="Built from real-world experience">Gebaut aus der Praxis heraus</h2>
+      <p style="font-size:15px;color:var(--gray);line-height:1.8;margin-bottom:16px" data-de="Ich bin Jason — Entwickler, Unternehmer und Mitglied einer Freikirche in der Schweiz. AJ Connect ist aus einem echten Bedürfnis entstanden: Unsere Gemeinde verwaltete alles mit Excel und WhatsApp. Das musste besser gehen." data-en="I'm Jason — developer, entrepreneur and member of a free church in Switzerland. AJ Connect was born from a real need: our church managed everything with Excel and WhatsApp. There had to be a better way.">Ich bin Jason — Entwickler, Unternehmer und Mitglied einer Freikirche in der Schweiz. AJ Connect ist aus einem echten Bedürfnis entstanden: Unsere Gemeinde verwaltete alles mit Excel und WhatsApp. Das musste besser gehen.</p>
+      <p style="font-size:15px;color:var(--gray);line-height:1.8;margin-bottom:24px" data-de="AJ Connect ist keine Software von einem grossen Konzern — es ist ein Produkt das ich selbst täglich nutze und laufend weiterentwickle. Feedback fliesst direkt in neue Features ein." data-en="AJ Connect is not software from a big corporation — it's a product I use myself daily and continuously improve. Feedback flows directly into new features.">AJ Connect ist keine Software von einem grossen Konzern — es ist ein Produkt das ich selbst täglich nutze und laufend weiterentwickle. Feedback fliesst direkt in neue Features ein.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px;background:white;border:1px solid #E5E7EB;border-radius:8px;padding:10px 16px">
+          <span style="font-size:20px">🇨🇭</span>
+          <span style="font-size:13px;font-weight:500;color:var(--navy)" data-de="Gebaut in der Schweiz" data-en="Built in Switzerland">Gebaut in der Schweiz</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;background:white;border:1px solid #E5E7EB;border-radius:8px;padding:10px 16px">
+          <span style="font-size:20px">⛪</span>
+          <span style="font-size:13px;font-weight:500;color:var(--navy)" data-de="Für Gemeinden gemacht" data-en="Made for churches">Für Gemeinden gemacht</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;background:white;border:1px solid #E5E7EB;border-radius:8px;padding:10px 16px">
+          <span style="font-size:20px">💬</span>
+          <span style="font-size:13px;font-weight:500;color:var(--navy)" data-de="Direkter Kontakt" data-en="Direct contact">Direkter Kontakt</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-top">
@@ -852,6 +916,7 @@ document.addEventListener('DOMContentLoaded',()=>buildFAQ('de'));
       <a href="#features" data-de="Features" data-en="Features">Features</a>
       <a href="#preise" data-de="Preise" data-en="Pricing">Preise</a>
       <a href="#schweiz" data-de="Datenschutz" data-en="Privacy">Datenschutz</a>
+      <a href="#about" data-de="Über mich" data-en="About">Über mich</a>
       <a href="mailto:info@ajconnect.ch">info@ajconnect.ch</a>
     </div>
   </div>
